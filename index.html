@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MLM LIVE</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="MLM LIVE" />
+     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="MLM LIVE" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="MLM LIVE" />
+    <meta property="og:description" content="MLM LIVE" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MLM LIVE" />
+    <meta name="twitter:description" content="MLM LIVE" />
+        <link rel="apple-touch-icon" sizes="180x180" href="./public/mlmboo2l.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="./public/mlmboo2l.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="./public/mlmboo2l.png" />
+    <link rel="apple-touch-icon" href="./public/mlmboo2l.png" />
+    <!-- Standard favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./public/mlmboo2l.png" />
+    <link rel="icon" type="image/png" href="./public/mlmboo2l.png" />
+    <link rel="icon" type="image/svg+xml" href="/public/mlmboo2.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Queue Android WebView messages immediately. The app bundle and Signup
+      // route load later, after Splash/Onboarding, but Play install-referrer is
+      // commonly delivered only once on the first launch.
+      (() => {
+        const queue = [];
+        const capture = (event) => {
+          queue.push(event.data);
+          if (queue.length > 20) queue.shift();
+        };
+
+        window.__MLMLIVE_EARLY_BRIDGE_MESSAGES__ = queue;
+        window.__MLMLIVE_EARLY_BRIDGE_HANDLER__ = capture;
+        window.addEventListener("message", capture);
+        document.addEventListener("message", capture);
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>

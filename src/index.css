@@ -1,0 +1,707 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+@import "@heroui/styles";
+
+/* Keep Tailwind dark: utilities controlled by the app theme toggle,
+   not by the phone/browser prefers-color-scheme setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  --app-visual-viewport-height: 100dvh;
+  --app-visual-viewport-top: 0px;
+}
+
+:root,
+.light,
+[data-theme="light"],
+[data-theme="default"] {
+  --accent: #2877e9;
+  --accent-foreground: #ffffff;
+  --background: #f4f6fb;
+  --border: #e2e8f0;
+  --card: #ffffff;
+  --card-foreground: #0f1117;
+  --danger: oklch(65.32% 0.2335 27.01);
+  --danger-foreground: oklch(99.11% 0 0);
+  --default: oklch(94.00% 0.0015 264.39);
+  --default-foreground: oklch(21.03% 0.0059 264.39);
+  --field-background: #ffffff;
+  --field-foreground: #0f1117;
+  --field-placeholder: #94a3b8;
+  --focus: #2877e9;
+  --foreground: #0f1117;
+  --muted: #64748b;
+  --muted-foreground: #64748b;
+  --overlay: #ffffff;
+  --overlay-foreground: #0f1117;
+  --scrollbar: #cbd5e1;
+  --segment: #ffffff;
+  --segment-foreground: #0f1117;
+  --separator: #f1f5f9;
+  --success: oklch(73.29% 0.1941 152.08);
+  --success-foreground: oklch(21.03% 0.0059 152.08);
+  --surface: #ffffff;
+  --surface-foreground: #0f1117;
+  --surface-secondary: #f8fafc;
+  --surface-secondary-foreground: #0f1117;
+  --surface-tertiary: #f1f5f9;
+  --surface-tertiary-foreground: #0f1117;
+  --warning: oklch(78.19% 0.1590 73.60);
+  --warning-foreground: oklch(21.03% 0.0059 73.60);
+
+  --radius: 0.75rem;
+  --field-radius: 0.75rem;
+  --font-sans: 'Figtree', sans-serif;
+  --font-display: 'Figtree', sans-serif;
+
+  /* Card shadow */
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06), 0 2px 12px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
+  --app-blue-start: #2f80ea;
+  --app-blue-end: #175bc9;
+  --auth-field: #f2f4f9;
+  --auth-field-border: #dce2ec;
+  --auth-sheet: #ffffff;
+  --auth-soft: #eef4ff;
+}
+
+@keyframes shimmerSlide {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes marquee-smooth {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-smooth {
+  display: inline-flex;
+  animation: marquee-smooth 5s linear infinite;
+  width: max-content;
+}
+
+.dark,
+.default,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --accent: #2877e9;
+  --accent-foreground: #ffffff;
+  --background: #0d1320;
+  --border: #2a3548;
+  --card: #151d2b;
+  --card-foreground: #f8fafc;
+  --danger: oklch(59.40% 0.1973 25.90);
+  --danger-foreground: oklch(99.11% 0 0);
+  --default: oklch(27.40% 0.0015 264.39);
+  --default-foreground: oklch(99.11% 0 0);
+  --field-background: #1a2236;
+  --field-foreground: #f8fafc;
+  --field-placeholder: #91a0b8;
+  --focus: #2877e9;
+  --foreground: #f8fafc;
+  --muted: #9eabc0;
+  --muted-foreground: #aeb9cb;
+  --overlay: #151d2b;
+  --overlay-foreground: #f8fafc;
+  --scrollbar: #2d3748;
+  --segment: #202b3d;
+  --segment-foreground: #f8fafc;
+  --separator: #1e2736;
+  --success: oklch(73.29% 0.1941 152.08);
+  --success-foreground: oklch(21.03% 0.0059 152.08);
+  --surface: #151d2b;
+  --surface-foreground: #f8fafc;
+  --surface-secondary: #1b2536;
+  --surface-secondary-foreground: #f8fafc;
+  --surface-tertiary: #223047;
+  --surface-tertiary-foreground: #f8fafc;
+  --warning: oklch(82.03% 0.1392 77.61);
+  --warning-foreground: oklch(21.03% 0.0059 77.61);
+
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.30), 0 2px 12px rgba(0, 0, 0, 0.20);
+  --shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.40), 0 1px 4px rgba(0, 0, 0, 0.30);
+  --app-blue-start: #2f80ea;
+  --app-blue-end: #174da8;
+  --auth-field: #182234;
+  --auth-field-border: #2d3a50;
+  --auth-sheet: #111827;
+  --auth-soft: #152641;
+}
+
+/* Keep HeroUI inline fallbacks and the app's semantic tokens in sync. */
+html {
+  font-size: 14px;
+}
+
+/* ── WebView / React Native WebView performance ────────────────────────── */
+
+/* Eliminate 300ms tap delay on all tappable elements */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+/* Instant touch response — no delay, no ghost highlight */
+button,
+a,
+[role="button"],
+input,
+select,
+textarea,
+.cursor-pointer {
+  touch-action: manipulation;
+}
+
+/* Prevent accidental text selection on interactive cards */
+button,
+[role="button"],
+.cursor-pointer {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* GPU-accelerated horizontal scroll containers */
+.scroll-gpu {
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prevent elastic overscroll showing white gap in WebView */
+  overscroll-behavior: none;
+}
+
+/* ── Theme-safe native and library form controls ────────────────────────── */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/*
+ * Keep the dark-theme fallback that makes legacy button/tab labels visible,
+ * but do not override component-owned colours in the light theme.  This rule
+ * is intentionally dark-scoped because an unscoped, unlayered button colour
+ * wins over Tailwind/HeroUI text-colour utilities.
+ */
+:is(.dark, [data-theme="dark"]) button {
+  color: inherit;
+}
+
+input,
+select,
+textarea {
+  color: var(--field-foreground);
+  caret-color: var(--field-foreground);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--field-placeholder);
+  opacity: 1;
+}
+
+:is(.dark, [data-theme="dark"]) :is(input, select, textarea) {
+  color: var(--field-foreground);
+  -webkit-text-fill-color: var(--field-foreground);
+}
+
+:is(.dark, [data-theme="dark"]) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not(.bg-transparent),
+  select,
+  textarea:not(.bg-transparent)) {
+  background-color: var(--field-background);
+  border-color: var(--border);
+}
+
+:is(.dark, [data-theme="dark"]) :is(input, textarea)::placeholder {
+  color: var(--field-placeholder);
+  -webkit-text-fill-color: var(--field-placeholder);
+  opacity: 1;
+}
+
+:is(.dark, [data-theme="dark"]) :is(option, optgroup) {
+  background-color: var(--overlay);
+  color: var(--overlay-foreground);
+}
+
+:is(.dark, [data-theme="dark"]) :is(input[type="date"], input[type="datetime-local"], input[type="time"], select) {
+  color-scheme: dark;
+}
+
+:is(.dark, [data-theme="dark"]) :is(input:disabled, input[readonly], select:disabled, textarea:disabled) {
+  color: var(--muted-foreground);
+  -webkit-text-fill-color: var(--muted-foreground);
+  opacity: 1;
+}
+
+:is(.dark, [data-theme="dark"]) input:-webkit-autofill,
+:is(.dark, [data-theme="dark"]) input:-webkit-autofill:hover,
+:is(.dark, [data-theme="dark"]) input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--field-foreground);
+  caret-color: var(--field-foreground);
+  -webkit-box-shadow: 0 0 0 1000px var(--field-background) inset;
+  box-shadow: 0 0 0 1000px var(--field-background) inset;
+}
+
+/* HeroUI portals are mounted outside page containers, so enforce the active
+   theme on their own surfaces as well. */
+:is(.dark, [data-theme="dark"]) :is([data-slot="select-trigger"], [data-slot="select-popover"], [data-slot="popover-dialog"], [data-slot="modal-dialog"]) {
+  color: var(--overlay-foreground);
+}
+
+:is(.dark, [data-theme="dark"]) :is([data-slot="select-popover"], [data-slot="popover-dialog"], [data-slot="modal-dialog"]) {
+  background-color: var(--overlay);
+  border-color: var(--border);
+}
+
+/*
+ * Keep modal fields above the mobile keyboard in browsers and RN WebViews.
+ * The controller updates these values from VisualViewport/window resize,
+ * then marks only the modal that currently owns the focused field.
+ */
+[data-keyboard-guard-fullscreen="true"] {
+  inset: auto 0 auto 0 !important;
+  top: var(--app-visual-viewport-top, 0px) !important;
+  bottom: auto !important;
+  height: var(--app-visual-viewport-height, 100dvh) !important;
+  max-height: var(--app-visual-viewport-height, 100dvh) !important;
+  overflow: hidden !important;
+}
+
+[data-keyboard-guard-content="true"] {
+  max-height: calc(var(--app-visual-viewport-height, 100dvh) - 0.75rem) !important;
+  min-height: 0 !important;
+}
+
+[data-keyboard-guard-active="true"] [data-slot="modal-container"] {
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+}
+
+[data-keyboard-guard-active="true"] [data-slot="modal-dialog"] {
+  max-height: calc(100% - 0.75rem) !important;
+  min-height: 0 !important;
+}
+
+[data-keyboard-guard-scroll="true"],
+[data-keyboard-guard-active="true"] [data-slot="modal-body"],
+[data-keyboard-guard-active="true"] [data-keyboard-modal-scroll] {
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scroll-padding-block: 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS zooms focused fields below 16px, which can move a modal behind the keyboard. */
+@media (max-width: 767px) {
+
+  [data-keyboard-modal] input,
+  [data-keyboard-modal] textarea,
+  [data-slot="modal-dialog"] input,
+  [data-slot="modal-dialog"] textarea,
+  [data-keyboard-guard-active="true"] input,
+  [data-keyboard-guard-active="true"] textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Dark mode contrast booster — ensure inherited text is crisp white */
+.dark,
+[data-theme="dark"] {
+  color: #f8fafc;
+}
+
+.dark body,
+[data-theme="dark"] body {
+  color: #f8fafc;
+}
+
+.dark .text-foreground,
+[data-theme="dark"] .text-foreground {
+  color: #ffffff !important;
+}
+
+.dark .text-muted-foreground,
+[data-theme="dark"] .text-muted-foreground {
+  color: #b9c5d8 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ── App-wide light/dark readability helpers ───────────────────────────── */
+.app-surface {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.app-card {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-color: var(--border);
+}
+
+.app-field {
+  background: var(--auth-field);
+  color: var(--field-foreground);
+  border-color: var(--auth-field-border);
+}
+
+.app-field::placeholder {
+  color: var(--field-placeholder);
+}
+
+/* Common neutral utility fallbacks used across older screens. */
+:is(.dark, [data-theme="dark"]) .text-gray-500,
+:is(.dark, [data-theme="dark"]) .text-gray-600,
+:is(.dark, [data-theme="dark"]) .text-slate-500,
+:is(.dark, [data-theme="dark"]) .text-slate-600 {
+  color: var(--muted-foreground) !important;
+}
+
+:is(.dark, [data-theme="dark"]) .border-gray-200,
+:is(.dark, [data-theme="dark"]) .border-gray-300,
+:is(.dark, [data-theme="dark"]) .border-slate-200 {
+  border-color: var(--border) !important;
+}
+
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+.layout-scroll-container {
+  scrollbar-gutter: stable;
+}
+
+/* Hide scrollbar */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Animations ─────────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes shimmerSlide {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Reusable shimmer skeleton bar — used in template cards */
+.shimmer-bar {
+  background: linear-gradient(90deg, #e8e8e8 25%, #f0f0f0 37%, #e8e8e8 63%);
+  background-size: 400% 100%;
+  animation: shimmerSlide 1.2s ease infinite;
+}
+
+.dark .shimmer-bar,
+[data-theme="dark"] .shimmer-bar {
+  background: linear-gradient(90deg, #1e2736 25%, #252f42 37%, #1e2736 63%);
+  background-size: 400% 100%;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.animate-toast-in {
+  animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-toast-out {
+  animation: toastOut 0.25s ease-in forwards;
+}
+
+/* ── Safe area ──────────────────────────────────────── */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: 0;
+  /* WebView host already owns the top/status-bar inset. */
+}
+
+/* ── Utilities ──────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, #0088DA, #0088DA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-press {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-press:active {
+  transform: scale(0.97);
+}
+
+/* ── Toast container ────────────────────────────────── */
+#toast-root {
+  position: fixed;
+  bottom: 88px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+  width: min(90vw, 380px);
+}
+
+@media (min-width: 768px) {
+  #toast-root {
+    bottom: 24px;
+    right: 24px;
+    left: auto;
+    transform: none;
+    align-items: flex-end;
+  }
+}
+
+.toast-item {
+  pointer-events: all;
+  width: 100%;
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.10);
+  backdrop-filter: blur(16px);
+  animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.toast-success {
+  background: #16a34a;
+  color: #fff;
+}
+
+.toast-error {
+  background: #dc2626;
+  color: #fff;
+}
+
+.toast-info {
+  background: #0088DA;
+  color: #fff;
+}
+
+.toast-warning {
+  background: #d97706;
+  color: #fff;
+}
+
+/* ── Font Lock — prevent HeroUI/Tailwind from overriding fonts ─────────── */
+/* Must be at the bottom of the file to win the cascade */
+:root {
+  --font-sans: 'Figtree', sans-serif !important;
+  --font-display: 'Figtree', sans-serif !important;
+}
+
+body,
+body * {
+  font-family: 'Figtree', sans-serif !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-display {
+  font-family: 'Figtree', sans-serif !important;
+}
+
+/* ── Global toast appearance ─────────────────────────────── */
+
+[data-slot="toast-region"] {}
+
+[data-slot="toast"] {
+  background-color: var(--overlay);
+
+  color: var(--foreground) !important;
+
+  border: 1px solid color-mix(in srgb,
+      var(--accent) 80%,
+      transparent) !important;
+
+  border-radius: 14px !important;
+  box-shadow: 0 8px 10px #0088DA !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  pointer-events: auto;
+}
+
+[data-slot="toast-title"] {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+}
+
+[data-slot="toast-description"] {
+  color: var(--muted-foreground) !important;
+}
+
+[data-slot="toast-content"] {
+  color: var(--foreground) !important;
+}

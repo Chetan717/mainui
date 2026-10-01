@@ -1,0 +1,26 @@
+const COLLECTIONS = {
+  USERS: import.meta.env.VITE_COL_USERS,
+  ADMINUSER: import.meta.env.VITE_COL_ADMINUSER,
+  COUPONCODE: import.meta.env.VITE_COL_COUPONCODE,
+  MTEAM: import.meta.env.VITE_COL_MTEAM,
+  SUBSCRIPTION: import.meta.env.VITE_COL_SUBSCRIPTION,
+  MLMCOMP: import.meta.env.VITE_COL_MLMCOMP,
+  MLMPROFILES: import.meta.env.VITE_COL_MLMPROFILES,
+  MLMTEMPLATE: import.meta.env.VITE_COL_MLMTEMPLATE,
+  LEADMANAGEMENT: import.meta.env.VITE_COL_LEADMANAGEMENT,
+  MLMGRAPHICS: import.meta.env.VITE_COL_MLMGRAPHICS,
+  REMOVEBG: import.meta.env.VITE_COL_REMOVEBG,
+  PAYMENTLOG: import.meta.env.VITE_COL_PAYMENTLOG,
+  REPORTINGUSER: import.meta.env.VITE_COL_REPORTINGUSER,
+  REPORTPLAN: import.meta.env.VITE_COL_REPORTPLAN,
+  REPORTSP: import.meta.env.VITE_COL_REPORTSP,
+  REPORTFOLLOWUP: import.meta.env.VITE_COL_REPORTFOLLOWUP,
+  REPORTKITBOOK: import.meta.env.VITE_COL_REPORTKITBOOK,
+  REPORTNAC: import.meta.env.VITE_COL_REPORTNAC,
+  REPORTNEXTDAY: import.meta.env.VITE_COL_REPORTNEXTDAY,
+  TEAMREQUESTS: import.meta.env.VITE_COL_TEAMREQUESTS || "teamrequests",
+  REPORTGUEST: import.meta.env.VITE_COL_REPORTGUEST || "reportguest",
+  ASKAICREDIT: import.meta.env.VITE_COL_ASKAICREDIT || "askaicredit",
+};
+
+export { COLLECTIONS };
