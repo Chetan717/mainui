@@ -226,8 +226,8 @@ function normalizeCompanyDesignations(company) {
 }
 
 const GENERAL_SELECT_TYPES = new Set([
-  "Trending",
-  "Today_Trending",
+  // "Trending",
+  // "Today_Trending",
   "Festival",
   "Product",
   "Motivational",
