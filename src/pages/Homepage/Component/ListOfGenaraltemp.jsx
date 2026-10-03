@@ -190,12 +190,13 @@ function DesignationSelectModal({
 }
 
 function normalizeCompanyDesignations(company) {
-  const source = [
-    company?.profile,
-    company?.designation,
-    company?.designations,
-    company?.ranks,
-  ].find(Array.isArray) || [];
+  const source =
+    [
+      company?.profile,
+      company?.designation,
+      company?.designations,
+      company?.ranks,
+    ].find(Array.isArray) || [];
 
   return source
     .map((item) => {
@@ -315,7 +316,8 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
   const handleViewAll = useCallback(
     (group) => {
       const selttype = {
-        MainType: group?.templates?.[0]?.MainType || group?.MainType || "General",
+        MainType:
+          group?.templates?.[0]?.MainType || group?.MainType || "General",
         type: group.type,
         id: group.templates?.[0]?.id,
         serial: group.templates?.[0]?.serial,
@@ -456,7 +458,12 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
 
       proceedWithTemplateSelection(selttype);
     },
-    [handleReset, prepareEditorTemplate, proceedWithTemplateSelection, setSelType],
+    [
+      handleReset,
+      prepareEditorTemplate,
+      proceedWithTemplateSelection,
+      setSelType,
+    ],
   );
 
   // Refresh the authenticated user's company document when the designation
@@ -559,7 +566,9 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
   );
 
   const everydayMomentCards = EVERYDAY_MOMENT_ENTRIES.map((entry) => {
-    const group = visibleGroups.find((candidate) => candidate?.type === entry.type);
+    const group = visibleGroups.find(
+      (candidate) => candidate?.type === entry.type,
+    );
     const item = group?.templates?.[0] || null;
     return item ? { ...entry, group, item } : null;
   }).filter(Boolean);
@@ -568,7 +577,9 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
     (group) => !isEverydayMomentType(group?.type),
   );
   const noResults = Boolean(
-    searchQuery && regularGroups.length === 0 && everydayMomentCards.length === 0,
+    searchQuery &&
+    regularGroups.length === 0 &&
+    everydayMomentCards.length === 0,
   );
 
   return (
@@ -594,10 +605,13 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="truncate text-[13px] font-bold leading-5 text-[#161D2D] dark:text-white">
-                      {displayName}
+                      {displayName === "Training"
+                        ? "Seat Booking"
+                        : displayName}
                     </h2>
                     <p className="text-[8px] font-medium text-[#9AA4B5] dark:text-[#778297]">
-                      {group.templates.length} design{group.templates.length === 1 ? "" : "s"}
+                      {group.templates.length} design
+                      {group.templates.length === 1 ? "" : "s"}
                     </p>
                   </div>
                   {renderViewAllButton(group)}
@@ -606,7 +620,6 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
               </section>
             );
           })}
-
 
           {everydayMomentCards.length > 0 && (
             <section className="min-w-0">
@@ -619,7 +632,9 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
                 </div>
                 <button
                   type="button"
-                  onClick={() => navigate(buildEverydayMomentsAllTemplatesPath())}
+                  onClick={() =>
+                    navigate(buildEverydayMomentsAllTemplatesPath())
+                  }
                   className="flex items-center gap-1 rounded-full bg-[#E8F5FD] px-3 py-1.5 text-[11px] font-semibold text-[#1787D6] dark:bg-[#17314A] dark:text-[#74C8FF]"
                 >
                   View All
