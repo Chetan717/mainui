@@ -266,7 +266,7 @@ export default function Festival() {
               key={d.iso}
               data-iso={d.iso}
               onClick={() => handleDateSelect(d.iso)}
-              className={`relative flex flex-col items-center justify-center min-w-[45px] h-[55px] rounded-xl transition-all duration-300 snap-center shrink-0 border ${
+              className={`relative flex h-[50px] w-[50px] min-w-[50px] flex-col items-center justify-center rounded-[7px] transition-all duration-300 snap-center shrink-0 border ${
                 isSelected
                   ? "bg-accent text-white shadow-md border-transparent scale-105"
                   : "bg-white dark:bg-black/20 text-foreground border-border hover:border-accent/50 hover:bg-accent/5"

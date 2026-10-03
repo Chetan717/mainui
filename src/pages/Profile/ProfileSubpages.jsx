@@ -32,7 +32,7 @@ const SUPPORT_EMAIL = "help@mlmlive.in";
 
 export function ProfileHeader({ title, onBack }) {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-[#2784f1] to-[#1d58c8] px-4 py-2.5 text-white">
+    <div className="relative overflow-hidden bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] px-4 py-2.5 text-white">
       <div className="pointer-events-none absolute -right-12 -top-24 h-48 w-48 rounded-full bg-white/[0.08]" />
       <div className="relative flex items-center gap-3">
         <button

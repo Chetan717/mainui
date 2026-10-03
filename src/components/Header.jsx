@@ -68,6 +68,7 @@ const PAGE_TITLES = {
   "/alltemp": "Templates",
   "/mlmform": "Create Design",
   "/selectcomp": "Select company",
+  "/ask-ai": "Ask AI",
 };
 
 const REPORTING_TAB_LABELS = {
@@ -279,7 +280,10 @@ export default function Header({
   const canRefresh = Boolean(REFRESH_TARGETS[location.pathname]);
   const isSubPage = !!pageTitle;
   const isForm = location.pathname === "/mlmform";
-  const useBlueSubpageHeader = ["/mlmprofile", "/selectcomp"].includes(location.pathname);
+  // Keep the same visual identity as Home on every app screen that uses the
+  // shared header. Route-specific pages with their own header use the same
+  // gradient as well.
+  const useBlueSubpageHeader = true;
 
   const typeName = (() => {
     let t = selType?.type;
@@ -444,7 +448,7 @@ export default function Header({
 
         <div className="flex-1 min-w-0 flex items-center">
           {(isEditor || isForm) && typeName ? (
-            <h1 className="text-[15px] font-display font-bold text-foreground truncate leading-tight capitalize">
+            <h1 className="text-[15px] font-display font-bold text-white truncate leading-tight capitalize">
               {typeName}
             </h1>
           ) : pageTitle ? (
@@ -455,11 +459,11 @@ export default function Header({
             </h1>
           ) : isReporting ? (
             <div className="flex flex-col min-w-0">
-              <h1 className="text-[15px] font-display font-bold text-foreground leading-tight">
+              <h1 className="text-[15px] font-display font-bold text-white leading-tight">
                 Reporting
               </h1>
               {currentTabLabel && (
-                <p className="text-[10px] text-accent font-semibold leading-none truncate">
+                <p className="text-[10px] text-white/80 font-semibold leading-none truncate">
                   {currentTabLabel}
                 </p>
               )}
@@ -542,10 +546,10 @@ export default function Header({
                   state: createBannerSettingsNavigationState(location),
                 })
               }
-              className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-foreground/8 active:scale-95 transition-all"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-95 transition-all"
               title="Banner Settings"
             >
-              <Gear className="size-[18px] text-accent dark:text-white" />
+              <Gear className="size-[18px] text-white" />
             </button>
           )}
         </div>

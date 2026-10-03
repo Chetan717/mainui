@@ -889,13 +889,13 @@ export default function ImageEditorCanvas({
     <div
       ref={containerRef}
       data-image-editor-open="true"
-      className="rounded-xl"
+      className="rounded-none"
       style={{
         display: "flex",
         flexDirection: "column",
         height: "100%",
         width: "100%",
-        backgroundColor: "#181818",
+        backgroundColor: "var(--background)",
         userSelect: "none",
         fontFamily: "'Figtree', sans-serif",
       }}
@@ -907,7 +907,9 @@ export default function ImageEditorCanvas({
           alignItems: "center",
           justifyContent: "space-between",
           padding: "8px 12px",
-          borderBottom: "1px solid #2c2c2c",
+          borderBottom: "1px solid rgba(255,255,255,0.18)",
+          background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
+          boxShadow: "0 5px 18px rgba(26,75,148,0.14)",
           flexShrink: 0,
         }}
       >
@@ -916,7 +918,7 @@ export default function ImageEditorCanvas({
           style={{
             background: "none",
             border: "none",
-            color: "#aaa",
+            color: "#fff",
             fontSize: 15,
             cursor: "pointer",
             padding: "8px 12px",
@@ -927,6 +929,14 @@ export default function ImageEditorCanvas({
         >
           ✕
         </button>
+        <div style={{ minWidth: 0, flex: 1, padding: "0 4px" }}>
+          <div style={{ color: "#fff", fontSize: 13, fontWeight: 800 }}>
+            {enableEnhance ? "Final Crop" : "Crop Photo"}
+          </div>
+          <div style={{ color: "rgba(255,255,255,0.78)", fontSize: 9, marginTop: 1 }}>
+            {enableEnhance ? "Step 3 of 3 · Adjust final cutout" : "Step 1 of 3 · Crop original photo"}
+          </div>
+        </div>
         <button
           type="button"
           disabled={isDoing || !isImageReady}
@@ -935,45 +945,44 @@ export default function ImageEditorCanvas({
             position: "relative",
             overflow: "hidden",
             background: isDoing || !isImageReady
-              ? "#1c0e04"
-              : "linear-gradient(135deg,#ea580c,#f97316)",
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: 13,
-            borderRadius: 12,
-            minWidth: 100,
+              ? "rgba(255,255,255,0.16)"
+              : "#ffffff",
+            color: isDoing || !isImageReady ? "#ffffff" : "#1f63d3",
+            fontWeight: 800,
+            fontSize: 12,
+            borderRadius: 10,
+            minWidth: 104,
             minHeight: 36,
-            border: "none",
+            border: "1px solid rgba(255,255,255,0.28)",
             cursor: isDoing || !isImageReady ? "default" : "pointer",
             touchAction: "manipulation",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "0 14px",
+            gap: 7,
+            padding: "0 13px",
           }}
         >
-          {isDoing && (
+          {(isDoing || !isImageReady) && (
             <span
+              aria-hidden="true"
               style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                bottom: 0,
-                width: `${encodeProgress}%`,
-                background: "linear-gradient(135deg,#ea580c,#f97316)",
-                transition: "width 0.1s linear",
-                borderRadius: 12,
+                width: 14,
+                height: 14,
+                borderRadius: "999px",
+                border: "2px solid rgba(255,255,255,0.35)",
+                borderTopColor: "#fff",
+                animation: "crop-editor-spin .75s linear infinite",
+                flexShrink: 0,
               }}
             />
           )}
-          <span
-            style={{ position: "relative", zIndex: 1, letterSpacing: "0.01em" }}
-          >
+          <span style={{ letterSpacing: "0.01em", whiteSpace: "nowrap" }}>
             {!isImageReady
-              ? "Loading photo…"
+              ? "Continue"
               : isDoing
-                ? `Encoding ${encodeProgress}%`
-                : "Done / पूरा करें"}
+                ? `Saving ${encodeProgress}%`
+                : "Done"}
           </span>
         </button>
       </div>
@@ -1011,8 +1020,8 @@ export default function ImageEditorCanvas({
       {/* Tab controls */}
       <div
         style={{
-          backgroundColor: "#f4f4f4",
-          borderTop: "1px solid #e0e0e0",
+          backgroundColor: "var(--surface)",
+          borderTop: "1px solid var(--border)",
           flexShrink: 0,
         }}
       >
@@ -1034,8 +1043,8 @@ export default function ImageEditorCanvas({
                 onClick={() => setRotation((r) => r + deg)}
                 style={{
                   padding: "4px 8px",
-                  backgroundColor: "#fff",
-                  border: "1px solid #ddd",
+                  backgroundColor: "var(--surface-secondary)",
+                  border: "1px solid var(--border)",
                   borderRadius: 10,
                   fontSize: 14,
                   cursor: "pointer",
@@ -1064,9 +1073,9 @@ export default function ImageEditorCanvas({
                 onClick={fn}
                 style={{
                   padding: "4px 8px",
-                  backgroundColor: active ? "#f97316" : "#fff",
-                  color: active ? "#fff" : "#333",
-                  border: "1px solid #ddd",
+                  backgroundColor: active ? "#2877e9" : "var(--surface-secondary)",
+                  color: active ? "#fff" : "var(--foreground)",
+                  border: "1px solid var(--border)",
                   borderRadius: 10,
                   fontSize: 14,
                   fontWeight: 600,
@@ -1084,14 +1093,14 @@ export default function ImageEditorCanvas({
               padding: "7px 8px",
               textAlign: "center",
               fontSize: 12,
-              color: "#888",
+              color: "var(--muted-foreground)",
             }}
           >
-            Drag corners to resize · अंदर खींचकर फोटो सेट करें · Crop stays inside photo
+            Drag corners to resize · Drag inside to position · Crop stays inside photo
           </div>
         )}
         {tab === "enhance" && enableEnhance && (
-          <div style={{ padding: "8px 14px 10px", color: "#333" }}>
+          <div style={{ padding: "8px 14px 10px", color: "var(--foreground)" }}>
             <div
               style={{
                 display: "flex",
@@ -1111,8 +1120,8 @@ export default function ImageEditorCanvas({
                   border: "none",
                   borderRadius: 999,
                   padding: "5px 10px",
-                  background: enhance ? "#f97316" : "#ddd",
-                  color: enhance ? "#fff" : "#555",
+                  background: enhance ? "#2877e9" : "var(--surface-tertiary)",
+                  color: enhance ? "#fff" : "var(--muted-foreground)",
                   fontSize: 10,
                   fontWeight: 700,
                   cursor: "pointer",
@@ -1128,7 +1137,7 @@ export default function ImageEditorCanvas({
               max={100}
               value={enhance}
               onChange={(event) => setEnhance(Number(event.target.value))}
-              style={{ width: "100%", accentColor: "#f97316" }}
+              style={{ width: "100%", accentColor: "#2877e9" }}
             />
             <div
               style={{
@@ -1151,7 +1160,7 @@ export default function ImageEditorCanvas({
               max={50}
               value={skinTone}
               onChange={(event) => setSkinTone(Number(event.target.value))}
-              style={{ width: "100%", accentColor: "#f97316" }}
+              style={{ width: "100%", accentColor: "#2877e9" }}
             />
           </div>
         )}
@@ -1160,9 +1169,9 @@ export default function ImageEditorCanvas({
       {/* Zoom slider */}
       {tab !== "enhance" && <div
         style={{
-          backgroundColor: "#f4f4f4",
+          backgroundColor: "var(--surface)",
           padding: "4px 18px 10px",
-          borderTop: "1px solid #e8e8e8",
+          borderTop: "1px solid var(--border)",
           flexShrink: 0,
         }}
       >
@@ -1171,7 +1180,7 @@ export default function ImageEditorCanvas({
             textAlign: "center",
             fontSize: 14,
             fontWeight: 700,
-            color: "#f97316",
+            color: "#2877e9",
             marginBottom: 4,
           }}
         >
@@ -1204,7 +1213,7 @@ export default function ImageEditorCanvas({
                 style={{
                   width: 1.5,
                   height: i % 5 === 0 ? 13 : 6,
-                  backgroundColor: i === 0 ? "#f97316" : "#bbb",
+                  backgroundColor: i === 0 ? "#2877e9" : "var(--border)",
                   borderRadius: 1,
                 }}
               />
@@ -1230,19 +1239,20 @@ export default function ImageEditorCanvas({
           />
         </div>
         <style>{`
-          input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:5px;height:26px;background:#f97316;border-radius:3px;cursor:pointer;}
+          input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:5px;height:26px;background:#2877e9;border-radius:3px;cursor:pointer;}
           input[type=range]::-webkit-slider-runnable-track{background:transparent;height:34px;}
           @keyframes spin{to{transform:rotate(360deg)}}
+          @keyframes crop-editor-spin{to{transform:rotate(360deg)}}
         `}</style>
       </div>}
 
       {/* Tab bar */}
       <div
-        className="rounded-b-xl"
+        className="rounded-none"
         style={{
-          backgroundColor: "#1e1e1e",
+          backgroundColor: "var(--surface)",
           display: "flex",
-          borderTop: "1px solid #2a2a2a",
+          borderTop: "1px solid var(--border)",
           flexShrink: 0,
         }}
       >
@@ -1261,16 +1271,16 @@ export default function ImageEditorCanvas({
           }}
           style={btnBase}
         >
-          <span style={{ fontSize: 18, color: "#888" }}>↺</span>
-          <span style={{ fontSize: 9, color: "#666" }}>Reset</span>
+          <span style={{ fontSize: 18, color: "var(--muted-foreground)" }}>↺</span>
+          <span style={{ fontSize: 9, color: "var(--muted-foreground)" }}>Reset</span>
         </button>
         <button onClick={fitToCrop} style={btnBase}>
-          <span style={{ fontSize: 18, color: "#888" }}>⊞</span>
-          <span style={{ fontSize: 9, color: "#666" }}>Fit</span>
+          <span style={{ fontSize: 18, color: "var(--muted-foreground)" }}>⊞</span>
+          <span style={{ fontSize: 9, color: "var(--muted-foreground)" }}>Fit</span>
         </button>
         <button onClick={autoDetectFace} style={btnBase}>
-          <span style={{ fontSize: 16, color: "#888" }}>👤</span>
-          <span style={{ fontSize: 9, color: "#666" }}>Face</span>
+          <span style={{ fontSize: 16, color: "var(--muted-foreground)" }}>👤</span>
+          <span style={{ fontSize: 9, color: "var(--muted-foreground)" }}>Face</span>
         </button>
         {tabs.map(({ id, label, icon }) => {
           const active = tab === id;
@@ -1281,19 +1291,19 @@ export default function ImageEditorCanvas({
               style={{
                 ...btnBase,
                 borderTop: active
-                  ? "2.5px solid #f97316"
+                  ? "2.5px solid #2877e9"
                   : "2.5px solid transparent",
               }}
             >
               <span
-                style={{ fontSize: 18, color: active ? "#f97316" : "#888" }}
+                style={{ fontSize: 18, color: active ? "#2877e9" : "var(--muted-foreground)" }}
               >
                 {icon}
               </span>
               <span
                 style={{
                   fontSize: 9,
-                  color: active ? "#f97316" : "#777",
+                  color: active ? "#2877e9" : "var(--muted-foreground)",
                   fontWeight: active ? 700 : 400,
                 }}
               >

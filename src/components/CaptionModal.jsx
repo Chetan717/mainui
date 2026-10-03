@@ -20,9 +20,9 @@ export default function CaptionModal({
   const achieverLine = achieverInfo?.name
     ? [
         isBonanzaFlowType(achieverInfo?.selectType)
-          ? `आइए हम सभी मिलकर बधाई देते हैं ${achieverInfo.name} from ${achieverInfo.city} जिन्होनें कंपनी का ${achieverInfo.rankname} ${achieverInfo?.selectType === "Domestic_Trip" ? "DOMESTIC TRIP" : "BONANZA"} अचीव  किया है। \n\nBEST WISHES FROM \n${achieverInfo.fromwish}\n${achieverInfo.formdesignation}\n ${`MOB NO. : ${achieverInfo.formmobile}`}\n`
+          ? `Congratulations to ${achieverInfo.name} from ${achieverInfo.city} for achieving the company ${achieverInfo.rankname} ${achieverInfo?.selectType === "Domestic_Trip" ? "DOMESTIC TRIP" : "BONANZA"}. \n\nBEST WISHES FROM \n${achieverInfo.fromwish}\n${achieverInfo.formdesignation}\n ${`MOB NO. : ${achieverInfo.formmobile}`}\n`
           : isRankPromotionType(achieverInfo?.selectType)
-            ? `आइए हम सभी मिलकर बधाई देते हैं ${achieverInfo.name} from ${achieverInfo.city} जिन्होनें कंपनी का ${achieverInfo.rankname} RANK अचीव करके ${achieverInfo.amount} प्राप्त किया है। \n\nBEST WISHES FROM \n ${achieverInfo.fromwish}\n${achieverInfo.formdesignation}\n${`MOB NO. : ${achieverInfo.formmobile}`}\n`
+            ? `Congratulations to ${achieverInfo.name} from ${achieverInfo.city} for achieving the company ${achieverInfo.rankname} RANK and earning ${achieverInfo.amount}. \n\nBEST WISHES FROM \n ${achieverInfo.fromwish}\n${achieverInfo.formdesignation}\n${`MOB NO. : ${achieverInfo.formmobile}`}\n`
             : null,
       ]
         .filter(Boolean)
@@ -85,10 +85,10 @@ export default function CaptionModal({
         <div className="flex items-center justify-between px-5 pt-5 pb-3 flex-shrink-0">
           <div>
             <h3 className="text-base font-bold text-foreground">
-              🚀 AI Captions / एआई कैप्शन
+              🚀 AI Captions
             </h3>
             <p className="text-sm text-muted-foreground mt-0.5">
-              डिज़ाइन पोस्ट करते समय इस्तेमाल करने के लिए एक कैप्शन कॉपी करें।
+              Copy a caption to use when posting your design.
             </p>
           </div>
           <button
@@ -113,7 +113,7 @@ export default function CaptionModal({
         <div className="mx-5 mb-3 rounded-xl border border-accent/20 bg-accent/10 px-3 py-2.5 flex items-start gap-2">
           <span className="w-5 h-5 rounded-full bg-accent text-white text-[10px] font-bold flex items-center justify-center shrink-0">i</span>
           <p className="text-[11px] leading-relaxed text-foreground/75">
-            <span className="font-bold">3 easy steps:</span> Category चुनें → Caption देखें और Copy करें → Design Download करें।
+            <span className="font-bold">3 easy steps:</span> Choose a category → Preview and copy a caption → Download your design.
           </p>
         </div>
 
@@ -262,7 +262,7 @@ export default function CaptionModal({
                         <rect x="9" y="9" width="13" height="13" rx="2" />
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                       </svg>
-                      {"कॉपी / Copy"}
+                      {"Copy"}
                     </>
                   )}
                 </button>
@@ -274,7 +274,7 @@ export default function CaptionModal({
         {/* ── Footer ── */}
         <div className="px-5 pt-3 pb-5 flex-shrink-0 border-t border-border">
           <p className="text-xs text-muted-foreground text-center mb-3">
-            ऊपर अपना कैप्शन कॉपी करें, फिर अपना डिज़ाइन डाउनलोड करें।
+            Copy your caption above, then download your design.
           </p>
           <button
             onClick={handleDownload}

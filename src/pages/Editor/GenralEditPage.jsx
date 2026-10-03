@@ -63,6 +63,11 @@ import numSlash from "./amount_numberImage/lash.png";
 import { COLLECTIONS } from "../../collections";
 import { celebrateDownload } from "../../utils/downloadCelebration";
 import { recordImageDownload } from "../../services/userActivityService";
+import {
+  DAILY_DOWNLOAD_LIMIT,
+  reserveDailyDownload,
+  releaseDailyDownload,
+} from "../../services/downloadLimitService";
 import { getAchieverDisplayName } from "./utils/canvasDataUtils";
 import { getImageExportPixelRatio } from "./exportUtils";
 
@@ -362,6 +367,7 @@ const VideoCanvas = React.memo(function VideoCanvas({
 });
 
 export const GENERAL_SELECT_TYPES = [
+  { name: "Product", value: "Product" },
   { name: "Motivational", value: "Motivational" },
   { name: "Thank You Rank", value: "ThankYou_Banner_B" },
   {
@@ -439,8 +445,8 @@ const FadeEdgesFilter = (imageData) => {
   if (width <= 1 || height <= 1) return;
 
   const bottomBorder = 0;
-  const sideFade = 0.07; // केवल 7% side area में fade
-  const minSideAlpha = 0.4; // sides पर minimum 40% opacity
+  const sideFade = 0.07; // Fade only within the 7% side area
+  const minSideAlpha = 0.4; // Keep at least 40% opacity on the sides
 
   const wMax = width - 1;
 
@@ -1774,12 +1780,12 @@ function GeneralEditPage({
     spacing = 1.5,
     onTap,
   }) {
-    // "/-" को single token रखता है ताकि Slash.png render हो।
+    // Keep "/-" as a single token so Slash.png renders correctly.
     const tokens = tokenizeAmount(amountText);
 
     const totalWidth = computeAmountWidth(amountText, digitHeight, spacing);
 
-    // Slash image को canvas से बाहर जाने से रोकता है।
+    // Keep the slash image inside the canvas bounds.
     let curX = Math.max(0, Math.min(startX, STAGE_WIDTH - totalWidth - 2));
 
     const nodes = [];
@@ -1960,7 +1966,7 @@ function GeneralEditPage({
   // Final output: ₹10,000/-
   const amountText = amountBaseText ? `${amountBaseText}/-` : "";
 
-  // Existing positioning calculations में slash count नहीं होगा।
+  // Do not include the slash in the existing positioning count.
   const charslen = amountBaseText.split("");
 
   const [insta] = useImage(instagram, "anonymous");
@@ -1974,6 +1980,30 @@ function GeneralEditPage({
   const planDownloads = activeSub?.download ?? 0;
   const referCredits = userData?.referCredit ?? 0;
   const totalDownloadsAvailable = planDownloads + referCredits;
+
+  const reserveDownloadSlot = async () => {
+    const storedUser = getUser() || {};
+    const reservation = await reserveDailyDownload({
+      userDocumentId: userData?._documentId || userData?.id,
+      userIdentity:
+        storedUser?.uid ||
+        storedUser?.id ||
+        storedUser?.mobileNo ||
+        storedUser?.mobile ||
+        "current-user",
+    });
+
+    if (!reservation.allowed) {
+      showToast(
+        `Daily download limit reached. You can download up to ${DAILY_DOWNLOAD_LIMIT} images or videos per day. Please try again tomorrow.`,
+        "error",
+        5000,
+      );
+      return null;
+    }
+
+    return reservation;
+  };
 
   // const checkCredits = (cost) => {
   // if (!activeSub) {
@@ -2061,6 +2091,12 @@ function GeneralEditPage({
     }
 
     exportInProgressRef.current = true;
+    const dailyReservation = await reserveDownloadSlot();
+    if (!dailyReservation) {
+      exportInProgressRef.current = false;
+      return;
+    }
+    let downloadCompleted = false;
     setExportLoading(true);
     setIsImageSelected(false);
     setSelectedImageType(null);
@@ -2115,10 +2151,12 @@ function GeneralEditPage({
       });
       // await deductCredits(IMAGE_CREDIT_COST, "Downloaded!"); {change for free}
       setExportedUri(uri);
+      downloadCompleted = true;
       celebrateDownload();
     } catch (err) {
       showToast("Export failed. Please try again.", "error");
     } finally {
+      if (!downloadCompleted) void releaseDailyDownload(dailyReservation);
       setExportLoading(false);
       exportInProgressRef.current = false;
     }
@@ -2147,6 +2185,12 @@ function GeneralEditPage({
     setVideoPlaying(true);
     // if (!checkCredits(VIDEO_CREDIT_COST)) return; {change for free}
     exportInProgressRef.current = true;
+    const dailyReservation = await reserveDownloadSlot();
+    if (!dailyReservation) {
+      exportInProgressRef.current = false;
+      return;
+    }
+    let downloadCompleted = false;
     setExportLoading(true);
     setVideoExporting(true);
     setProgressTarget(5);
@@ -2270,11 +2314,13 @@ function GeneralEditPage({
       }
       setProgressTarget(100);
       setProgressLabel("Done!");
+      downloadCompleted = true;
       celebrateDownload();
       // await deductCredits(VIDEO_CREDIT_COST, "Video downloaded!"); {change for free}
     } catch (err) {
       showToast("Video download failed. Please try again.", "error");
     } finally {
+      if (!downloadCompleted) void releaseDailyDownload(dailyReservation);
       if (progressTicker) clearInterval(progressTicker);
       if (rafId) cancelAnimationFrame(rafId);
       try {
@@ -2536,6 +2582,12 @@ function GeneralEditPage({
     if (exportInProgressRef.current) return;
     // if (!checkCredits(VIDEO_CREDIT_COST)) return; {change for free}
     exportInProgressRef.current = true;
+    const dailyReservation = await reserveDownloadSlot();
+    if (!dailyReservation) {
+      exportInProgressRef.current = false;
+      return;
+    }
+    let downloadCompleted = false;
     const withTimeout = (promise, ms, label) =>
       Promise.race([
         promise,
@@ -2753,11 +2805,13 @@ function GeneralEditPage({
       }
       setProgressTarget(100);
       setProgressLabel("Done!");
+      downloadCompleted = true;
       celebrateDownload();
       // await deductCredits(VIDEO_CREDIT_COST, "Video downloaded!"); {change for free}
     } catch (err) {
       showToast("Video export failed. Please try again.", "error", 5000);
     } finally {
+      if (!downloadCompleted) void releaseDailyDownload(dailyReservation);
       setMusicExporting(false);
       exportInProgressRef.current = false;
       setTimeout(() => {
@@ -2880,8 +2934,8 @@ function GeneralEditPage({
           data-guide="editor-canvas"
           data-no-ui-translate="true"
           className={previewOnly
-            ? "relative mx-auto flex-shrink-0 overflow-hidden rounded-[10px] border border-[#d6dce8] bg-transparent shadow-[0_8px_20px_rgba(15,23,42,0.12)] dark:border-[#344158]"
-            : "relative mx-auto flex-shrink-0 overflow-hidden rounded-[18px] border border-[#d6dce8] bg-transparent shadow-[0_14px_34px_rgba(15,23,42,0.16)] dark:border-[#344158]"}
+            ? "relative mx-auto flex-shrink-0 overflow-hidden rounded-none border border-[#d6dce8] bg-transparent shadow-[0_8px_20px_rgba(15,23,42,0.12)] dark:border-[#344158]"
+            : "relative mx-auto flex-shrink-0 overflow-hidden rounded-none border border-[#d6dce8] bg-transparent shadow-[0_14px_34px_rgba(15,23,42,0.16)] dark:border-[#344158]"}
           style={{
             width: previewOnly && previewSize ? previewSize : "min(320px, 92vw)",
             height: `${STAGE_WIDTH * stageScale}px`,
@@ -2929,7 +2983,7 @@ function GeneralEditPage({
                 </span>
                 <SlowLoadingHint
                   delay={3500}
-                  message="आपका शानदार डिज़ाइन अभी लोड हो रहा है — बड़े टेम्प्लेट या धीमे कनेक्शन में कुछ अतिरिक्त सेकंड लग सकते हैं। कृपया थोड़ा इंतज़ार करें, बस होने ही वाला है।"
+                  message="Your design is loading. Large templates or slower connections may take a few extra seconds. Please wait a moment."
                 />
               </div>
             </div>

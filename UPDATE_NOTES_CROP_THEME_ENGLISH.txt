@@ -1,0 +1,12 @@
+MLM LIVE - Crop / Upload / Remove-BG UI refinement
+
+Updated:
+- Crop and Final Crop screens now use the same MLM LIVE blue gradient theme as Home.
+- The old orange "Loading photo..." action is replaced by a clear spinner + "Preparing..." state.
+- Ready state shows a clean "Done" action; saving state shows spinner + progress.
+- Remove Background processing overlay now uses the app blue gradient header.
+- Device image loading overlay uses the app theme and English base copy.
+- Hardcoded Hindi/bilingual UI copy outside the language dictionaries was converted to English base copy.
+- Crop-related labels were added to Hindi/Marathi/Gujarati language dictionaries so language switching remains available.
+- Existing image upload size limit value was not changed; only its validation message was changed to English.
+- Remove-BG routing/server/client logic was not changed by this UI refinement.

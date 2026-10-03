@@ -115,7 +115,7 @@ export function Signup() {
 
     if (!/^[0-9]{4}$/.test(data.pin || "")) {
       setFormError(
-        "Password must be 4 digits / पासवर्ड 4 अंकों का होना चाहिए।",
+        "Password must be 4 digits.",
       );
       return;
     }
@@ -214,14 +214,14 @@ export function Signup() {
 
   const stepTitles = [
     "",
-    "Create Account / अकाउंट बनाएं",
-    "Verify OTP / OTP सत्यापित करें",
+    "Create Account",
+    "Verify OTP",
   ];
 
   const stepSubs = [
     "",
-    "Join MLM LIVE today / आज ही MLM LIVE से जुड़ें",
-    `OTP sent to +91 ${userMobile} / OTP भेज दिया गया है`,
+    "Join MLM LIVE today",
+    `OTP sent to +91 ${userMobile}`,
   ];
 
   if (step === 2) {
@@ -253,7 +253,7 @@ export function Signup() {
 
           <main className="px-7 pt-8 pb-10">
             <h2 className="text-[23px] font-bold leading-tight text-foreground">Enter the code</h2>
-            <span className="sr-only">Enter 4-Digit OTP / 4 अंकों का OTP दर्ज करें</span>
+            <span className="sr-only">Enter 4-Digit OTP</span>
             <p className="mt-2 text-[15px] text-muted-foreground">
               We sent a 4-digit code to +91 {userMobile}
             </p>
@@ -351,7 +351,7 @@ export function Signup() {
             <div>
               <label htmlFor="signup-name" className="mb-2 block text-[12px] font-medium text-muted-foreground">
                 Full name
-                <span className="sr-only">Full Name / पूरा नाम</span>
+                <span className="sr-only">Full Name</span>
               </label>
               <input
                 id="signup-name"
@@ -367,7 +367,7 @@ export function Signup() {
             <div>
               <label htmlFor="signup-mobile" className="mb-2 block text-[12px] font-medium text-muted-foreground">
                 Mobile number
-                <span className="sr-only">Mobile Number / मोबाइल नंबर</span>
+                <span className="sr-only">Mobile Number</span>
               </label>
               <div className="app-field flex h-[54px] items-center rounded-[15px] border px-3 shadow-sm focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/15">
                 <span className="border-r border-border pr-3 text-[15px] text-muted-foreground">+91</span>
@@ -389,13 +389,13 @@ export function Signup() {
             <div>
               <label htmlFor="signup-pin" className="mb-2 block text-[12px] font-medium text-muted-foreground">
                 Create a password
-                <span className="sr-only">Add Your Password / अपना पासवर्ड जोड़ें</span>
+                <span className="sr-only">Add Your Password</span>
               </label>
               <div className="relative">
                 <input
                   id="signup-pin"
                   name="pin"
-                  aria-label="Add Your Password / अपना पासवर्ड जोड़ें"
+                  aria-label="Add Your Password"
                   className="app-field h-[54px] w-full rounded-[15px] border px-4 pr-14 text-[16px] font-semibold tracking-[0.22em] outline-none shadow-sm transition focus:border-accent focus:ring-2 focus:ring-accent/15"
                   maxLength={4}
                   type={showPassword ? "text" : "password"}
@@ -412,7 +412,7 @@ export function Signup() {
                 />
                 <button
                   type="button"
-                  aria-label={showPassword ? "Hide password / पासवर्ड छिपाएं" : "Show password / पासवर्ड दिखाएं"}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   aria-pressed={showPassword}
                   onClick={() => setShowPassword((visible) => !visible)}
                   className="absolute inset-y-0 right-1 flex w-12 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:text-accent"
@@ -430,7 +430,7 @@ export function Signup() {
               <input
                 id="signup-coupon"
                 type="text"
-                aria-label="Coupon Code / कूपन कोड"
+                aria-label="Coupon Code"
                 maxLength={8}
                 value={referInput}
                 onChange={(event) => {

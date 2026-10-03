@@ -232,7 +232,7 @@ test("company can change only before the first MLM Profile is created", () => {
 
   const profileForm = read("src/pages/Form/Mlmprofilemodal.jsx");
   assert.match(profileForm, /canChangeCompany && \(/);
-  assert.match(profileForm, /aria-label="Change Company \/ कंपनी बदलें"/);
+  assert.match(profileForm, /aria-label="Change Company"/);
   assert.match(profileForm, /navigate\("\/selectcomp\?mode=change"\)/);
   assert.match(profileForm, /setProfileLookupState\("existing"\)/);
   assert.match(profileForm, /setProfileLookupState\("missing"\)/);

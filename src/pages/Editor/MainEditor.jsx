@@ -9,6 +9,7 @@ import { COLLECTIONS } from "../../collections";
 export const GENERAL_SELECT_TYPES = [
   { name: "Trending", value: "Trending" },
   { name: "Festival", value: "Festival" },
+  { name: "Product", value: "Product" },
   { name: "Motivational", value: "Motivational" },
   { name: "Good Morning", value: "Good_Morning" },
   { name: "Sport", value: "Sport" },

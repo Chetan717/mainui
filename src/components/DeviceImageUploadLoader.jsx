@@ -102,7 +102,11 @@ export default function DeviceImageUploadLoader() {
       aria-live="polite"
       aria-label="Photo loading from device"
     >
-      <div className="w-full max-w-[330px] overflow-hidden rounded-[26px] border border-white/20 bg-background shadow-2xl">
+      <div className="w-full max-w-[330px] overflow-hidden rounded-2xl border border-border bg-background shadow-2xl">
+        <div className="bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] px-5 py-3 text-white">
+          <p className="text-[15px] font-extrabold">Preparing Photo</p>
+          <p className="mt-0.5 text-[10px] font-medium text-white/80">Opening the photo editor</p>
+        </div>
         <div className="relative h-[210px] bg-[linear-gradient(45deg,#e7e7e7_25%,transparent_25%),linear-gradient(-45deg,#e7e7e7_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#e7e7e7_75%),linear-gradient(-45deg,transparent_75%,#e7e7e7_75%)] bg-[length:20px_20px] bg-[position:0_0,0_10px,10px_-10px,-10px_0px] dark:bg-muted/30">
           {previewUrl && (
             <img
@@ -112,20 +116,20 @@ export default function DeviceImageUploadLoader() {
             />
           )}
           <div className="absolute inset-0 flex items-center justify-center bg-black/15">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/40 border-t-accent shadow-lg" />
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/40 border-t-[#2877e9] shadow-lg" />
           </div>
         </div>
 
         <div className="p-5 text-center">
           <p className="text-[16px] font-extrabold text-foreground">
-            फोटो डिवाइस से लोड हो रही है…
+            Loading photo from your device…
           </p>
           <p className="mt-1 text-[11px] font-medium text-muted-foreground">
-            कृपया प्रतीक्षा करें, फोटो एडिटर तैयार किया जा रहा है
+            Please wait while the photo editor is being prepared
           </p>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full bg-accent transition-[width] duration-100 ease-out"
+              className="h-full rounded-full bg-[linear-gradient(90deg,#2F80EA_0%,#236FDE_55%,#1454C5_100%)] transition-[width] duration-100 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>

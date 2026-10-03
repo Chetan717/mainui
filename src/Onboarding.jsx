@@ -62,13 +62,13 @@ export default function Onboarding() {
             className="text-white font-display font-bold text-2xl leading-tight mb-2"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.3)" }}
           >
-            आज ही शुरू करें!
+            Get started today!
           </h1>
           <p className="text-white/50 text-[13px] font-semibold tracking-wide uppercase mb-3">
             Get Started Today
           </p>
           <p className="text-white/75 text-[15px] leading-relaxed font-medium">
-            नया अकाउंट बनाएं या{"\n"}पहले से है तो Login करें
+            Create a new account or{"\n"}sign in if you already have one
           </p>
           <p className="text-white/40 text-[12px] leading-relaxed mt-1.5">
             Create an account or Sign in to continue
@@ -87,7 +87,7 @@ export default function Onboarding() {
             touchAction: "manipulation",
           }}
         >
-          नया अकाउंट बनाएं — Signup
+          Create a new account — Sign up
         </button>
         <button
           onClick={() => markDone("/login")}
@@ -99,7 +99,7 @@ export default function Onboarding() {
             touchAction: "manipulation",
           }}
         >
-          Login करें — Sign In
+          Already have an account — Sign in
         </button>
       </div>
     </div>

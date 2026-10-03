@@ -14,11 +14,11 @@ const TABS = [
     path: "/",
     Icon: ({ className }) => <House className={className} />,
   },
-  {
-    label: "Plans",
-    path: "/subscription",
-    Icon: ({ className }) => <Gem className={className} />,
-  },
+  // {
+  //   label: "Plans",
+  //   path: "/subscription",
+  //   Icon: ({ className }) => <Gem className={className} />,
+  // },
   {
     label: "Ask AI",
     path: "/ask-ai",

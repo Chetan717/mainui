@@ -106,14 +106,14 @@ export default function ImageUploadWithBgRemove({
     const previewUrl = URL.createObjectURL(croppedBlob);
     setProcessingPreview(previewUrl);
     setLoad(true);
-    setProgressMsg("AI आपकी फोटो तैयार कर रहा है…");
+    setProgressMsg("Preparing your photo with AI…");
     setProgressPct(0);
     const controller = new AbortController();
     abortRef.current = controller;
     publishProcessing({
       active: true,
       previewUrl,
-      progressMessage: "AI आपकी फोटो तैयार कर रहा है…",
+      progressMessage: "Preparing your photo with AI…",
       progressPct: 0,
       onCancel: cancelRemoveBg,
     });
@@ -161,7 +161,7 @@ export default function ImageUploadWithBgRemove({
         
         console.error("[removeBg] Image processing failed:", err, err?.cause);
         toast.danger(
-          "Background removal शुरू नहीं हो पाया. Photo दोबारा select करके Retry करें.",
+          "Background removal could not start. Please select the photo again and retry.",
         );
 
         // Never return the unchanged crop to another Done button. That looked
@@ -197,7 +197,7 @@ export default function ImageUploadWithBgRemove({
         processingId === processingIdRef.current
       ) {
         openFinalCrop(finalImage, true);
-        toast("Adjust the final crop, then tap Done.");
+        toast("Background removed. Adjust the final crop, then tap Done.");
       }
     })();
 

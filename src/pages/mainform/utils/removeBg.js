@@ -178,7 +178,7 @@ async function runLocalWithStartupRetry(file, signal) {
     if (!isRetryableRemoveBgError(firstError)) throw firstError;
 
     console.warn("[removeBg] Local portrait retry:", firstError);
-    emitProgress("On-device AI clean retry कर रहा है…", 8);
+    emitProgress("Retrying on-device AI…", 8);
     await prepareSameQualityRetry();
     return removeWithProfessionalMatte(file, signal);
   }
@@ -203,7 +203,7 @@ export async function removeBg(file, onProgress, signal) {
     throw new Error("Please select a valid image.");
   }
   throwIfAborted(signal);
-  onProgress?.("On-device portrait AI तैयार हो रहा है…", 2);
+  onProgress?.("Preparing on-device portrait AI…", 2);
 
   return queueProcessing(async () => {
     throwIfAborted(signal);
@@ -227,7 +227,7 @@ export async function removeBg(file, onProgress, signal) {
       throwIfAborted(signal);
 
       if (localResult) {
-        emitProgress("Photo complexity check हो रही है…", 70);
+        emitProgress("Checking photo complexity…", 70);
         let assessment;
         try {
           assessment = await assessLocalMatte(localResult);
@@ -240,14 +240,14 @@ export async function removeBg(file, onProgress, signal) {
 
         if (!assessment.complex) {
           reportNativeRoute("local-simple", { metrics: assessment.metrics });
-          emitProgress("Clean transparent photo तैयार है", 100);
+          emitProgress("Transparent photo is ready", 100);
           return localResult;
         }
 
         reportNativeRoute("server-complex", { reasons: assessment.reasons });
         try {
           const serverResult = await tryServer(file, signal);
-          emitProgress("Clean transparent photo तैयार है", 100);
+          emitProgress("Transparent photo is ready", 100);
           return serverResult;
         } catch (serverError) {
           if (serverError?.name === "AbortError" || signal?.aborted) {
@@ -264,19 +264,19 @@ export async function removeBg(file, onProgress, signal) {
           reportNativeRoute("local-server-fallback", {
             reason: serverError?.message || "server-unavailable",
           });
-          emitProgress("Server busy है — local clean result use हो रहा है", 94);
-          emitProgress("Clean transparent photo तैयार है", 100);
+          emitProgress("Server is busy — using the clean local result", 94);
+          emitProgress("Transparent photo is ready", 100);
           return localResult;
         }
       }
 
       // Local engine itself could not produce a PNG. Give the VPS one final
       // independent chance before showing an error.
-      emitProgress("On-device AI unavailable — server try हो रहा है…", 72);
+      emitProgress("On-device AI unavailable — trying the server…", 72);
       try {
         const serverResult = await tryServer(file, signal);
         reportNativeRoute("server-local-failed");
-        emitProgress("Clean transparent photo तैयार है", 100);
+        emitProgress("Transparent photo is ready", 100);
         return serverResult;
       } catch (serverError) {
         if (serverError?.name === "AbortError" || signal?.aborted) {
@@ -296,7 +296,7 @@ export async function removeBg(file, onProgress, signal) {
         localMessage: localError?.message || null,
       });
       throw new Error(
-        "Background removal अभी उपलब्ध नहीं है. कृपया network check करके एक बार Retry करें.",
+        "Background removal is temporarily unavailable. Please check your connection and try again.",
         { cause: error },
       );
     } finally {

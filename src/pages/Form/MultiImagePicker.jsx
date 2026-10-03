@@ -180,7 +180,7 @@ const filtered = useMemo(() => {
       role="button"
       tabIndex={isTriggerDisabled ? -1 : 0}
       aria-disabled={isTriggerDisabled}
-      aria-label="Add Top Upline or Seniors Image / टॉप अपलाइन या सीनियर्स की इमेज जोड़ें"
+      aria-label="Add Top Upline or Seniors Image"
       onClick={() => {
         if (!isTriggerDisabled) handleOpen();
       }}
@@ -194,7 +194,7 @@ const filtered = useMemo(() => {
       <div className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {totalSelected === 0 && (
           <span className="text-[11px] text-gray-400 px-2 py-3">
-            Tap anywhere to add an image / इमेज जोड़ने के लिए बॉक्स पर टैप करें
+            Tap anywhere to add an image
           </span>
         )}
        {selectedLinks.map((item, i) => {
@@ -267,7 +267,7 @@ const filtered = useMemo(() => {
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
           <div>
-            <h2 className="text-[17px] font-bold text-gray-900 dark:text-white">Select Images / इमेज चुनें</h2>
+            <h2 className="text-[17px] font-bold text-gray-900 dark:text-white">Select Images</h2>
             <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{totalSelected} of {allowed} selected</p>
           </div>
           <button type="button" onClick={handleClose}
@@ -286,8 +286,8 @@ const filtered = useMemo(() => {
           {!hideUpload && (
             <div className="flex gap-1.5 p-1 bg-gray-100 dark:bg-gray-800/60 rounded-2xl flex-shrink-0">
               {[
-                { key: "company", label: "Company Photos / कंपनी फोटो" },
-                { key: "upload",  label: "Upload New / नई अपलोड करें"  },
+                { key: "company", label: "Company Photos" },
+                { key: "upload",  label: "Upload New"  },
               ].map(({ key, label }) => (
                 <button key={key} type="button" onClick={() => setTab(key)}
                   className={`flex-1 py-2 px-3 rounded-xl text-[12px] font-bold transition-all duration-200 ${
@@ -313,7 +313,7 @@ const filtered = useMemo(() => {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search by name / नाम से खोजें…"
+                  placeholder="Search by name…"
                   aria-label="Search top upline by name"
                   autoComplete="off"
                   enterKeyHint="search"
@@ -450,7 +450,7 @@ const filtered = useMemo(() => {
                 </div>
                 <div className="text-left">
                   <p className="text-[13px] font-semibold text-gray-800 dark:text-gray-200 group-hover:text-[#0088DA] dark:group-hover:text-violet-400 transition-colors">
-                    {isLimitReached ? "Image limit reached / सीमा पूरी हुई" : processingBg ? "Processing image… / इमेज प्रोसेस हो रही है…" : "Choose from gallery / गैलरी से चुनें"}
+                    {isLimitReached ? "Image limit reached" : processingBg ? "Processing image…" : "Choose from gallery"}
                   </p>
                   <p className="text-[10px] text-gray-400">JPG, PNG · max {allowed}</p>
                 </div>

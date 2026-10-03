@@ -5,6 +5,7 @@ import {
   Heart,
   Medal,
   Monitor,
+  PackageOpen,
   Sparkles,
   Sun,
   Trophy,
@@ -14,6 +15,7 @@ import { EVERYDAY_MOMENTS_GROUP_KEY } from "../../../utils/everydayMoments";
 import { RANK_PROMOTION_TYPES } from "../../../utils/templateTypeConfig";
 
 export const HOME_CATEGORY_ITEMS = Object.freeze([
+  { type: "Product", label: "Product", Icon: PackageOpen },
   { type: "Motivational", label: "Motivational", Icon: Volume2 },
   { type: "Bonanza", label: "Bonanza", Icon: Gift },
   { type: "Meeting", label: "Meeting", Icon: Monitor },

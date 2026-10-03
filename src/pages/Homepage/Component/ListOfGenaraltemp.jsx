@@ -228,6 +228,7 @@ const GENERAL_SELECT_TYPES = new Set([
   "Trending",
   "Today_Trending",
   "Festival",
+  "Product",
   "Motivational",
   "Good_Morning",
   "Sport",
@@ -314,7 +315,7 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
   const handleViewAll = useCallback(
     (group) => {
       const selttype = {
-        MainType: group?.MainType || "General",
+        MainType: group?.templates?.[0]?.MainType || group?.MainType || "General",
         type: group.type,
         id: group.templates?.[0]?.id,
         serial: group.templates?.[0]?.serial,

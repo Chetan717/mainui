@@ -159,7 +159,7 @@ export function ReferEarnPage() {
 
   return (
     <div className="min-h-[100dvh] bg-[#f5f6fa] dark:bg-[#0f1420] pb-10">
-      <div className="overflow-hidden rounded-b-[32px] bg-gradient-to-br from-[#2784f1] to-[#1d58c8] text-white">
+      <div className="overflow-hidden rounded-b-[32px] bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] text-white">
         <ProfileHeader title={t("Refer & earn")} onBack={() => navigate("/profile")} />
         <div className="relative flex flex-col items-center px-4 pb-9 pt-2">
           <div className="pointer-events-none absolute -bottom-20 -left-20 h-52 w-52 rounded-full bg-white/[0.08]" />

@@ -40,6 +40,7 @@ import {
   Heart,
   Medal,
   Monitor,
+  PackageOpen,
   Moon,
   Search,
   Sparkles,
@@ -60,6 +61,7 @@ const PULL_REFRESH_ACTIVE_HEIGHT = 48;
 
 const HOME_UI_TEMPLATE_TYPES = [
   "Today_Trending",
+  "Product",
   "Motivational",
   ...RANK_PROMOTION_TYPES,
   "Bonanza",
@@ -111,6 +113,7 @@ function getStoredProfilePhoto() {
 
 const CATEGORY_ICON_BY_TYPE = {
   Today_Trending: Sparkles,
+  Product: PackageOpen,
   Motivational: Volume2,
   Rank_Promotion: Trophy,
   Rank_Promotion_B: Medal,
@@ -269,7 +272,7 @@ function HomeHero({ onSearchClick, compact }) {
 
   return (
     <header
-      className={`sticky rounded-b-2xl top-0 z-40 overflow-hidden bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] text-white shadow-[0_5px_18px_rgba(26,75,148,0.10)] transition-all duration-200 ${
+      className={`sticky  top-0 z-40 overflow-hidden bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] text-white shadow-[0_5px_18px_rgba(26,75,148,0.10)] transition-all duration-200 ${
         compact ? "px-2 pb-3 pt-3" : "px-2 pb-4 pt-4"
       } md:px-4`}
     >

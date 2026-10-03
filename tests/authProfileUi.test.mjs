@@ -52,7 +52,7 @@ test("signup coupon defaults to editable MLM100 while preserving entered codes",
 
   const couponInput =
     signup.match(
-      /<input[\s\S]*?aria-label="Coupon Code \/ कूपन कोड"[\s\S]*?\/>/,
+      /<input[\s\S]*?aria-label="Coupon Code"[\s\S]*?\/>/,
     )?.[0] || "";
   assert.ok(couponInput, "coupon input was not found");
   assert.doesNotMatch(couponInput, /\bdisabled\b|\breadOnly\b/);
@@ -105,23 +105,23 @@ test("Play Store install-referrer MLM300 reaches the signup coupon field", () =>
   assert.match(index, /__MLMLIVE_EARLY_BRIDGE_MESSAGES__/);
 });
 
-test("login and registration use one bilingual password field", () => {
+test("login and registration use one English base password field", () => {
   const login = read("src/Auth/Login.jsx");
   const signup = read("src/Auth/Signup.jsx");
 
   assert.match(
     login,
-    /Enter Your Password \/ अपना पासवर्ड दर्ज करें/,
+    /Enter your password/,
   );
   assert.match(login, /<input[\s\S]{0,180}name="pin"/);
   assert.doesNotMatch(login, /InputOTP/);
 
-  assert.match(signup, /Full Name \/ पूरा नाम/);
-  assert.match(signup, /Mobile Number \/ मोबाइल नंबर/);
-  assert.match(signup, /Add Your Password \/ अपना पासवर्ड जोड़ें/);
+  assert.match(signup, /Full Name/);
+  assert.match(signup, /Mobile Number/);
+  assert.match(signup, /Add Your Password/);
   assert.match(signup, /<input[\s\S]{0,180}name="pin"/);
   assert.doesNotMatch(signup, /<InputOTP\s+name="pin"/);
-  assert.match(signup, /Enter 4-Digit OTP \/ 4 अंकों का OTP दर्ज करें/);
+  assert.match(signup, /Enter 4-Digit OTP/);
 });
 
 test("login and registration password fields have accessible show-hide buttons", () => {
@@ -132,8 +132,8 @@ test("login and registration password fields have accessible show-hide buttons",
     assert.match(source, /const \[showPassword, setShowPassword\] = useState\(false\)/);
     assert.match(source, /type=\{showPassword \? "text" : "password"\}/);
     assert.match(source, /type="button"[\s\S]{0,180}aria-label=\{/);
-    assert.match(source, /Show password \/ पासवर्ड दिखाएं/);
-    assert.match(source, /Hide password \/ पासवर्ड छिपाएं/);
+    assert.match(source, /Show password/);
+    assert.match(source, /Hide password/);
     assert.match(source, /aria-pressed=\{showPassword\}/);
     assert.match(source, /onClick=\{\(\) => setShowPassword\(\(visible\) => !visible\)\}/);
     assert.match(source, /<EyeOff aria-hidden="true"/);
@@ -144,7 +144,7 @@ test("login and registration password fields have accessible show-hide buttons",
 test("MLM Profile opens a rank modal with manual entry above a scrollable rank list", () => {
   const profile = read("src/pages/Form/Mlmprofilemodal.jsx");
 
-  assert.match(profile, /Select Rank \/ रैंक चुनें/);
+  assert.match(profile, /Select Rank/);
   assert.match(
     profile,
     /aria-haspopup="dialog"[\s\S]{0,160}aria-controls="mlm-rank-picker"/,
@@ -161,16 +161,16 @@ test("MLM Profile opens a rank modal with manual entry above a scrollable rank l
       rankPanel.indexOf("designations.map"),
     "manual rank input must appear before the company rank list",
   );
-  assert.match(rankPanel, /Use Manual Rank \/ मैन्युअल रैंक चुनें/);
+  assert.match(rankPanel, /Use Manual Rank/);
   assert.match(rankPanel, /max-h-\[48dvh\][^"\n]*overflow-y-auto/);
   assert.doesNotMatch(profile, /Enter designation manually/);
   assert.match(
     profile,
-    /Add Top Upline\/Seniors Image \/ टॉप अपलाइन\/सीनियर्स की इमेज जोड़ें/,
+    /Add Top Upline\/Seniors Image/,
   );
   assert.match(
     profile,
-    /Add Profile Photo \/ प्रोफाइल फोटो जोड़ें/,
+    /Add Profile Photo/,
   );
 });
 
@@ -186,7 +186,7 @@ test("both profile upload strips are full-area click targets and mobile styling 
 
   assert.match(
     profile,
-    /role="button"[\s\S]{0,220}aria-label="Add Profile Photo \/ प्रोफाइल फोटो जोड़ें"/,
+    /role="button"[\s\S]{0,220}aria-label="Add Profile Photo"/,
   );
   assert.match(
     profile,
@@ -195,7 +195,7 @@ test("both profile upload strips are full-area click targets and mobile styling 
 
   assert.match(
     topUplinePicker,
-    /role="button"[\s\S]{0,260}aria-label="Add Top Upline or Seniors Image \/ टॉप अपलाइन या सीनियर्स की इमेज जोड़ें"/,
+    /role="button"[\s\S]{0,260}aria-label="Add Top Upline or Seniors Image"/,
   );
   assert.match(
     topUplinePicker,

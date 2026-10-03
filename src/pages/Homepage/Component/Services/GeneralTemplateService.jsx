@@ -15,13 +15,10 @@ import {
 import { primeAllTemplateGraphicsCache } from "./Alltemplateservice";
 import { RANK_PROMOTION_TYPES } from "../../../../utils/templateTypeConfig";
 
-// Load Home progressively instead of issuing every template-category query
-// on the first paint. Home.jsx already supports multiple groups and requests the
-// next group when the user scrolls near the bottom, so the same sections remain
-// available without paying for sections the user never reaches.
 const TYPE_GROUPS = [
   [
     "Today_Trending",
+    "Product",
     "Motivational",
     ...RANK_PROMOTION_TYPES,
     "Bonanza",

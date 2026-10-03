@@ -1,0 +1,11 @@
+MLM LIVE October UI/Form update
+
+- Festival dates are square with light rounding.
+- Shared/profile headers use the Home gradient.
+- Added Product MLM template type above Motivational; direct Editor flow.
+- Daily successful image/video download cap: 10 per user/day.
+- Main form photo flow: crop -> remove background -> final crop, with full-screen English loading/crop UI.
+- Main form saved details now restore Live Design preview instead of showcase image.
+- Preview label moved to the right; preview/editor design canvas is square.
+- Existing hybrid RemoveBG fallback remains: complex -> VPS, VPS busy/offline -> local MODNet result.
+- Existing Festival data fetching and image upload size configuration were not changed.

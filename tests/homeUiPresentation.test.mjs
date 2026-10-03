@@ -14,6 +14,7 @@ const read = (relativePath) =>
 
 const orderedTypes = [
   "Today_Trending",
+  "Product",
   "Motivational",
   "Rank_Promotion",
   "Rank_Promotion_B",
@@ -50,6 +51,7 @@ test("Home template sections follow the product order and group related types", 
     sections.map((section) => section.title),
     [
       "Today Trending",
+      "Product",
       "Motivational",
       "Rank Promotion",
       "Bonanza",

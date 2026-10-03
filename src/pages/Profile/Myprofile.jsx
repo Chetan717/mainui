@@ -142,7 +142,9 @@ function MainProfileView({
             <Modal.Dialog className="w-full max-w-[400px]">
               <Modal.CloseTrigger className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full bg-muted/30" />
               <Modal.Body>
-                <h3 className="mb-5 text-[18px] font-bold text-foreground">Edit Name</h3>
+                <h3 className="mb-5 text-[18px] font-bold text-foreground">
+                  Edit Name
+                </h3>
                 <label className="mb-2 ml-1 block text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
                   Full Name
                 </label>
@@ -155,7 +157,11 @@ function MainProfileView({
                   autoFocus
                 />
                 <div className="mt-5 flex gap-3">
-                  <button type="button" onClick={() => setEditOpen(false)} className="h-12 flex-1 rounded-xl bg-muted/30 text-[14px] font-semibold text-foreground">
+                  <button
+                    type="button"
+                    onClick={() => setEditOpen(false)}
+                    className="h-12 flex-1 rounded-xl bg-muted/30 text-[14px] font-semibold text-foreground"
+                  >
                     Cancel
                   </button>
                   <button
@@ -164,7 +170,13 @@ function MainProfileView({
                     disabled={loading || !newName.trim()}
                     className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-[#2877e9] text-[14px] font-bold text-white disabled:opacity-50"
                   >
-                    {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> : <><Check className="h-4 w-4" /> Save</>}
+                    {loading ? (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4" /> Save
+                      </>
+                    )}
                   </button>
                 </div>
               </Modal.Body>
@@ -174,32 +186,46 @@ function MainProfileView({
       </Modal>
 
       <div className="min-h-[100dvh] bg-[#f5f6fa] dark:bg-[#0f1420] pb-5">
-        <div className="relative overflow-hidden bg-gradient-to-br from-[#2784f1] to-[#1d58c8] px-5 pb-6 pt-4 text-white">
+        <div className="relative overflow-hidden bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] px-5 pb-6 pt-4 text-white">
           <div className="pointer-events-none absolute -right-12 -top-20 h-48 w-48 rounded-full bg-white/[0.08]" />
-          <h1 className="relative text-[16px] font-semibold">{t("My Profile")}</h1>
+          <h1 className="relative text-[16px] font-semibold">
+            {t("My Profile")}
+          </h1>
 
           <div className="relative mt-4 flex items-center gap-4">
-            <button type="button" onClick={handleProfileEdit} className="h-[76px] w-[76px] flex-shrink-0 overflow-hidden rounded-full border-2 border-white/45 bg-white/15">
-              <img src={profileImageURL} alt={displayName} className="h-full w-full object-contain" />
+            <button
+              type="button"
+              onClick={handleProfileEdit}
+              className="h-[76px] w-[76px] flex-shrink-0 overflow-hidden rounded-full border-2 border-white/45 bg-white/15"
+            >
+              <img
+                src={profileImageURL}
+                alt={displayName}
+                className="h-full w-full object-contain"
+              />
             </button>
-            <div className="min-w-0 flex-1">
-              <h2 className="truncate text-[19px] font-bold">{displayName}</h2>
+            <div className=" flex-1">
+              <h2 className="text-[16px]  font-bold">{displayName}</h2>
               {(designation || displayCompanyName) && (
                 <p className="mt-0.5 truncate text-[12px] text-white/85">
                   {[designation, displayCompanyName].filter(Boolean).join(", ")}
                 </p>
               )}
-              <p className="mt-0.5 text-[11px] text-white/70">{formatMobile(displayMobile)}</p>
+              <div className="w-full flex flex-row items-center justify-between">
+                <p className="mb-5 text-[11px] text-white/70">
+                  {formatMobile(displayMobile)}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleProfileEdit}
+                  aria-label={profileEditLabel}
+                  className="flex flex-shrink-0 mt-1 ml-5 items-center gap-2 rounded-2xl bg-white dark:bg-[#171e2d] p-3 text-[10px] font-semibold text-[#2877e9]"
+                >
+                  <PencilLine className="h-4 w-4" />
+                  {t("Edit")}
+                </button>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={handleProfileEdit}
-              aria-label={profileEditLabel}
-              className="flex flex-shrink-0 items-center gap-2 rounded-full bg-white dark:bg-[#171e2d] px-4 py-2.5 text-[12px] font-semibold text-[#2877e9]"
-            >
-              <PencilLine className="h-4 w-4" />
-              {t("Edit")}
-            </button>
           </div>
         </div>
 
@@ -229,21 +255,35 @@ function MainProfileView({
             <MainRow
               icon={Sun}
               label={t("Banner details")}
-              onClick={() => navigate(BANNER_SETTINGS_PATH, { state: createBannerSettingsNavigationState(location) })}
+              onClick={() =>
+                navigate(BANNER_SETTINGS_PATH, {
+                  state: createBannerSettingsNavigationState(location),
+                })
+              }
             />
             <div className="ml-12 h-px bg-[#e7eaf0]" />
-            <MainRow icon={Globe2} label={t("Language")} onClick={() => navigate("/profile/language")} />
+            <MainRow
+              icon={Globe2}
+              label={t("Language")}
+              onClick={() => navigate("/profile/language")}
+            />
             <div className="ml-12 h-px bg-[#e7eaf0]" />
             <MainRow
               icon={CircleHelp}
               label={t("Dark mode")}
               onClick={toggleTheme}
-              rightContent={<Toggle checked={theme === "dark"} onChange={toggleTheme} />}
+              rightContent={
+                <Toggle checked={theme === "dark"} onChange={toggleTheme} />
+              }
             />
           </div>
 
           <div className="overflow-hidden rounded-[22px] bg-white dark:bg-[#171e2d]">
-            <MainRow icon={CircleHelp} label={t("Settings & support")} onClick={() => navigate("/profile/settings")} />
+            <MainRow
+              icon={CircleHelp}
+              label={t("Settings & support")}
+              onClick={() => navigate("/profile/settings")}
+            />
           </div>
         </div>
       </div>

@@ -8,6 +8,11 @@ export const HOME_SECTION_DEFINITIONS = Object.freeze([
     entries: [{ type: "Today_Trending" }],
   },
   {
+    id: "product",
+    title: "Product",
+    entries: [{ type: "Product" }],
+  },
+  {
     id: "motivational",
     title: "Motivational",
     entries: [{ type: "Motivational" }],

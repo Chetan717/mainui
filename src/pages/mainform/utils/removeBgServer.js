@@ -134,8 +134,8 @@ export async function removeBackgroundOnServer(file, signal, onProgress) {
     if (signal?.aborted) throw abortError();
     onProgress?.(
       attempt === 1
-        ? "Professional server complex edges साफ कर रहा है…"
-        : "Server connection retry हो रही है…",
+        ? "Professional server is refining complex edges…"
+        : "Retrying the server connection…",
       attempt === 1 ? 76 : 82,
     );
 
@@ -184,7 +184,7 @@ export async function removeBackgroundOnServer(file, signal, onProgress) {
         });
       }
 
-      onProgress?.("Professional transparent photo तैयार है", 96);
+      onProgress?.("Professional transparent photo is ready", 96);
       return output;
     } catch (error) {
       if (signal?.aborted) throw abortError();

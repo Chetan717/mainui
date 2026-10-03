@@ -79,7 +79,7 @@ export function Login() {
     }
     if (!/^[0-9]{4}$/.test(pin)) {
       setFormError(
-        "Please enter a valid 4-digit password / कृपया सही 4 अंकों का पासवर्ड दर्ज करें।",
+        "Please enter a valid 4-digit password.",
       );
       return;
     }
@@ -93,7 +93,7 @@ export function Login() {
 
       // Account exists but needs OTP verification first
       if (result.status === "unverified") {
-        toast.success("OTP भेजा गया! Verify करें।");
+        toast.success("OTP sent! Please verify it.");
         navigate("/signup", {
           state: {
             verifyMode: true,
@@ -241,7 +241,7 @@ export function Login() {
               <div className="relative">
                 <input
                   name="pin"
-                  aria-label="Enter Your Password / अपना पासवर्ड दर्ज करें"
+                  aria-label="Enter your password"
                   className="app-field h-[56px] w-full rounded-[16px] border px-4 pr-14 text-[16px] font-semibold tracking-[0.22em] outline-none shadow-sm transition focus:border-accent focus:ring-2 focus:ring-accent/15"
                   maxLength={4}
                   value={pin}
@@ -257,7 +257,7 @@ export function Login() {
                 />
                 <button
                   type="button"
-                  aria-label={showPassword ? "Hide password / पासवर्ड छिपाएं" : "Show password / पासवर्ड दिखाएं"}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   aria-pressed={showPassword}
                   onClick={() => setShowPassword((visible) => !visible)}
                   className="absolute inset-y-0 right-1 flex w-12 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:text-accent"

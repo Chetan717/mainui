@@ -218,7 +218,7 @@ export default function SelectComp() {
     } catch (error) {
       if (error?.code === COMPANY_SELECTION_LOCKED_CODE) {
         alert(
-          "MLM Profile बनने के बाद Company बदली नहीं जा सकती। / Company cannot be changed after MLM Profile creation.",
+          "Company cannot be changed after MLM Profile creation.",
         );
         navigate("/mlmprofile", { replace: true });
         return;

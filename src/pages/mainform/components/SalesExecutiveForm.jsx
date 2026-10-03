@@ -33,7 +33,6 @@ import {
   Select,
   ListBox,
   Tabs,
-  Modal,
   toast,
 } from "@heroui/react";
 import {
@@ -63,6 +62,7 @@ import { convertToWebP } from "../../../lib/convertToWebP";
 import MultiImagePicker from "./MultiImagePicker";
 import ImageUploadWithBgRemove from "./ImageUploadWithBgRemove";
 import ImageEditorCanvas from "./ImageEditorCanvas";
+import RemoveBgLoadingOverlay from "./RemoveBgLoadingOverlay";
 import AchievementForm from "./AchievementForm";
 import { useNavigate } from "react-router";
 import IncomeForm from "./IncomeForm";
@@ -332,6 +332,13 @@ export default function SalesExecutiveForm() {
   const [editingImage, setEditingImage] = useState(null);
   const [onImageDone, setOnImageDone] = useState(null);
   const [enhanceEnabled, setEnhanceEnabled] = useState(false);
+  const [removeBgProcessing, setRemoveBgProcessing] = useState({
+    active: false,
+    previewUrl: null,
+    progressMessage: "",
+    progressPct: 0,
+    onCancel: null,
+  });
 
   const [achiever, setAchiever] = useState({
     title: "Mr.",
@@ -852,51 +859,46 @@ export default function SalesExecutiveForm() {
     setErrors({});
   };
 
-  const previewSizeCss = "min(240px, 86vw, calc(30dvh - 20px))";
-  const showLiveCanvas = hasStartedEditing && hasMeaningfulFormInput;
+  const previewSizeCss = "min(220px, 64vw, calc(30dvh - 20px))";
+  // Form state is persisted before opening the editor. When the user returns
+  // to this screen, meaningful saved details must immediately render the live
+  // design instead of falling back to the showcase/suggestion image.
+  const showLiveCanvas = hasMeaningfulFormInput;
 
   return (
     <div className="relative h-full min-h-0 w-full overflow-hidden bg-background">
-      {/* Fixed 30% preview. The canvas never resizes while the user scrolls. */}
+      {/* Fixed 30% preview. Canvas stays square and never resizes while scrolling. */}
       <div className="absolute inset-x-0 top-0 z-0 flex h-[30%] items-center justify-center overflow-hidden px-3 py-2">
-        <div
-          className="pointer-events-none relative flex aspect-square items-center justify-center"
-          style={{ width: previewSizeCss, height: previewSizeCss }}
-        >
-          {!showLiveCanvas ? (
-            <div className="relative h-full w-full overflow-hidden rounded-[10px] border border-[#d6dce8] bg-background shadow-[0_8px_20px_rgba(15,23,42,0.10)] dark:border-[#344158]">
-              {initialPreviewImage ? (
-                <img
-                  src={initialPreviewImage}
-                  alt={formImageLabel || "Selected design preview"}
-                  className="h-full w-full object-contain"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-xs font-medium text-muted-foreground">
-                  Design preview
-                </div>
-              )}
-              <div className="absolute left-2 top-2 flex items-center gap-1.5 rounded-full border border-white/70 bg-white/90 px-2 py-1 text-[10px] font-bold text-[#2C73E8] shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-[#101827]/85 dark:text-[#8bb7ff]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
-                Selected design
+        <div className="flex w-full max-w-[340px] items-center justify-center gap-2">
+          <div
+            className="pointer-events-none relative flex aspect-square shrink-0 items-center justify-center"
+            style={{ width: previewSizeCss, height: previewSizeCss }}
+          >
+            {!showLiveCanvas ? (
+              <div className="relative h-full w-full overflow-hidden rounded-none border border-[#d6dce8] bg-background shadow-[0_8px_20px_rgba(15,23,42,0.10)] dark:border-[#344158]">
+                {initialPreviewImage ? (
+                  <img
+                    src={initialPreviewImage}
+                    alt={formImageLabel || "Selected design preview"}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-xs font-medium text-muted-foreground">
+                    Design preview
+                  </div>
+                )}
               </div>
-            </div>
-          ) : (
-            <GeneralEditPage
-              previewOnly
-              previewSize={previewSizeCss}
-              previewFormData={livePreviewFormData}
-              middaleImage={previewMiddleImage}
-              setmiddaleImage={setPreviewMiddleImage}
-            />
-          )}
+            ) : (
+              <GeneralEditPage
+                previewOnly
+                previewSize={previewSizeCss}
+                previewFormData={livePreviewFormData}
+                middaleImage={previewMiddleImage}
+                setmiddaleImage={setPreviewMiddleImage}
+              />
+            )}
+          </div>
 
-          {showLiveCanvas && (
-            <div className="absolute left-2 top-2 z-20 flex items-center gap-1.5 rounded-full border border-white/70 bg-white/90 px-2 py-1 text-[10px] font-bold text-[#2C73E8] shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-[#101827]/85 dark:text-[#8bb7ff]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#22c55e] shadow-[0_0_0_3px_rgba(34,197,94,0.12)]" />
-              Live design
-            </div>
-          )}
         </div>
       </div>
 
@@ -1176,6 +1178,7 @@ export default function SalesExecutiveForm() {
                     setEditingImage={setEditingImage}
                     setOnImageDone={setOnImageDone}
                     setEnhanceEnabled={setEnhanceEnabled}
+                    onProcessingChange={setRemoveBgProcessing}
                     currentImage={achiever.image}
                     trigger={
                       <UploadZone
@@ -1395,6 +1398,7 @@ export default function SalesExecutiveForm() {
                 setEditingImage={setEditingImage}
                 setOnImageDone={setOnImageDone}
                 setEnhanceEnabled={setEnhanceEnabled}
+                onProcessingChange={setRemoveBgProcessing}
                 currentImage={promoter.image}
                 trigger={
                   <UploadZone
@@ -1447,25 +1451,30 @@ export default function SalesExecutiveForm() {
         </div>
       )}
 
-      <Modal isOpen={open}>
-        <Modal.Backdrop>
-          <Modal.Container placement="center" size="full">
-            <Modal.Dialog className="w-full bg-transparent shadow-none">
-              <ImageEditorCanvas
-                src={editingImage}
-                onDone={(blob) => {
-                  const shouldClose = onImageDone?.(blob) !== false;
-                  if (shouldClose) setEditingImage(null);
-                  return shouldClose;
-                }}
-                onCancel={() => setEditingImage(null)}
-                setOpen={setOpen}
-                enableEnhance={enhanceEnabled}
-              />
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
+      {open && editingImage ? (
+        <div className="fixed inset-0 z-[99998] h-[100dvh] w-full overflow-hidden bg-[#181818]">
+          <ImageEditorCanvas
+            src={editingImage}
+            onDone={(blob) => {
+              const shouldClose = onImageDone?.(blob) !== false;
+              if (shouldClose) setEditingImage(null);
+              return shouldClose;
+            }}
+            onCancel={() => setEditingImage(null)}
+            setOpen={setOpen}
+            enableEnhance={enhanceEnabled}
+          />
+        </div>
+      ) : null}
+
+      {removeBgProcessing.active ? (
+        <RemoveBgLoadingOverlay
+          previewUrl={removeBgProcessing.previewUrl}
+          progressMessage={removeBgProcessing.progressMessage}
+          progressPct={removeBgProcessing.progressPct}
+          onCancel={removeBgProcessing.onCancel}
+        />
+      ) : null}
     </div>
   );
 }
