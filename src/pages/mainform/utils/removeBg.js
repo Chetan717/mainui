@@ -1,17 +1,26 @@
 /**
- * Professional portrait background removal for every MLM LIVE photo flow.
+ * Hybrid production background removal for MLM LIVE.
  *
- * The final PNG always comes from the bundled MODNet continuous-alpha portrait
- * model. MediaPipe's low-resolution selfie mask and general salient-object
- * models are not accepted as a successful fallback: they can cut ears/hair or
- * choose a large background object instead of the person.
+ * 1) Bundled MODNet always gives us a private, free on-device result.
+ * 2) That matte is inspected locally. Simple/clean portraits finish instantly.
+ * 3) Complex portraits are sent to the private BiRefNet VPS for the final PNG.
+ * 4) If the VPS is busy/offline/times out, the already-computed MODNet result
+ *    is returned automatically so a server incident never becomes a user-flow
+ *    failure while the local engine is available.
  */
 
+import {
+  assessLocalMatte,
+  removeBackgroundOnServer,
+} from "./removeBgServer.js";
+
 export const REMOVE_BG_QUALITY = Object.freeze({
-  engine: "modnet-continuous-portrait-matte",
-  model: "modnet-portrait",
+  engine: "hybrid-modnet-birefnet",
+  localModel: "modnet-portrait",
+  serverModel: "birefnet-portrait",
   continuousAlpha: true,
-  lowQualityFallback: false,
+  serverForComplexPortraits: true,
+  localFallbackOnServerFailure: true,
   originalPhotoFallback: false,
 });
 
@@ -44,21 +53,36 @@ async function loadModNetEngine() {
   return modNetPromise;
 }
 
-function reportNativeFailure(error) {
+function reportNativeFailure(error, extra = {}) {
   try {
     window.ReactNativeWebView?.postMessage(
       JSON.stringify({
         type: "REMOVE_BG_ERROR",
         engine: REMOVE_BG_QUALITY.engine,
         message: error?.message || String(error),
+        ...extra,
       }),
     );
   } catch {
-    // Diagnostics must never hide the original processing error.
+    // Diagnostics must never affect image processing.
   }
 }
 
-/** Download and initialise the same quality portrait model used for output. */
+function reportNativeRoute(route, extra = {}) {
+  try {
+    window.ReactNativeWebView?.postMessage(
+      JSON.stringify({
+        type: "REMOVE_BG_ROUTE",
+        route,
+        ...extra,
+      }),
+    );
+  } catch {
+    // Optional diagnostics only.
+  }
+}
+
+/** Download and initialise the local portrait model ahead of the Done tap. */
 export async function preloadBgModel(onProgress) {
   if (typeof window === "undefined") return "unavailable";
   if (onProgress) activeProgress = onProgress;
@@ -69,7 +93,7 @@ export async function preloadBgModel(onProgress) {
       await preloadModNet((stage, percentage) =>
         emitProgress(stage, percentage),
       );
-      return REMOVE_BG_QUALITY.engine;
+      return "modnet-continuous-portrait-matte";
     })().catch((error) => {
       preloadPromise = null;
       throw error;
@@ -99,8 +123,7 @@ function raceWithAbort(promise, signal) {
 }
 
 function queueProcessing(task, signal) {
-  // One model run at a time prevents several large photos from exhausting a
-  // phone WebView while a user selects images quickly.
+  // One local model run at a time protects lower-memory Android WebViews.
   const scheduled = processingTail.then(async () => {
     throwIfAborted(signal);
     return task();
@@ -115,12 +138,15 @@ async function removeWithProfessionalMatte(file, signal) {
   throwIfAborted(signal);
   const result = await removeBackgroundWithModNet(
     file,
-    (stage, percentage) => emitProgress(stage, percentage),
+    (stage, percentage) => {
+      // Reserve progress space for quality inspection/server routing.
+      emitProgress(stage, Math.min(68, Math.round(percentage * 0.68)));
+    },
     signal,
   );
   throwIfAborted(signal);
   if (!(result instanceof Blob) || result.size === 0) {
-    throw new Error("Professional portrait model returned an empty image.");
+    throw new Error("Local portrait model returned an empty image.");
   }
   return result;
 }
@@ -139,61 +165,138 @@ export function isRetryableRemoveBgError(error) {
 async function prepareSameQualityRetry() {
   preloadPromise = null;
   const { resetModNetEngine } = await loadModNetEngine();
-  // Reuse browser-cached model/WASM bytes. Cache-busting roughly 38 MB here
-  // made one transient start-up failure feel like two complete runs on phones.
   resetModNetEngine({ freshAssets: false });
 }
 
+async function runLocalWithStartupRetry(file, signal) {
+  try {
+    return await removeWithProfessionalMatte(file, signal);
+  } catch (firstError) {
+    if (firstError?.name === "AbortError" || signal?.aborted) {
+      throw abortError();
+    }
+    if (!isRetryableRemoveBgError(firstError)) throw firstError;
+
+    console.warn("[removeBg] Local portrait retry:", firstError);
+    emitProgress("On-device AI clean retry कर रहा है…", 8);
+    await prepareSameQualityRetry();
+    return removeWithProfessionalMatte(file, signal);
+  }
+}
+
+async function tryServer(file, signal) {
+  return removeBackgroundOnServer(file, signal, (stage, pct) =>
+    emitProgress(stage, pct),
+  );
+}
+
 /**
- * Remove a portrait background entirely on the user's device.
+ * Remove a portrait background with automatic local/server routing.
  *
  * @param {File|Blob} file
  * @param {(stage: string, pct: number) => void} [onProgress]
  * @param {AbortSignal} [signal]
- * @returns {Promise<Blob>} lossless transparent PNG
+ * @returns {Promise<Blob>} transparent PNG
  */
 export async function removeBg(file, onProgress, signal) {
   if (!(file instanceof Blob) || file.size === 0) {
     throw new Error("Please select a valid image.");
   }
   throwIfAborted(signal);
-  onProgress?.("Professional portrait AI तैयार हो रहा है…", 2);
+  onProgress?.("On-device portrait AI तैयार हो रहा है…", 2);
 
   return queueProcessing(async () => {
     throwIfAborted(signal);
     activeProgress = onProgress || null;
+
+    let localResult = null;
+    let localError = null;
+
     try {
+      // Local processing is intentionally first: it gives simple portraits an
+      // instant/private path and leaves us with a ready fallback before the VPS
+      // is contacted for complex hair/edges.
       try {
-        const result = await removeWithProfessionalMatte(file, signal);
+        localResult = await runLocalWithStartupRetry(file, signal);
+      } catch (error) {
+        if (error?.name === "AbortError" || signal?.aborted) throw abortError();
+        localError = error;
+        console.warn("[removeBg] Local engine failed; trying VPS:", error);
+      }
+
+      throwIfAborted(signal);
+
+      if (localResult) {
+        emitProgress("Photo complexity check हो रही है…", 70);
+        let assessment;
+        try {
+          assessment = await assessLocalMatte(localResult);
+        } catch (error) {
+          // If quality inspection itself is unavailable, be conservative and
+          // let the higher-quality server have a chance.
+          console.warn("[removeBg] Matte inspection failed:", error);
+          assessment = { complex: true, reasons: ["inspection-failed"] };
+        }
+
+        if (!assessment.complex) {
+          reportNativeRoute("local-simple", { metrics: assessment.metrics });
+          emitProgress("Clean transparent photo तैयार है", 100);
+          return localResult;
+        }
+
+        reportNativeRoute("server-complex", { reasons: assessment.reasons });
+        try {
+          const serverResult = await tryServer(file, signal);
+          emitProgress("Clean transparent photo तैयार है", 100);
+          return serverResult;
+        } catch (serverError) {
+          if (serverError?.name === "AbortError" || signal?.aborted) {
+            throw abortError();
+          }
+
+          // Critical reliability rule: complex photos still complete using the
+          // local result if the VPS is busy, offline, blocked by CORS/mixed
+          // content, or temporarily unhealthy.
+          console.warn(
+            "[removeBg] VPS unavailable; using local fallback:",
+            serverError,
+          );
+          reportNativeRoute("local-server-fallback", {
+            reason: serverError?.message || "server-unavailable",
+          });
+          emitProgress("Server busy है — local clean result use हो रहा है", 94);
+          emitProgress("Clean transparent photo तैयार है", 100);
+          return localResult;
+        }
+      }
+
+      // Local engine itself could not produce a PNG. Give the VPS one final
+      // independent chance before showing an error.
+      emitProgress("On-device AI unavailable — server try हो रहा है…", 72);
+      try {
+        const serverResult = await tryServer(file, signal);
+        reportNativeRoute("server-local-failed");
         emitProgress("Clean transparent photo तैयार है", 100);
-        return result;
-      } catch (firstError) {
-        if (firstError?.name === "AbortError" || signal?.aborted) {
+        return serverResult;
+      } catch (serverError) {
+        if (serverError?.name === "AbortError" || signal?.aborted) {
           throw abortError();
         }
-
-        // Only model download / engine initialisation errors deserve one
-        // automatic retry. Photo, quality and post-processing errors are
-        // deterministic; repeating the full inference only wastes time.
-        if (!isRetryableRemoveBgError(firstError)) {
-          throw firstError;
-        }
-
-        // Retry only the same continuous-alpha quality model after clearing a
-        // partial session. Never downgrade to MediaPipe/original.
-        console.warn("[removeBg] Professional portrait retry:", firstError);
-        emitProgress("Professional AI clean retry कर रहा है…", 7);
-        await prepareSameQualityRetry();
-        const result = await removeWithProfessionalMatte(file, signal);
-        emitProgress("Clean transparent photo तैयार है", 100);
-        return result;
+        const combined = new Error(
+          "Both local and server background removal are unavailable.",
+          { cause: serverError },
+        );
+        combined.localCause = localError;
+        throw combined;
       }
     } catch (error) {
       if (error?.name === "AbortError" || signal?.aborted) throw abortError();
-      console.error("[removeBg] Professional portrait removal failed:", error);
-      reportNativeFailure(error);
+      console.error("[removeBg] Hybrid background removal failed:", error);
+      reportNativeFailure(error, {
+        localMessage: localError?.message || null,
+      });
       throw new Error(
-        "Clean background removal पूरा नहीं हुआ. Internet चालू रखकर Retry करें—background वाली photo save नहीं की गई है.",
+        "Background removal अभी उपलब्ध नहीं है. कृपया network check करके एक बार Retry करें.",
         { cause: error },
       );
     } finally {
@@ -202,7 +305,7 @@ export async function removeBg(file, onProgress, signal) {
   }, signal);
 }
 
-/** Force a clean model/session retry after a failed or corrupt download. */
+/** Force a clean local model/session retry after a corrupt cached download. */
 export function refreshRemoveBgKeys() {
   preloadPromise = null;
   if (modNetPromise) {

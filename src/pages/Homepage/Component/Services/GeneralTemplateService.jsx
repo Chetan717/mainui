@@ -115,7 +115,7 @@ const normalizeDoc = (doc) => ({
 });
 
 // Max templates to fetch per type on the home page
-const HOME_LIMIT = 10;
+const HOME_LIMIT = 30;
 
 export const fetchGeneralTemplates = async (groupIndex, company) => {
   const cacheKey = `${groupIndex}__${company || ""}`;

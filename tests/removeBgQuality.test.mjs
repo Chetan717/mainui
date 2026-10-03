@@ -126,14 +126,19 @@ test("automatic retry is limited to engine startup failures", () => {
 test("all runtimes require the same continuous-alpha portrait model", () => {
   const removeBg = read("src/pages/mainform/utils/removeBg.js");
   assert.deepEqual(REMOVE_BG_QUALITY, {
-    engine: "modnet-continuous-portrait-matte",
-    model: "modnet-portrait",
+    engine: "hybrid-modnet-birefnet",
+    localModel: "modnet-portrait",
+    serverModel: "birefnet-portrait",
     continuousAlpha: true,
-    lowQualityFallback: false,
+    serverForComplexPortraits: true,
+    localFallbackOnServerFailure: true,
     originalPhotoFallback: false,
   });
   assert.match(removeBg, /removeWithProfessionalMatte/);
   assert.match(removeBg, /removeBackgroundWithModNet/);
+  assert.match(removeBg, /assessLocalMatte/);
+  assert.match(removeBg, /removeBackgroundOnServer/);
+  assert.match(removeBg, /return localResult/);
   assert.doesNotMatch(
     removeBg,
     /removeBgWithMediaPipe|removeWithImgly|@imgly\/background-removal/,
