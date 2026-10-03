@@ -367,7 +367,7 @@ const VideoCanvas = React.memo(function VideoCanvas({
 });
 
 export const GENERAL_SELECT_TYPES = [
-  { name: "Product", value: "Product" },
+  
   { name: "Motivational", value: "Motivational" },
   { name: "Thank You Rank", value: "ThankYou_Banner_B" },
   {
@@ -386,6 +386,7 @@ export const GENERAL_SELECT_TYPES2 = [
   { name: "Festival", value: "Festival" },
   { name: "Trending", value: "Trending" },
   { name: "Today_Trending", value: "Today_Trending" },
+  { name: "Product", value: "Product" }
 ];
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
