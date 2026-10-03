@@ -17,7 +17,7 @@ import { RANK_PROMOTION_TYPES } from "../../../../utils/templateTypeConfig";
 
 const TYPE_GROUPS = [
   [
-    "Today_Trending",
+    // "Today_Trending",
     "Product",
     "Motivational",
     ...RANK_PROMOTION_TYPES,
