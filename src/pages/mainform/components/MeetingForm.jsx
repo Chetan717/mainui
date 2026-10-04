@@ -75,7 +75,7 @@ const platformButtons = [
   { id: "youtube", label: "YouTube", Icon: Youtube },
 ];
 
-export default function MeetingForm() {
+export default function MeetingForm({ onPreviewChange }) {
   const { selectedCompany } = useSelectedCompany();
   const navigate = useNavigate();
   // default to today's date and current time
@@ -104,6 +104,7 @@ export default function MeetingForm() {
   const [companyDesignations, setCompanyDesignations] = useState([]);
   const [chiefImageOption, setChiefImageOption] = useState("company");
   const [chiefImage, setChiefImage] = useState(null);
+  const [chiefImagePreviewSrc, setChiefImagePreviewSrc] = useState("");
   const [chiefName, setChiefName] = useState("");
   const [chiefDesignation, setChiefDesignation] = useState("");
 
@@ -224,6 +225,61 @@ export default function MeetingForm() {
       
     }
   }, [selectedCompany]);
+
+  useEffect(() => {
+    if (!chiefImage) {
+      setChiefImagePreviewSrc("");
+      return undefined;
+    }
+    if (typeof chiefImage === "string") {
+      setChiefImagePreviewSrc(chiefImage);
+      return undefined;
+    }
+    const url = URL.createObjectURL(chiefImage);
+    setChiefImagePreviewSrc(url);
+    return () => URL.revokeObjectURL(url);
+  }, [chiefImage]);
+
+  useEffect(() => {
+    onPreviewChange?.({
+      teamName,
+      date: formatDateDisplay(date),
+      time: formatTimeDisplay(time),
+      meetingMode,
+      platformType,
+      platformInput,
+      meetingId,
+      meetingPassword,
+      address1,
+      address2,
+      chiefImage: chiefImagePreviewSrc || null,
+      chiefImageOption,
+      chiefName,
+      chiefDesignation,
+      hostMode,
+      hostName,
+      hostDesignation,
+    });
+  }, [
+    teamName,
+    date,
+    time,
+    meetingMode,
+    platformType,
+    platformInput,
+    meetingId,
+    meetingPassword,
+    address1,
+    address2,
+    chiefImagePreviewSrc,
+    chiefImageOption,
+    chiefName,
+    chiefDesignation,
+    hostMode,
+    hostName,
+    hostDesignation,
+    onPreviewChange,
+  ]);
 
   useEffect(() => {
     if (!savedMessage) return;
@@ -598,11 +654,7 @@ export default function MeetingForm() {
                     {chiefImage ? (
                       <div className="flex items-center gap-4">
                         <img
-                          src={
-                            typeof chiefImage === "string"
-                              ? chiefImage
-                              : URL.createObjectURL(chiefImage)
-                          }
+                          src={chiefImagePreviewSrc}
                           alt="Chief selected"
                           className=" rounded-3xl object-cover"
                         />

@@ -803,6 +803,9 @@ function GeneralEditPage({
   previewOnly = false,
   previewFormData = null,
   previewSelectedGraphic = null,
+  previewAchievementForm = undefined,
+  previewIncomeFormData = undefined,
+  previewMeetingData = undefined,
   previewSize = null,
 }) {
   const stageRef = useRef(null);
@@ -848,6 +851,7 @@ function GeneralEditPage({
   useEffect(() => {
     if (previewFormData) setMlmForm(previewFormData);
   }, [previewFormData]);
+
   const [isImageSelected, setIsImageSelected] = useState(false);
   const [selectedImageType, setSelectedImageType] = useState(null);
   const [toolbarPos, setToolbarPos] = useState({ x: 0, y: 0, width: 0 });
@@ -858,11 +862,36 @@ function GeneralEditPage({
   const [exportLoading, setExportLoading] = useState(false);
   const [toast, setToast] = useState(null);
   const [exportedUri, setExportedUri] = useState(null);
-  const [achievementForm, setAchievementForm] = useState(null);
-  const [incomeFormData, setIncomeFormData] = useState(null);
-  const [meetingData, setMeetingData] = useState(() =>
-    readStoredJson("local", "Meeting"),
+  const [achievementForm, setAchievementForm] = useState(() =>
+    previewOnly && previewAchievementForm !== undefined
+      ? previewAchievementForm
+      : readStoredJson("local", "achieve_form"),
   );
+  const [incomeFormData, setIncomeFormData] = useState(() =>
+    previewOnly && previewIncomeFormData !== undefined
+      ? previewIncomeFormData
+      : readStoredJson("local", "income_form"),
+  );
+  const [meetingData, setMeetingData] = useState(() =>
+    previewOnly && previewMeetingData !== undefined
+      ? previewMeetingData
+      : readStoredJson("local", "Meeting"),
+  );
+
+  useEffect(() => {
+    if (!previewOnly || previewAchievementForm === undefined) return;
+    setAchievementForm(previewAchievementForm || null);
+  }, [previewOnly, previewAchievementForm]);
+
+  useEffect(() => {
+    if (!previewOnly || previewIncomeFormData === undefined) return;
+    setIncomeFormData(previewIncomeFormData || null);
+  }, [previewOnly, previewIncomeFormData]);
+
+  useEffect(() => {
+    if (!previewOnly || previewMeetingData === undefined) return;
+    setMeetingData(previewMeetingData || null);
+  }, [previewOnly, previewMeetingData]);
   const [showSocial, setShowSocial] = useState("no");
   const [footerImgFlip, setFooterImgFlip] = useState(false);
   const [showTopupline] = useState(
@@ -939,19 +968,25 @@ function GeneralEditPage({
 
   useEffect(() => {
     try {
-      const savedAchieve = localStorage.getItem("achieve_form");
       setShowSocial("no");
-      if (savedAchieve) setAchievementForm(JSON.parse(savedAchieve));
+      if (!(previewOnly && previewAchievementForm !== undefined)) {
+        const savedAchieve = localStorage.getItem("achieve_form");
+        if (savedAchieve) setAchievementForm(JSON.parse(savedAchieve));
+      }
     } catch (err) {}
 
     try {
-      const savedIncome = localStorage.getItem("income_form");
-      if (savedIncome) setIncomeFormData(JSON.parse(savedIncome));
+      if (!(previewOnly && previewIncomeFormData !== undefined)) {
+        const savedIncome = localStorage.getItem("income_form");
+        if (savedIncome) setIncomeFormData(JSON.parse(savedIncome));
+      }
     } catch (err) {}
 
     try {
-      const savedMeeting = localStorage.getItem("Meeting");
-      if (savedMeeting) setMeetingData(JSON.parse(savedMeeting));
+      if (!(previewOnly && previewMeetingData !== undefined)) {
+        const savedMeeting = localStorage.getItem("Meeting");
+        if (savedMeeting) setMeetingData(JSON.parse(savedMeeting));
+      }
     } catch (err) {}
 
     try {

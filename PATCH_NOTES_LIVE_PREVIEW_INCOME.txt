@@ -1,0 +1,21 @@
+MLM Live patch - 2026-10-04
+Base: latest user-uploaded mainui.zip (not an older patch)
+
+Fixed:
+1. Meeting live preview now receives current meeting information and chief guest photo immediately while editing.
+2. Training live preview now stays on the actual canvas while editing and reflects the current form/photo/date data before Create.
+3. Achievement live preview now receives current achievement information, main photo and feature photos immediately while editing.
+4. Income live preview now receives the current Income form state, including the image returned by the crop editor. A zoomed/cropped image therefore stays zoomed/cropped in the template instead of the preview falling back to stale/original saved data.
+5. Preview-only editor state no longer overwrites the live Meeting/Achievement/Income data with older localStorage values on mount.
+
+Changed files:
+- src/pages/mainform/components/SalesExecutiveForm.jsx
+- src/pages/mainform/components/MeetingForm.jsx
+- src/pages/mainform/components/AchievementForm.jsx
+- src/pages/mainform/components/IncomeForm.jsx
+- src/pages/Editor/GenralEditPage.jsx
+- tests/livePreviewAuxForms.test.mjs
+
+Verification:
+- 22 focused regression tests passed (live-preview, editor-return, remove-bg quality, October UI checks).
+- Existing unrelated baseline failures were not changed by this patch.

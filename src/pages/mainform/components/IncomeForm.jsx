@@ -3,7 +3,7 @@ import ImageUploadSquare from "./ImageUploadSquare";
 import { sanitizeAmount, sanitizeFormValue } from "../utils/inputSanitize";
 import { toast } from "@heroui/react";
 
-const IncomeForm = ({ onSaved }) => {
+const IncomeForm = ({ onSaved, onPreviewChange }) => {
   const STORAGE_KEY = "income_form";
 
   const [formData, setFormData] = useState({
@@ -33,6 +33,10 @@ const IncomeForm = ({ onSaved }) => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    onPreviewChange?.(formData);
+  }, [formData, onPreviewChange]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

@@ -15,12 +15,14 @@ const toBase64 = (blob) =>
     reader.readAsDataURL(blob);
   });
 
-export default function AchievementForm({ onSaved }) {
+export default function AchievementForm({ onSaved, onPreviewChange }) {
   const [mainImage, setMainImage] = useState(null);
   const [features, setFeatures] = useState([null, null, null]);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [errors, setErrors] = useState({});
+  const [mainImagePreviewSrc, setMainImagePreviewSrc] = useState("");
+  const [featurePreviewSrcs, setFeaturePreviewSrcs] = useState(["", "", ""]);
 
   const [editingImage, setEditingImage] = useState(null);
   const [editingType, setEditingType] = useState("main");
@@ -41,6 +43,42 @@ export default function AchievementForm({ onSaved }) {
       
     }
   }, []);
+
+  React.useEffect(() => {
+    if (!mainImage) {
+      setMainImagePreviewSrc("");
+      return undefined;
+    }
+    if (typeof mainImage === "string") {
+      setMainImagePreviewSrc(mainImage);
+      return undefined;
+    }
+    const url = URL.createObjectURL(mainImage);
+    setMainImagePreviewSrc(url);
+    return () => URL.revokeObjectURL(url);
+  }, [mainImage]);
+
+  React.useEffect(() => {
+    const createdUrls = [];
+    const next = features.map((feature) => {
+      if (!feature) return "";
+      if (typeof feature === "string") return feature;
+      const url = URL.createObjectURL(feature);
+      createdUrls.push(url);
+      return url;
+    });
+    setFeaturePreviewSrcs(next);
+    return () => createdUrls.forEach((url) => URL.revokeObjectURL(url));
+  }, [features]);
+
+  React.useEffect(() => {
+    onPreviewChange?.({
+      mainImage: mainImagePreviewSrc || null,
+      name,
+      price,
+      features: featurePreviewSrcs,
+    });
+  }, [mainImagePreviewSrc, featurePreviewSrcs, name, price, onPreviewChange]);
 
   const handleMainImageReady = (image) => {
     setMainImage(image);
@@ -104,7 +142,7 @@ export default function AchievementForm({ onSaved }) {
             <div className={`flex flex-col items-center justify-center gap-2 py-5 px-4 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${errors.mainImage ? "border-danger bg-danger/5" : "border-border hover:border-accent/50 hover:bg-accent/5"}`}>
               {mainImage ? (
                 <img
-                  src={typeof mainImage === "string" ? mainImage : URL.createObjectURL(mainImage)}
+                  src={mainImagePreviewSrc}
                   alt="achievement"
                   className="h-20 w-20 object-cover rounded-xl"
                 />
@@ -183,7 +221,7 @@ export default function AchievementForm({ onSaved }) {
                   <div className="aspect-square rounded-2xl border-2 border-dashed border-border hover:border-accent/50 bg-muted/20 flex items-center justify-center cursor-pointer overflow-hidden transition-colors">
                     {features[i] ? (
                       <img
-                        src={typeof features[i] === "string" ? features[i] : URL.createObjectURL(features[i])}
+                        src={featurePreviewSrcs[i]}
                         alt={`feature ${i + 1}`}
                         className="w-full h-full object-cover rounded-2xl"
                       />

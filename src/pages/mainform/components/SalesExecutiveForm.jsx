@@ -198,6 +198,15 @@ function readSelectedSuggestionImage() {
   }
 }
 
+function readLocalPreviewData(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── Inline field error ───────────────────────────────────────────────────────
 function InlineError({ message }) {
   if (!message) return null;
@@ -328,6 +337,15 @@ export default function SalesExecutiveForm() {
   const formScrollRef = useRef(null);
   const [hasStartedEditing, setHasStartedEditing] = useState(false);
   const [selectedSuggestionImage] = useState(() => readSelectedSuggestionImage());
+  const [liveMeetingData, setLiveMeetingData] = useState(() =>
+    readLocalPreviewData("Meeting"),
+  );
+  const [liveAchievementForm, setLiveAchievementForm] = useState(() =>
+    readLocalPreviewData("achieve_form"),
+  );
+  const [liveIncomeFormData, setLiveIncomeFormData] = useState(() =>
+    readLocalPreviewData("income_form"),
+  );
 
   const [editingImage, setEditingImage] = useState(null);
   const [onImageDone, setOnImageDone] = useState(null);
@@ -863,7 +881,12 @@ export default function SalesExecutiveForm() {
   // Form state is persisted before opening the editor. When the user returns
   // to this screen, meaningful saved details must immediately render the live
   // design instead of falling back to the showcase/suggestion image.
-  const showLiveCanvas = hasMeaningfulFormInput;
+  const showLiveCanvas = hasMeaningfulFormInput ||
+    isMeeting ||
+    isTraining ||
+    isAchievment ||
+    isIncome ||
+    hasStartedEditing;
 
   return (
     <div className="relative h-full min-h-0 w-full overflow-hidden bg-background">
@@ -893,6 +916,11 @@ export default function SalesExecutiveForm() {
                 previewOnly
                 previewSize={previewSizeCss}
                 previewFormData={livePreviewFormData}
+                previewMeetingData={isMeeting ? liveMeetingData : undefined}
+                previewAchievementForm={
+                  isAchievment ? liveAchievementForm : undefined
+                }
+                previewIncomeFormData={isIncome ? liveIncomeFormData : undefined}
                 middaleImage={previewMiddleImage}
                 setmiddaleImage={setPreviewMiddleImage}
               />
@@ -951,7 +979,7 @@ export default function SalesExecutiveForm() {
 
         {/* Top upline selection is intentionally hidden here; saved profile uplines are used automatically by the design. */}
 
-        {isMeeting ? <MeetingForm /> : null}
+        {isMeeting ? <MeetingForm onPreviewChange={setLiveMeetingData} /> : null}
 
         {isMeeting ? null : (
           <div className="rounded-2xl border border-border bg-background p-4 space-y-4" data-guide="design-details">
@@ -1227,7 +1255,12 @@ export default function SalesExecutiveForm() {
             )}
           </div>
         )}
-        {isIncome ? <IncomeForm onSaved={() => setIncomeSaved(true)} /> : null}
+        {isIncome ? (
+          <IncomeForm
+            onSaved={() => setIncomeSaved(true)}
+            onPreviewChange={setLiveIncomeFormData}
+          />
+        ) : null}
         {/* ── Bonanza: Days + For Whom ── */}
         {isBonanza && (
           <div className="rounded-2xl border border-border bg-background p-4 space-y-4">
@@ -1307,6 +1340,7 @@ export default function SalesExecutiveForm() {
               editingType={editingType}
               setEditingType={setEditingType}
               onSaved={() => setAchievementSaved(true)}
+              onPreviewChange={setLiveAchievementForm}
             />
           </div>
         ) : null}
