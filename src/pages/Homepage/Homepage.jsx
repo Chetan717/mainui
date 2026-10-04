@@ -239,7 +239,7 @@ function SearchProfileModal({ onConfirm, onDismiss }) {
         <button
           onClick={onConfirm}
           className="w-full py-3.5 mt-5 rounded-2xl text-white font-bold text-[14px] shadow-lg shadow-accent/20"
-          style={{ background: "linear-gradient(135deg, #0088DA 0%, #0088DA 100%)" }}
+          style={{ background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)" }}
         >
           Create Profile →
         </button>

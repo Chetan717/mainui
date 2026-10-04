@@ -99,7 +99,7 @@ export default function ManagerView({ profile, activeTab }) {
         <div className="rounded-2xl border border-border bg-card shadow-sm p-4">
           <div className="flex items-center gap-2.5 mb-1">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg,#0088DA,#0088DA)" }}>
+              style={{ background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)" }}>
               <PlusCircle className="w-4 h-4 text-white" />
             </div>
             <div>

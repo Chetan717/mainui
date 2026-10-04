@@ -1,0 +1,83 @@
+MLM LIVE - ALL CUMULATIVE PATCH FROM SHARED mainui.zip
+Base: the mainui.zip uploaded by the user on 2026-10-04.
+
+HOW TO APPLY:
+1. Extract your original mainui.zip project.
+2. Extract this patch ZIP into that project root.
+3. Allow overwrite/replace when prompted.
+4. No files need to be deleted for this patch.
+
+Changed existing files: 56
+New files: 4
+Deleted files: 0
+
+This cumulative patch includes all changes made after that shared mainui.zip, including:
+- Editor video empty state: No Video Available / Coming Soon
+- Home template type icon/name presentation updates
+- App theme color consistency updates
+- Product template footer PNG suppression in editor
+- My Profile inline Settings & Support + fixed profile area
+- Home/Festival/Everyday template card styling + smooth horizontal scrolling
+- Capping single large horizontal/square-photo card treatment
+
+FILES INCLUDED:
+CHANGED  src/App.jsx
+CHANGED  src/Auth/Logout.jsx
+CHANGED  src/Context/GeneralContext.jsx
+CHANGED  src/Onboarding.jsx
+CHANGED  src/components-source/Header.jsx
+CHANGED  src/components-source/Sidebar.jsx
+CHANGED  src/components/CaptionModal.jsx
+CHANGED  src/components/DeviceImageUploadLoader.jsx
+CHANGED  src/components/DownloadConfetti.jsx
+CHANGED  src/components/Header.jsx
+CHANGED  src/components/NewTemplateToast.jsx
+CHANGED  src/index.css
+CHANGED  src/pages/AskAi/AskAi.jsx
+CHANGED  src/pages/Editor/AiRetouchModal.jsx
+CHANGED  src/pages/Editor/GenralEditPage.jsx
+CHANGED  src/pages/Editor/MainEditor.jsx
+CHANGED  src/pages/Editor/components/ListOfTemplates.jsx
+CHANGED  src/pages/Editor/utils/TopuplineSelect.jsx
+CHANGED  src/pages/Form/ImageEditorCanvas.jsx
+CHANGED  src/pages/Form/Mlmprofilemodal.jsx
+CHANGED  src/pages/Form/MultiImagePicker.jsx
+CHANGED  src/pages/Home.jsx
+CHANGED  src/pages/Homepage/Component/Festival.jsx
+CHANGED  src/pages/Homepage/Component/ListOfGenaraltemp.jsx
+CHANGED  src/pages/Homepage/Homepage.jsx
+CHANGED  src/pages/Profile/Myprofile.jsx
+CHANGED  src/pages/Profile/ProfileSubpages.jsx
+CHANGED  src/pages/Profile/ReferCard.jsx
+CHANGED  src/pages/Reporting/CreateProfile.jsx
+CHANGED  src/pages/Reporting/ManagerView.jsx
+CHANGED  src/pages/Reporting/MemberView.jsx
+CHANGED  src/pages/Reporting/Reporting.jsx
+CHANGED  src/pages/Reporting/UnifiedView.jsx
+CHANGED  src/pages/Reporting/components/AddGuest.jsx
+CHANGED  src/pages/Reporting/components/AddPlan.jsx
+CHANGED  src/pages/Reporting/components/ApproveMembers.jsx
+CHANGED  src/pages/Reporting/components/Leaderboard.jsx
+CHANGED  src/pages/Reporting/components/MemberGraph.jsx
+CHANGED  src/pages/Reporting/components/MemberReportView.jsx
+CHANGED  src/pages/Reporting/components/MemberView.jsx
+CHANGED  src/pages/Reporting/components/NetworkTree.jsx
+CHANGED  src/pages/Reporting/components/ProfileCard.jsx
+CHANGED  src/pages/Reporting/components/ReportGraph.jsx
+CHANGED  src/pages/Reporting/components/TeamReportView.jsx
+CHANGED  src/pages/Reporting/components/TeamWeeklyReport.jsx
+CHANGED  src/pages/Reporting/components/UnifiedView.jsx
+CHANGED  src/pages/Reporting/components/ViewGuestList.jsx
+CHANGED  src/pages/Subscription/CheckoutModal.jsx
+CHANGED  src/pages/Subscription/MainSubscription.jsx
+CHANGED  src/pages/Test.jsx
+CHANGED  src/pages/mainform/components/AchievementForm.jsx
+CHANGED  src/pages/mainform/components/ImageEditorCanvas.jsx
+CHANGED  src/pages/mainform/components/IncomeForm.jsx
+CHANGED  src/pages/mainform/components/RemoveBgLoadingOverlay.jsx
+CHANGED  src/pages/mainform/components/SalesExecutiveForm.jsx
+CHANGED  src/utils/toast.jsx
+NEW      PROFILE_INLINE_SETTINGS_UPDATE.txt
+NEW      UPDATE_NOTES_HOME_TEMPLATE_CARDS.txt
+NEW      UPDATE_NOTES_OCT4_VIDEO_HOME_THEME_PRODUCT.txt
+NEW      tests/oct4VideoHomeThemeProduct.test.mjs

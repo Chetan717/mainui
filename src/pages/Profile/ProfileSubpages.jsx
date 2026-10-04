@@ -166,7 +166,7 @@ export function LanguagePage() {
       <ProfileHeader title={t("Language")} onBack={() => navigate("/profile/settings")} />
       <div className="flex-1 px-4 pt-4">
         <div className="mb-4 flex items-center gap-3 rounded-[16px] bg-[#e9f2ff] px-4 py-3 text-[12px] text-[#667085] dark:text-[#b6c0d1]">
-          <Globe2 className="h-4 w-4 flex-shrink-0 text-[#2877e9]" />
+          <Globe2 className="h-4 w-4 flex-shrink-0 text-[#2F80EA]" />
           <span>{t("The whole app changes language, including template labels.")}</span>
         </div>
 
@@ -182,7 +182,7 @@ export function LanguagePage() {
                   <p className="text-[14px] font-medium text-[#202634] dark:text-[#f5f7fb]">{item.nativeLabel}</p>
                   <p className="mt-0.5 text-[11px] text-[#98a2b3] dark:text-[#8995aa]">{item.label}</p>
                 </div>
-                <span className={`flex h-6 w-6 items-center justify-center rounded-full border ${draft === item.code ? "border-[#2877e9] bg-[#2877e9] text-white" : "border-[#d7ddea] bg-white dark:bg-[#171e2d] text-transparent"}`}>
+                <span className={`flex h-6 w-6 items-center justify-center rounded-full border ${draft === item.code ? "border-[#2F80EA] bg-[#2F80EA] text-white" : "border-[#d7ddea] bg-white dark:bg-[#171e2d] text-transparent"}`}>
                   {draft === item.code && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                 </span>
               </button>
@@ -199,7 +199,7 @@ export function LanguagePage() {
             setLanguage(draft);
             toast.success("Language updated");
           }}
-          className="h-14 w-full rounded-[14px] bg-[#2877e9] text-[15px] font-semibold text-white"
+          className="h-14 w-full rounded-[14px] bg-[#2F80EA] text-[15px] font-semibold text-white"
         >
           {t("Save language")}
         </button>
@@ -221,7 +221,7 @@ function PinDots({ value }) {
       {[0, 1, 2, 3].map((index) => (
         <span
           key={index}
-          className={`h-4 w-4 rounded-full border ${index < value.length ? "border-[#2877e9] bg-[#2877e9]" : "border-[#d5dce8] bg-white dark:bg-[#171e2d]"}`}
+          className={`h-4 w-4 rounded-full border ${index < value.length ? "border-[#2F80EA] bg-[#2F80EA]" : "border-[#d5dce8] bg-white dark:bg-[#171e2d]"}`}
         />
       ))}
     </div>
@@ -334,7 +334,7 @@ export function ChangePinPage() {
       <div className="px-4 pt-4">
         <div className="mb-6 flex gap-1.5">
           {[0, 1, 2].map((index) => (
-            <div key={index} className={`h-1 flex-1 rounded-full ${index <= step ? "bg-[#2877e9]" : "bg-[#e6e9ef]"}`} />
+            <div key={index} className={`h-1 flex-1 rounded-full ${index <= step ? "bg-[#2F80EA]" : "bg-[#e6e9ef]"}`} />
           ))}
         </div>
         <h2 className="text-[22px] font-bold text-[#151a26] dark:text-[#f5f7fb]">{headings[step]}</h2>
@@ -342,7 +342,7 @@ export function ChangePinPage() {
           {t("Step")} {step + 1} {t("of")} 3. {t("We ask for this so nobody else can change it.")}
         </p>
         <PinDots value={pins[step]} />
-        <button type="button" onClick={() => navigate("/forgetpin")} className="mx-auto block text-[12px] font-medium text-[#2877e9]">
+        <button type="button" onClick={() => navigate("/forgetpin")} className="mx-auto block text-[12px] font-medium text-[#2F80EA]">
           {t("Forgot your PIN?")}
         </button>
         {error && (
@@ -392,7 +392,7 @@ export function DeleteAccountPage() {
           {reasons.map(([key, label], index) => (
             <React.Fragment key={key}>
               <button type="button" onClick={() => setReason(key)} className="flex w-full items-center gap-3 px-4 py-4 text-left">
-                <span className={`flex h-6 w-6 items-center justify-center rounded-full border ${reason === key ? "border-[#2877e9] bg-[#2877e9] text-white" : "border-[#d7ddea] bg-white dark:bg-[#171e2d]"}`}>
+                <span className={`flex h-6 w-6 items-center justify-center rounded-full border ${reason === key ? "border-[#2F80EA] bg-[#2F80EA] text-white" : "border-[#d7ddea] bg-white dark:bg-[#171e2d]"}`}>
                   {reason === key && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                 </span>
                 <span className="text-[14px] text-[#202634] dark:text-[#f5f7fb]">{label}</span>
@@ -407,12 +407,12 @@ export function DeleteAccountPage() {
           onClick={() => navigate("/profile/customer-care")}
           className="mt-4 flex w-full items-center gap-3 rounded-[20px] bg-[#e8f2ff] px-4 py-4 text-left"
         >
-          <Headphones className="h-5 w-5 text-[#2877e9]" />
+          <Headphones className="h-5 w-5 text-[#2F80EA]" />
           <div className="flex-1">
             <p className="text-[14px] font-medium text-[#202634] dark:text-[#f5f7fb]">{t("Let us try to fix it first")}</p>
             <p className="text-[11px] text-[#667085] dark:text-[#b6c0d1]">{t("Most problems are sorted in one call")}</p>
           </div>
-          <ChevronRight className="h-5 w-5 text-[#2877e9]" />
+          <ChevronRight className="h-5 w-5 text-[#2F80EA]" />
         </button>
       </div>
 
@@ -474,7 +474,7 @@ export function FeedbackPage() {
             {options.map(([key, label]) => {
               const active = tags.includes(key);
               return (
-                <button key={key} type="button" onClick={() => toggleTag(key)} className={`rounded-full border px-4 py-2 text-[12px] font-medium ${active ? "border-[#2877e9] bg-[#2877e9] text-white" : "border-[#d7ddeb] bg-white dark:bg-[#171e2d] text-[#667085] dark:text-[#b6c0d1]"}`}>
+                <button key={key} type="button" onClick={() => toggleTag(key)} className={`rounded-full border px-4 py-2 text-[12px] font-medium ${active ? "border-[#2F80EA] bg-[#2F80EA] text-white" : "border-[#d7ddeb] bg-white dark:bg-[#171e2d] text-[#667085] dark:text-[#b6c0d1]"}`}>
                   {label}
                 </button>
               );
@@ -485,16 +485,16 @@ export function FeedbackPage() {
             value={message}
             onChange={(event) => setMessage(event.target.value)}
             placeholder={t("Anything we should fix or add? (optional)")}
-            className="mt-5 h-28 w-full resize-none rounded-[18px] border border-[#d7ddeb] bg-white dark:bg-[#171e2d] p-4 text-[14px] text-[#202634] dark:text-[#f5f7fb] outline-none focus:border-[#2877e9]"
+            className="mt-5 h-28 w-full resize-none rounded-[18px] border border-[#d7ddeb] bg-white dark:bg-[#171e2d] p-4 text-[14px] text-[#202634] dark:text-[#f5f7fb] outline-none focus:border-[#2F80EA]"
           />
         </div>
       </div>
 
       <div className="sticky bottom-0 bg-white/95 dark:bg-[#171e2d]/95 px-6 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3 backdrop-blur">
-        <button type="button" onClick={submit} className="h-14 w-full rounded-[14px] bg-[#2877e9] text-[15px] font-semibold text-white">
+        <button type="button" onClick={submit} className="h-14 w-full rounded-[14px] bg-[#2F80EA] text-[15px] font-semibold text-white">
           {t("Send feedback")}
         </button>
-        <button type="button" onClick={() => window.open("https://play.google.com/store", "_blank")} className="mt-2 w-full text-center text-[11px] text-[#2877e9]">
+        <button type="button" onClick={() => window.open("https://play.google.com/store", "_blank")} className="mt-2 w-full text-center text-[11px] text-[#2F80EA]">
           {t("Happy with the app? Rate us on the Play Store")}
         </button>
       </div>
@@ -548,12 +548,12 @@ export function CustomerCarePage() {
         <div className="space-y-3">
           {contactRows.map(({ icon: Icon, title, value, subtitle, action }) => (
             <button key={title} type="button" onClick={action} className="flex w-full items-center gap-4 rounded-[20px] bg-white dark:bg-[#171e2d] p-4 text-left shadow-[0_5px_16px_rgba(31,41,55,0.03)]">
-              <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#e8f2ff] text-[#2877e9]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#e8f2ff] text-[#2F80EA]">
                 <Icon className="h-5 w-5" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[14px] font-semibold text-[#202634] dark:text-[#f5f7fb]">{title}</span>
-                <span className="mt-0.5 block text-[12px] font-medium text-[#2877e9]">{value}</span>
+                <span className="mt-0.5 block text-[12px] font-medium text-[#2F80EA]">{value}</span>
                 <span className="mt-0.5 block text-[11px] text-[#8e98ac] dark:text-[#8995aa]">{subtitle}</span>
               </span>
               <ChevronRight className="h-5 w-5 text-[#98a2b3] dark:text-[#8995aa]" />

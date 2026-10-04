@@ -174,14 +174,16 @@ function MainEditor() {
         setIsOpen={setIsOpen}
         isOpen={isOpen}
       />
-      <FooterSelect
-        isOpenFtr={isOpenFtr}
-        setIsOpenFtr={setIsOpenFtr}
-        frames={Footersframes}
-        setSelectedFooterFrame={setSelectedFooterFrame}
-        onFrameSelectFooter={(frame) => setSelectedFooterFrame(frame)}
-        selectedFooterFrame={selectedFooterFrame}
-      />
+      {selll?.type !== "Product" && (
+        <FooterSelect
+          isOpenFtr={isOpenFtr}
+          setIsOpenFtr={setIsOpenFtr}
+          frames={Footersframes}
+          setSelectedFooterFrame={setSelectedFooterFrame}
+          onFrameSelectFooter={(frame) => setSelectedFooterFrame(frame)}
+          selectedFooterFrame={selectedFooterFrame}
+        />
+      )}
     </>
   );
 }

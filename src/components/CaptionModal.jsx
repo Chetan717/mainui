@@ -227,7 +227,7 @@ export default function CaptionModal({
                   data-guide="caption-copy"
                   className={`self-end flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                     copied
-                      ? "bg-green-500 text-white"
+                      ? "bg-accent text-white"
                       : "bg-accent text-background hover:opacity-90"
                   }`}
                 >

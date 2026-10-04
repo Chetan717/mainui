@@ -186,7 +186,7 @@ export function CheckoutModal({ plan, isOpen, setIsOpen, onBack, onPaymentSucces
           planType: plan.Type      || "",
           company:  company?.name  || "",
         },
-        theme: { color: "#0088DA" },
+        theme: { color: "#2F80EA" },
 
         handler: async (response) => {
           try {

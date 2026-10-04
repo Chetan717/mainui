@@ -65,7 +65,7 @@ function ActiveSubscriptionCard({ sub }) {
       className="relative rounded-[28px] overflow-hidden shadow-2xl"
       style={{
         background:
-          "linear-gradient(135deg, #0088DA 0%, #0088DA 50%, #0088DA 100%)",
+          "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
       }}
     >
       {/* Shimmer overlay */}
@@ -535,14 +535,14 @@ export default function MainSubscription() {
           className="relative mb-8 rounded-[28px] overflow-hidden p-6"
           style={{
             background:
-              "linear-gradient(135deg, #0088da 0%, #0088DA 60%, #0088da 100%)",
+              "linear-gradient(135deg, #2F80EA 0%, #2F80EA 60%, #2F80EA 100%)",
           }}
         >
           <div
             className="absolute inset-0 opacity-30"
             style={{
               background:
-                "radial-gradient(ellipse at 80% 20%, #0088da 0%, transparent 60%)",
+                "radial-gradient(ellipse at 80% 20%, #2F80EA 0%, transparent 60%)",
             }}
           />
           <div className="absolute top-0 left-8 right-8 h-px bg-white/15 rounded-full" />
@@ -679,7 +679,7 @@ export default function MainSubscription() {
                     <div
                       className="absolute top-0 left-0 right-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       style={{
-                        background: "linear-gradient(90deg, #0088DA, #4f6fd0)",
+                        background: "linear-gradient(90deg, #2F80EA, #4f6fd0)",
                       }}
                     />
 
@@ -865,7 +865,7 @@ export default function MainSubscription() {
 //       className="relative rounded-[28px] overflow-hidden shadow-2xl"
 //       style={{
 //         background:
-//           "linear-gradient(135deg, #0088DA 0%, #0088DA 50%, #0088DA 100%)",
+//           "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
 //       }}
 //     >
 //       {/* Shimmer overlay */}

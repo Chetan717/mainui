@@ -822,7 +822,7 @@ function Home() {
       >
         <div className="flex items-center gap-2">
           <span
-            className={`h-3.5 w-3.5 rounded-full border-2 border-[#2C7BE5]/20 border-t-[#2C7BE5] ${
+            className={`h-3.5 w-3.5 rounded-full border-2 border-[#2F80EA]/20 border-t-[#2F80EA] ${
               pullRefreshing ? "animate-spin" : ""
             }`}
             style={

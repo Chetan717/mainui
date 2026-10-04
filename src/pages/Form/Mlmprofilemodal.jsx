@@ -486,7 +486,7 @@ function DisplaySettings({ accent = false }) {
           aria-checked={showLogo === "yes"}
           onClick={toggleLogo}
           className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200 ${
-            showLogo === "yes" ? "bg-green-500" : "bg-foreground/20"
+            showLogo === "yes" ? "bg-accent" : "bg-foreground/20"
           }`}
         >
           <span
@@ -508,7 +508,7 @@ function DisplaySettings({ accent = false }) {
           aria-checked={showMobile === "yes"}
           onClick={toggleMobile}
           className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200 ${
-            showMobile === "yes" ? "bg-green-500" : "bg-foreground/20"
+            showMobile === "yes" ? "bg-accent" : "bg-foreground/20"
           }`}
         >
           <span
@@ -1864,7 +1864,7 @@ export default function MLMProfilePage() {
                 <select
                   value={form.salutation}
                   onChange={(e) => setField("salutation", e.target.value)}
-                  className="border border-[#DDE3ED] rounded-[14px] px-3 py-2.5 text-[13px] bg-[#F1F4F9] text-foreground focus:outline-none focus:ring-2 focus:ring-[#2478EA]/25 focus:border-[#2478EA] transition-all dark:border-border dark:bg-[#1A2236]"
+                  className="border border-[#DDE3ED] rounded-[14px] px-3 py-2.5 text-[13px] bg-[#F1F4F9] text-foreground focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-[#2478EA] transition-all dark:border-border dark:bg-[#1A2236]"
                 >
                   {["Mr", "Mrs", "Miss", "Ms", "Dr",
                     "Prof","Er",
@@ -1921,7 +1921,7 @@ export default function MLMProfilePage() {
                   aria-expanded={rankPickerOpen}
                   aria-controls="mlm-rank-picker"
                   onClick={openRankPicker}
-                  className={`w-full min-h-11 border rounded-[14px] px-3 py-2.5 text-sm bg-[#F1F4F9] focus:outline-none focus:ring-2 focus:ring-[#2478EA]/25 flex items-center justify-between gap-3 text-left dark:bg-[#1A2236] ${errors.designation ? "border-red-400 dark:bg-red-500/10" : "border-[#DDE3ED] dark:border-border"}`}
+                  className={`w-full min-h-11 border rounded-[14px] px-3 py-2.5 text-sm bg-[#F1F4F9] focus:outline-none focus:ring-2 focus:ring-accent/25 flex items-center justify-between gap-3 text-left dark:bg-[#1A2236] ${errors.designation ? "border-red-400 dark:bg-red-500/10" : "border-[#DDE3ED] dark:border-border"}`}
                 >
                   <span className={form.designation ? "text-foreground font-medium" : "text-muted-foreground"}>
                     {form.designation || "Select Rank"}
@@ -2022,7 +2022,7 @@ export default function MLMProfilePage() {
                         className="w-14 h-14 rounded-full object-contain bg-gradient-to-r from-yellow-200 via-amber-400 to-yellow-600 font-bold text-transparent"
                       />
                       {/* {isExisting && (
-                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[8px] px-1 rounded-full leading-tight ring-2 ring-background">
+                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-accent text-white text-[8px] px-1 rounded-full leading-tight ring-2 ring-background">
                           saved
                         </span>
                       )} */}
@@ -2118,7 +2118,7 @@ export default function MLMProfilePage() {
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 cursor-pointer transition font-medium text-sm capitalize
           ${
             showSocial === val
-              ? "border-accent bg-indigo-accent text-accent"
+              ? "border-accent bg-accent/10 text-accent"
               : "border-border bg-muted/20 text-muted-foreground hover:border-accent"
           }`}
                 >
@@ -2163,7 +2163,7 @@ export default function MLMProfilePage() {
                 </div>
               ))}
             </div>
-            <div className="mt-4 p-4 bg-muted/20 rounded-xl border border-indigo-100">
+            <div className="mt-4 p-4 bg-muted/20 rounded-xl border border-accent/20">
               <p className="text-sm font-medium text-foreground/80 mb-2">
                 Same ID across platforms?
               </p>
@@ -2173,7 +2173,7 @@ export default function MLMProfilePage() {
                 maxLength={40}
                 value={form.socialSameId}
                 onChange={(e) => handleSocialSameIdChange(e.target.value)}
-                className="w-full border border-indigo-200 rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-accent/40 mb-3"
+                className="w-full border border-accent/25 rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-accent/40 mb-3"
               />
               <p className="text-xs text-muted-foreground mb-2">
                 Select platforms to apply:
@@ -2186,8 +2186,8 @@ export default function MLMProfilePage() {
                     onClick={() => handleSocialSameToggle(platform)}
                     className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition ${
                       form.socialSameSelected.includes(platform)
-                        ? "border-accent bg-indigo-500"
-                        : "border-border bg-background hover:border-indigo-400"
+                        ? "border-accent bg-accent"
+                        : "border-border bg-background hover:border-accent"
                     }`}
                   >
                     <SocialIcon

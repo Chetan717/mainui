@@ -131,7 +131,7 @@ export default function TeamWeeklyReport({ managerProfile }) {
             onClick={(e) => e.stopPropagation()}>
             <div className="text-center">
               <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+                style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
                 <FileText className="w-7 h-7 text-white" />
               </div>
               <p className="font-bold text-foreground text-[16px]">Team Weekly Report</p>
@@ -146,7 +146,7 @@ export default function TeamWeeklyReport({ managerProfile }) {
               </button>
               <button onClick={handleDownload}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-white font-bold text-[14px]"
-                style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+                style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
                 <Download className="w-4 h-4" /> Download PDF
               </button>
             </div>
@@ -161,10 +161,10 @@ export default function TeamWeeklyReport({ managerProfile }) {
       <div className="space-y-3">
         {/* Header card */}
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-          <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#0088DA,#4f6fcf)" }} />
+          <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#2F80EA,#236FDE)" }} />
           <div className="px-4 py-3.5 flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+              style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
               <Users className="w-4 h-4 text-white" />
             </div>
             <div>
@@ -196,7 +196,7 @@ export default function TeamWeeklyReport({ managerProfile }) {
           </div>
           <button onClick={load} disabled={loading}
             className="w-full py-2.5 rounded-xl text-white text-[13px] font-bold flex items-center justify-center gap-2 disabled:opacity-60 transition-opacity"
-            style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+            style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
             {loading
               ? <><Loader2 className="w-4 h-4 animate-spin" /> Loading…</>
               : <><RefreshCw className="w-4 h-4" /> {rows === null ? "Generate Report" : "Refresh"}</>}
@@ -222,7 +222,7 @@ export default function TeamWeeklyReport({ managerProfile }) {
               {(filtered?.length || 0) > 0 && (
                 <button onClick={() => setPdfModal(true)}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-[11px] font-bold shrink-0"
-                  style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+                  style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
                   <FileText className="w-3.5 h-3.5" /> PDF
                 </button>
               )}
@@ -248,7 +248,7 @@ export default function TeamWeeklyReport({ managerProfile }) {
               <div className="overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse min-w-[480px]">
                   <thead>
-                    <tr style={{ background: "#0088DA", color: "#fff" }}>
+                    <tr style={{ background: "#2F80EA", color: "#fff" }}>
                       <th className="px-2 py-2.5 border border-gray-300 text-center font-bold w-10">SR.NO</th>
                       <th className="px-2 py-2.5 border border-gray-300 text-left font-bold">NAME</th>
                       <th className="px-2 py-2.5 border border-gray-300 text-center font-bold">PLAN</th>
@@ -272,7 +272,7 @@ export default function TeamWeeklyReport({ managerProfile }) {
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr style={{ background: "#0088DA" }}>
+                    <tr style={{ background: "#2F80EA" }}>
                       <td className="px-2 py-2.5 border border-gray-300 dark:border-gray-700 text-center font-bold text-black dark:text-white" />
                       <td className="px-2 py-2.5 border border-gray-300 dark:border-gray-700 text-left font-bold text-black dark:text-white">TOTAL</td>
                       <td className="px-2 py-2.5 border border-gray-300 dark:border-gray-700 text-center font-bold text-black dark:text-white">{totals.plan}</td>
@@ -292,7 +292,7 @@ export default function TeamWeeklyReport({ managerProfile }) {
                   </button>
                   <button onClick={handleDownload}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-white font-bold text-[12px]"
-                    style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+                    style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
                     <Download className="w-4 h-4" /> Download PDF
                   </button>
                 </div>

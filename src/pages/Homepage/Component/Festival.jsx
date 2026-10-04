@@ -293,20 +293,25 @@ export default function Festival() {
       </div>
 
       {initialLoading ? (
-        <div className="flex gap-4 overflow-x-hidden px-1">
+        <div className="flex gap-3 overflow-x-hidden px-1 pb-2">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="shrink-0 flex flex-col gap-1">
-              <div className="w-[110px] md:w-[140px] h-[110px] md:h-[140px] rounded-2xl overflow-hidden bg-white dark:bg-black/20 border border-border">
-                <Skeleton className="w-full h-full" />
+            <div
+              key={i}
+              className="w-[118px] shrink-0 overflow-hidden rounded-[15px] border border-border bg-white shadow-[0_4px_14px_rgba(28,54,92,0.08)] dark:bg-[#111827]"
+            >
+              <div className="aspect-square w-full overflow-hidden bg-muted/40">
+                <Skeleton className="h-full w-full" />
               </div>
-              <div className="w-[110px] md:w-[140px] h-3 rounded bg-muted animate-pulse" />
+              <div className="px-2.5 py-2.5">
+                <div className="h-3 w-3/4 rounded bg-muted animate-pulse mx-auto" />
+              </div>
             </div>
           ))}
         </div>
       ) : visibleDates.length > 0 ? (
         <div
           ref={sliderRef}
-          className="flex gap-2 overflow-x-auto hide-scrollbar px-1 pb-1"
+          className="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory hide-scrollbar px-1 pb-2"
         >
           {visibleDates.map((d) => {
             const cards = allFestivalData[d.iso] || [];
@@ -318,53 +323,50 @@ export default function Festival() {
                 ref={(el) => {
                   cardGroupRefs.current[d.iso] = el;
                 }}
-                className="flex gap-3 shrink-0"
+                className="flex shrink-0 gap-3"
               >
-                <div className="flex gap-3">
-                  {isLoading
-                    ? [1, 2].map((i) => (
-                        <div key={i} className="shrink-0 flex flex-col gap-1">
-                          <div className="w-[110px] md:w-[140px] h-[110px] md:h-[140px] rounded-2xl overflow-hidden bg-white dark:bg-black/20 border border-border">
-                            <Skeleton className="w-full h-full" />
-                          </div>
-                          <div className="w-[110px] md:w-[140px] h-3 rounded bg-muted animate-pulse" />
+                {isLoading
+                  ? [1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="w-[118px] shrink-0 snap-start overflow-hidden rounded-[15px] border border-border bg-white shadow-[0_4px_14px_rgba(28,54,92,0.08)] dark:bg-[#111827]"
+                      >
+                        <div className="aspect-square w-full overflow-hidden bg-muted/40">
+                          <Skeleton className="h-full w-full" />
                         </div>
-                      ))
-                    : cards.map((card) => (
-                        <div
-                          key={card.id}
-                          onClick={() => handleImagePress(card)}
-                          className="shrink-0 flex flex-col gap-1.5 cursor-pointer"
-                        >
-                          <div className="w-[110px] md:w-[140px] h-[110px] md:h-[140px] rounded-2xl overflow-hidden relative border border-border shadow-sm bg-white dark:bg-black/20 card-press">
-                            <img
-                              src={card.image}
-                              alt={card.Subtype || "festival template"}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                            <div className="absolute bottom-1.5 right-1.5 min-w-[22px] h-[22px] px-1.5 rounded-lg bg-accent/90 backdrop-blur-sm flex items-center justify-center">
-                              <span className="text-white text-[10px] font-bold leading-none">
-                                {d.day}
-                              </span>
-                            </div>
-                          </div>
-                          {card.Subtype ? (
-                            <div className="w-[110px] md:w-[140px] overflow-hidden">
-                              <div className="flex whitespace-nowrap animate-marquee-smooth">
-                                <span className="text-[10px] font-semibold text-foreground/70 leading-tight pr-8">
-                                  {card.Subtype}
-                                </span>
-                                <span className="text-[10px] font-semibold text-foreground/70 leading-tight pr-8">
-                                  {card.Subtype}
-                                </span>
-                              </div>
-                            </div>
-                          ) : null}
+                        <div className="px-2.5 py-2.5">
+                          <div className="h-3 w-3/4 rounded bg-muted animate-pulse mx-auto" />
                         </div>
-                      ))}
-                </div>
+                      </div>
+                    ))
+                  : cards.map((card) => (
+                      <button
+                        key={card.id}
+                        type="button"
+                        onClick={() => handleImagePress(card)}
+                        className="w-[118px] shrink-0 snap-start overflow-hidden rounded-[15px] border border-[#E4EAF3] bg-white text-center shadow-[0_4px_14px_rgba(28,54,92,0.08)] transition-transform duration-150 active:scale-[0.985] dark:border-[#263146] dark:bg-[#111827]"
+                      >
+                        <div className="relative aspect-square w-full overflow-hidden bg-muted/40">
+                          <img
+                            src={card.image}
+                            alt={card.Subtype || "festival template"}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                          <div className="absolute bottom-1.5 right-1.5 flex h-[22px] min-w-[22px] items-center justify-center rounded-[7px] bg-accent/90 px-1.5 backdrop-blur-sm">
+                            <span className="text-[10px] font-bold leading-none text-white">
+                              {d.day}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="px-2.5 py-2.5">
+                          <p className="line-clamp-2 min-h-[26px] text-[10px] font-semibold leading-[13px] text-[#20283A] dark:text-[#E4EAF4]">
+                            {card.Subtype || "Festival"}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
               </div>
             );
           })}

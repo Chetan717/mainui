@@ -1073,7 +1073,7 @@ export default function ImageEditorCanvas({
                 onClick={fn}
                 style={{
                   padding: "4px 8px",
-                  backgroundColor: active ? "#2877e9" : "var(--surface-secondary)",
+                  backgroundColor: active ? "#2F80EA" : "var(--surface-secondary)",
                   color: active ? "#fff" : "var(--foreground)",
                   border: "1px solid var(--border)",
                   borderRadius: 10,
@@ -1120,7 +1120,7 @@ export default function ImageEditorCanvas({
                   border: "none",
                   borderRadius: 999,
                   padding: "5px 10px",
-                  background: enhance ? "#2877e9" : "var(--surface-tertiary)",
+                  background: enhance ? "#2F80EA" : "var(--surface-tertiary)",
                   color: enhance ? "#fff" : "var(--muted-foreground)",
                   fontSize: 10,
                   fontWeight: 700,
@@ -1137,7 +1137,7 @@ export default function ImageEditorCanvas({
               max={100}
               value={enhance}
               onChange={(event) => setEnhance(Number(event.target.value))}
-              style={{ width: "100%", accentColor: "#2877e9" }}
+              style={{ width: "100%", accentColor: "#2F80EA" }}
             />
             <div
               style={{
@@ -1160,7 +1160,7 @@ export default function ImageEditorCanvas({
               max={50}
               value={skinTone}
               onChange={(event) => setSkinTone(Number(event.target.value))}
-              style={{ width: "100%", accentColor: "#2877e9" }}
+              style={{ width: "100%", accentColor: "#2F80EA" }}
             />
           </div>
         )}
@@ -1180,7 +1180,7 @@ export default function ImageEditorCanvas({
             textAlign: "center",
             fontSize: 14,
             fontWeight: 700,
-            color: "#2877e9",
+            color: "#2F80EA",
             marginBottom: 4,
           }}
         >
@@ -1213,7 +1213,7 @@ export default function ImageEditorCanvas({
                 style={{
                   width: 1.5,
                   height: i % 5 === 0 ? 13 : 6,
-                  backgroundColor: i === 0 ? "#2877e9" : "var(--border)",
+                  backgroundColor: i === 0 ? "#2F80EA" : "var(--border)",
                   borderRadius: 1,
                 }}
               />
@@ -1239,7 +1239,7 @@ export default function ImageEditorCanvas({
           />
         </div>
         <style>{`
-          input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:5px;height:26px;background:#2877e9;border-radius:3px;cursor:pointer;}
+          input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:5px;height:26px;background:#2F80EA;border-radius:3px;cursor:pointer;}
           input[type=range]::-webkit-slider-runnable-track{background:transparent;height:34px;}
           @keyframes spin{to{transform:rotate(360deg)}}
           @keyframes crop-editor-spin{to{transform:rotate(360deg)}}
@@ -1291,19 +1291,19 @@ export default function ImageEditorCanvas({
               style={{
                 ...btnBase,
                 borderTop: active
-                  ? "2.5px solid #2877e9"
+                  ? "2.5px solid #2F80EA"
                   : "2.5px solid transparent",
               }}
             >
               <span
-                style={{ fontSize: 18, color: active ? "#2877e9" : "var(--muted-foreground)" }}
+                style={{ fontSize: 18, color: active ? "#2F80EA" : "var(--muted-foreground)" }}
               >
                 {icon}
               </span>
               <span
                 style={{
                   fontSize: 9,
-                  color: active ? "#2877e9" : "var(--muted-foreground)",
+                  color: active ? "#2F80EA" : "var(--muted-foreground)",
                   fontWeight: active ? 700 : 400,
                 }}
               >

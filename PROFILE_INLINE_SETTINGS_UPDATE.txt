@@ -1,0 +1,9 @@
+MLM LIVE - My Profile inline Settings & Support update
+
+Changes:
+- Settings & Support options are shown directly on the My Profile page.
+- The old /profile/settings entry redirects back to /profile.
+- Profile gradient header (photo/name/company/mobile/edit) stays sticky while the content below scrolls.
+- Existing Language, Banner Details, Dark Mode, support, security, about and account actions keep their original destinations/actions.
+
+Apply: extract this patch at the project root and overwrite matching files.

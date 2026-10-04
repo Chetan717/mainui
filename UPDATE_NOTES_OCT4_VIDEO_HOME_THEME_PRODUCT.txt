@@ -1,0 +1,30 @@
+MLM LIVE — Oct 4 Editor/Home Theme/Product Update
+
+1. Editor Video empty state
+- When the Video tab has no video template, the canvas no longer shows "Preparing design".
+- Canvas now shows "No Video Available" + "Coming Soon".
+- Template panel uses the same empty-state copy.
+
+2. Home template type headings
+- Every regular template type now shows a Festival-style round icon + template type name.
+- Everyday Moments heading uses the same visual treatment.
+- Existing template fetching/navigation logic is preserved.
+
+3. App theme consistency
+- Primary accent is aligned with the current Home/header gradient:
+  #2F80EA -> #236FDE -> #1454C5.
+- Primary buttons and brand controls use the same theme family.
+- Legacy violet/indigo brand accents in active UI were normalized.
+- Semantic destructive/error/warning states retain their status colors where needed.
+
+4. Product editor footer
+- Product is added to the editor's no-footer-image types.
+- The separate footer PNG is not drawn for Product templates.
+- Footer selector is also hidden for Product templates.
+- Other template types keep existing footer behavior.
+
+Validation
+- New focused tests: 4/4 pass.
+- Existing October UI tests: 6/6 pass.
+- Changed JSX files parse cleanly with TypeScript JSX parser.
+- Full source test suite: 101/108 pass. The 7 remaining failures are pre-existing in the uploaded base; baseline was 96/104 with 8 failures.

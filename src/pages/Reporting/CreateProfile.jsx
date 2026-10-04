@@ -86,7 +86,7 @@ export default function CreateProfile({ userMobile, userName, onProfileCreated }
     return (
       <div className="px-4 py-10 max-w-lg mx-auto flex flex-col items-center text-center gap-5">
         <div className="w-20 h-20 rounded-[24px] flex items-center justify-center shadow-xl"
-          style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+          style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
           <CheckCircle className="w-10 h-10 text-white" />
         </div>
         <div>
@@ -106,7 +106,7 @@ export default function CreateProfile({ userMobile, userName, onProfileCreated }
     <div className="px-4 py-6 max-w-lg mx-auto">
       <div className="text-center mb-6">
         <div className="w-16 h-16 rounded-[22px] flex items-center justify-center mx-auto mb-3 shadow-lg"
-          style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+          style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
           <UserPlus className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-[22px] font-bold text-foreground">Create Your Profile</h1>
@@ -182,7 +182,7 @@ export default function CreateProfile({ userMobile, userName, onProfileCreated }
           type="submit"
           disabled={submitting || !isValidProfileId(form.profileId.trim())}
           className="w-full py-3.5 rounded-xl text-white text-[14px] font-bold disabled:opacity-50 mt-2 flex items-center justify-center gap-2 transition-opacity"
-          style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}
+          style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}
         >
           {submitting ? (
             <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />

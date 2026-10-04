@@ -201,7 +201,7 @@ const filtered = useMemo(() => {
   const link = getSelectionLink(item);
   return (
     <div key={link || `sel-${i}`} className="relative w-15 h-15 flex-shrink-0">
-      <img src={link} alt="" className="w-14 h-14 p-1 rounded-full object-cover border border-2 border-yellow-400" />
+      <img src={link} alt="" className="w-14 h-14 p-1 rounded-full object-cover border border-2 border-accent" />
       <button type="button"
         onClick={(event) => {
           event.stopPropagation();
@@ -215,7 +215,7 @@ const filtered = useMemo(() => {
 })}
         {customFiles.map((item, i) => (
           <div key={item.previewURL || `cus-${i}`} className="relative flex-shrink-0">
-            <img src={item.previewURL} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-violet-300 dark:border-violet-500/50 bg-gray-100 dark:bg-gray-800" />
+            <img src={item.previewURL} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-accent/35 dark:border-accent/40 bg-gray-100 dark:bg-gray-800" />
             <button type="button"
               onClick={(event) => {
                 event.stopPropagation();
@@ -228,21 +228,21 @@ const filtered = useMemo(() => {
         ))}
       </div>
       <button type="button" onClick={(event) => { event.stopPropagation(); handleOpen(); }} disabled={isTriggerDisabled}
-        className="flex-shrink-0 w-14 h-14 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 flex items-center justify-center transition text-gray-400 hover:text-violet-500 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="flex-shrink-0 w-14 h-14 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-accent hover:bg-accent/5 dark:hover:bg-accent/10 flex items-center justify-center transition text-gray-400 hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed"
         title={isLimitReached ? "Limit reached" : processingBg ? "Processing…" : "Add image"}>
         {processingBg
-          ? <svg className="animate-spin w-5 h-5 text-violet-500" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+          ? <svg className="animate-spin w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
           : <IcoUpload />}
       </button>
     </div>
   ) : (
     <button type="button" onClick={handleOpen}
-      className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-violet-400 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-violet-50 dark:hover:bg-violet-500/10 cursor-pointer transition-all duration-200 group">
-      <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 group-hover:bg-violet-100 dark:group-hover:bg-violet-500/20 group-hover:border-violet-300 flex items-center justify-center transition-all duration-200 flex-shrink-0 text-gray-400 group-hover:text-violet-500">
+      className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-accent bg-gray-50/50 dark:bg-gray-800/30 hover:bg-accent/5 dark:hover:bg-accent/10 cursor-pointer transition-all duration-200 group">
+      <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 group-hover:bg-accent/10 dark:group-hover:bg-accent/20 group-hover:border-accent/35 flex items-center justify-center transition-all duration-200 flex-shrink-0 text-gray-400 group-hover:text-accent">
         <IcoUpload />
       </div>
       <div className="flex-1 text-left">
-        <p className="text-[13px] font-semibold text-gray-800 dark:text-gray-200 group-hover:text-[#0088DA] dark:group-hover:text-violet-400 transition-colors">
+        <p className="text-[13px] font-semibold text-gray-800 dark:text-gray-200 group-hover:text-[#2F80EA] dark:group-hover:text-accent transition-colors">
           {totalSelected > 0 ? `${totalSelected} image${totalSelected > 1 ? "s" : ""} selected` : "Select Image"}
         </p>
         <p className="text-[10px] text-gray-400 dark:text-gray-500">
@@ -250,8 +250,8 @@ const filtered = useMemo(() => {
         </p>
       </div>
       {totalSelected > 0 && (
-        <div className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-500/20 border border-violet-200 dark:border-violet-500/30 flex items-center justify-center flex-shrink-0">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#0088DA] dark:text-violet-400">
+        <div className="w-6 h-6 rounded-full bg-accent/10 dark:bg-accent/20 border border-accent/25 dark:border-accent/30 flex items-center justify-center flex-shrink-0">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#2F80EA] dark:text-accent">
             <path d="M20 6 9 17l-5-5" />
           </svg>
         </div>
@@ -292,7 +292,7 @@ const filtered = useMemo(() => {
                 <button key={key} type="button" onClick={() => setTab(key)}
                   className={`flex-1 py-2 px-3 rounded-xl text-[12px] font-bold transition-all duration-200 ${
                     tab === key
-                      ? "bg-[#0088DA] text-white shadow-md"
+                      ? "bg-[#2F80EA] text-white shadow-md"
                       : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                   }`}>
                   {label}
@@ -317,7 +317,7 @@ const filtered = useMemo(() => {
                   aria-label="Search top upline by name"
                   autoComplete="off"
                   enterKeyHint="search"
-                  className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 text-[13px] text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 transition"
+                  className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 text-[13px] text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition"
                 />
                 {search && (
                   <button type="button" onClick={() => setSearch("")}
@@ -359,10 +359,10 @@ const filtered = useMemo(() => {
                         }}
                         className={`relative border-2 rounded-xl overflow-hidden transition-all duration-150 flex flex-col ${
                           selected
-                            ? "border-[#0088DA] shadow-md shadow-[#0088DA]/20 scale-95"
+                            ? "border-[#2F80EA] shadow-md shadow-[#2F80EA]/20 scale-95"
                             : isLimitReached
                               ? "border-gray-200 dark:border-gray-700 opacity-40 cursor-not-allowed"
-                              : "border-gray-200 dark:border-gray-700 hover:border-[#0088DA] hover:scale-[0.97]"
+                              : "border-gray-200 dark:border-gray-700 hover:border-[#2F80EA] hover:scale-[0.97]"
                         }`}>
                         <div className="aspect-square w-full bg-gray-50 dark:bg-gray-800/60">
                           {img.link ? (
@@ -381,7 +381,7 @@ const filtered = useMemo(() => {
                           </div>
                         )}
                         {selected && (
-                          <div className="absolute top-1 right-1 w-5 h-5 bg-[#0088DA] rounded-full flex items-center justify-center shadow">
+                          <div className="absolute top-1 right-1 w-5 h-5 bg-[#2F80EA] rounded-full flex items-center justify-center shadow">
                             <IcoCheck />
                           </div>
                         )}
@@ -409,7 +409,7 @@ const filtered = useMemo(() => {
                           <button key={p} type="button" onClick={() => setPage(p)}
                             className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all ${
                               p === safePage
-                                ? "bg-[#0088DA] text-white shadow shadow-violet-500/20"
+                                ? "bg-[#2F80EA] text-white shadow shadow-accent/20"
                                 : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
                             }`}>
                             {p}
@@ -441,15 +441,15 @@ const filtered = useMemo(() => {
                 className={`flex items-center gap-3 px-4 py-3 rounded-2xl border-2 border-dashed transition-all duration-200 ${
                   isLimitReached || processingBg
                     ? "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 opacity-50 cursor-not-allowed"
-                    : "border-gray-200 dark:border-gray-700 hover:border-violet-400 bg-gray-50 dark:bg-gray-800/30 hover:bg-violet-50 dark:hover:bg-violet-500/10 cursor-pointer group"
+                    : "border-gray-200 dark:border-gray-700 hover:border-accent bg-gray-50 dark:bg-gray-800/30 hover:bg-accent/5 dark:hover:bg-accent/10 cursor-pointer group"
                 }`}>
-                <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 group-hover:bg-violet-100 dark:group-hover:bg-violet-500/20 group-hover:border-violet-300 flex items-center justify-center flex-shrink-0 transition-all text-gray-400 group-hover:text-violet-500">
+                <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 group-hover:bg-accent/10 dark:group-hover:bg-accent/20 group-hover:border-accent/35 flex items-center justify-center flex-shrink-0 transition-all text-gray-400 group-hover:text-accent">
                   {processingBg
-                    ? <svg className="animate-spin w-4 h-4 text-violet-500" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                    ? <svg className="animate-spin w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
                     : <IcoUpload />}
                 </div>
                 <div className="text-left">
-                  <p className="text-[13px] font-semibold text-gray-800 dark:text-gray-200 group-hover:text-[#0088DA] dark:group-hover:text-violet-400 transition-colors">
+                  <p className="text-[13px] font-semibold text-gray-800 dark:text-gray-200 group-hover:text-[#2F80EA] dark:group-hover:text-accent transition-colors">
                     {isLimitReached ? "Image limit reached" : processingBg ? "Processing image…" : "Choose from gallery"}
                   </p>
                   <p className="text-[10px] text-gray-400">JPG, PNG · max {allowed}</p>
@@ -482,7 +482,7 @@ const filtered = useMemo(() => {
               {customFiles.length > 0 && (
                 <div className={`grid ${colClass} gap-2.5`}>
                   {customFiles.map((item, i) => (
-                    <div key={i} className="relative border-2 border-violet-400/40 rounded-xl overflow-hidden aspect-square">
+                    <div key={i} className="relative border-2 border-accent/40 rounded-xl overflow-hidden aspect-square">
                       <img src={item.previewURL} alt="" className={`w-full ${thumbHeight} object-contain bg-gray-50 dark:bg-gray-800/60`} />
                       <button type="button"
                         onClick={() => setConfirmRemove({ action: () => onRemoveCustomFile(i) })}
@@ -507,18 +507,18 @@ const filtered = useMemo(() => {
                 <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
               </svg>
             ) : (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-violet-500">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
                 <path d="M20 6 9 17l-5-5" />
               </svg>
             )}
-            <p className={`text-[11px] font-bold ${isLimitReached ? "text-red-500" : "text-[#0088DA] dark:text-violet-400"}`}>
+            <p className={`text-[11px] font-bold ${isLimitReached ? "text-red-500" : "text-[#2F80EA] dark:text-accent"}`}>
               {totalSelected} / {allowed} {isLimitReached ? "— limit reached" : "images selected"}
             </p>
           </div>
 
           {/* Done */}
           <button type="button" onClick={handleClose}
-            className="w-full py-3 rounded-2xl bg-[#0088DA] hover:bg-violet-700 text-white text-[14px] font-bold transition-all active:scale-[0.98] shadow-lg shadow-violet-500/20 flex-shrink-0">
+            className="w-full py-3 rounded-2xl bg-[#2F80EA] hover:brightness-95 text-white text-[14px] font-bold transition-all active:scale-[0.98] shadow-lg shadow-accent/20 flex-shrink-0">
             Done
           </button>
         </div>

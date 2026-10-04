@@ -206,7 +206,7 @@ const IncomeForm = ({ onSaved }) => {
           onClick={handleSave}
           className="flex-1 py-3.5 rounded-2xl text-white font-bold text-[13px] transition-all active:scale-[0.98] shadow-lg shadow-accent/20"
           style={{
-            background: "linear-gradient(135deg, #0088DA 0%, #0088DA 100%)",
+            background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
           }}
         >
           Save Income

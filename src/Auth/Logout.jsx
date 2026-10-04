@@ -33,7 +33,7 @@ export function Logout() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background relative overflow-hidden">
       <div className="absolute -top-32 -right-32 w-64 h-64 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
       
       <div className="text-center flex flex-col items-center gap-6 relative z-10 bg-white/50 dark:bg-black/20 p-10 rounded-3xl backdrop-blur-xl border border-border shadow-2xl">
         <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mb-2">

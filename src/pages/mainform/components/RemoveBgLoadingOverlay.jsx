@@ -144,7 +144,7 @@ export default function RemoveBgLoadingOverlay({
             </div>
             <div className="h-2 w-full overflow-hidden rounded-full bg-accent/15">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[#0088DA] via-cyan-400 to-[#0088DA] transition-[width] duration-700 ease-out"
+                className="h-full rounded-full bg-gradient-to-r from-[#2F80EA] via-cyan-400 to-[#2F80EA] transition-[width] duration-700 ease-out"
                 style={{ width: `${safePct}%` }}
               />
             </div>

@@ -40,7 +40,7 @@ export default function NewTemplateToast({ template, onClose }) {
 
       <div
         style={{
-          background: 'linear-gradient(135deg, #0088DA 0%, #0088DA 50%, #0088DA 100%)',
+          background: 'linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)',
           borderRadius: '18px',
           padding: '14px 14px 14px 14px',
           boxShadow: '0 8px 32px rgba(14,36,92,0.45), 0 2px 8px rgba(0,0,0,0.2)',

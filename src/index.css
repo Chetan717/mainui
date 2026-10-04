@@ -20,7 +20,7 @@ html {
 .light,
 [data-theme="light"],
 [data-theme="default"] {
-  --accent: #2877e9;
+  --accent: #2F80EA;
   --accent-foreground: #ffffff;
   --background: #f4f6fb;
   --border: #e2e8f0;
@@ -33,7 +33,7 @@ html {
   --field-background: #ffffff;
   --field-foreground: #0f1117;
   --field-placeholder: #94a3b8;
-  --focus: #2877e9;
+  --focus: #2F80EA;
   --foreground: #0f1117;
   --muted: #64748b;
   --muted-foreground: #64748b;
@@ -62,12 +62,16 @@ html {
   /* Card shadow */
   --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06), 0 2px 12px rgba(0, 0, 0, 0.04);
   --shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
-  --app-blue-start: #2f80ea;
-  --app-blue-end: #175bc9;
+  --app-blue-start: #2F80EA;
+  --app-blue-end: #1454C5;
   --auth-field: #f2f4f9;
   --auth-field-border: #dce2ec;
   --auth-sheet: #ffffff;
   --auth-soft: #eef4ff;
+  --app-theme-primary: #2F80EA;
+  --app-theme-secondary: #236FDE;
+  --app-theme-tertiary: #1454C5;
+  --app-header-gradient: linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%);
 }
 
 @keyframes shimmerSlide {
@@ -100,7 +104,7 @@ html {
 .default,
 [data-theme="dark"] {
   color-scheme: dark;
-  --accent: #2877e9;
+  --accent: #2F80EA;
   --accent-foreground: #ffffff;
   --background: #0d1320;
   --border: #2a3548;
@@ -113,7 +117,7 @@ html {
   --field-background: #1a2236;
   --field-foreground: #f8fafc;
   --field-placeholder: #91a0b8;
-  --focus: #2877e9;
+  --focus: #2F80EA;
   --foreground: #f8fafc;
   --muted: #9eabc0;
   --muted-foreground: #aeb9cb;
@@ -136,12 +140,16 @@ html {
 
   --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.30), 0 2px 12px rgba(0, 0, 0, 0.20);
   --shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.40), 0 1px 4px rgba(0, 0, 0, 0.30);
-  --app-blue-start: #2f80ea;
-  --app-blue-end: #174da8;
+  --app-blue-start: #2F80EA;
+  --app-blue-end: #1454C5;
   --auth-field: #182234;
   --auth-field-border: #2d3a50;
   --auth-sheet: #111827;
   --auth-soft: #152641;
+  --app-theme-primary: #2F80EA;
+  --app-theme-secondary: #236FDE;
+  --app-theme-tertiary: #1454C5;
+  --app-header-gradient: linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%);
 }
 
 /* Keep HeroUI inline fallbacks and the app's semantic tokens in sync. */
@@ -577,7 +585,7 @@ html {
 
 /* ── Utilities ──────────────────────────────────────── */
 .text-gradient {
-  background: linear-gradient(135deg, #0088DA, #0088DA);
+  background: linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -642,7 +650,7 @@ html {
 }
 
 .toast-info {
-  background: #0088DA;
+  background: #2F80EA;
   color: #fff;
 }
 
@@ -687,7 +695,7 @@ h6,
       transparent) !important;
 
   border-radius: 14px !important;
-  box-shadow: 0 8px 10px #0088DA !important;
+  box-shadow: 0 8px 10px #2F80EA !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   pointer-events: auto;
@@ -704,4 +712,23 @@ h6,
 
 [data-slot="toast-content"] {
   color: var(--foreground) !important;
+}
+/* ── MLM LIVE brand controls ───────────────────────────────────────────────
+ * Primary interactive controls use the same blue gradient as the app header.
+ * Semantic error/success/warning states intentionally keep their status colors.
+ */
+.app-theme-button,
+button.bg-accent,
+button[class*="bg-[#2F80EA]"] {
+  background: var(--app-header-gradient) !important;
+  color: #ffffff !important;
+}
+
+.app-theme-icon {
+  color: var(--app-theme-primary) !important;
+}
+
+.app-theme-soft {
+  background: color-mix(in srgb, var(--app-theme-primary) 10%, transparent) !important;
+  color: var(--app-theme-primary) !important;
 }

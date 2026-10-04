@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { Navigate, useLocation, useNavigate } from "react-router";
 import {
   collection,
   getDocs,
@@ -17,6 +17,12 @@ import {
   Sun,
   Globe2,
   CircleHelp,
+  Users,
+  MessageSquare,
+  LockKeyhole,
+  Star,
+  UserRoundX,
+  LogOut,
 } from "lucide-react";
 import { COLLECTIONS } from "../../collections";
 import { getUser, setUser } from "../../utils/authStorage";
@@ -39,7 +45,6 @@ import {
   DeleteAccountPage,
   FeedbackPage,
   LanguagePage,
-  SettingsSupportPage,
 } from "./ProfileSubpages";
 
 const hasCompanyProfile = (profile) =>
@@ -50,6 +55,8 @@ const hasCompanyProfile = (profile) =>
 
 const formatProfileName = (value) =>
   String(value || "").replace(/^([A-Za-z]+)\.(?=\S)/, "$1. ").trim();
+
+const SUPPORT_PHONE = "+919341947815";
 
 const formatMobile = (value) => {
   const raw = String(value || "").trim();
@@ -74,17 +81,36 @@ function Toggle({ checked, onChange }) {
   );
 }
 
-function MainRow({ icon: Icon, label, onClick, rightContent }) {
+function MainRow({ icon: Icon, label, onClick, rightContent, danger = false }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-4 px-5 py-[18px] text-left active:bg-[#f7f9fc]"
+      className={`flex w-full items-center gap-4 px-5 py-[18px] text-left active:bg-[#f7f9fc] dark:active:bg-white/[0.04] ${
+        danger ? "text-[#ef2f36]" : "text-[#202634] dark:text-[#f5f7fb]"
+      }`}
     >
-      <Icon className="h-5 w-5 flex-shrink-0 text-[#667085] dark:text-[#b6c0d1]" strokeWidth={1.9} />
-      <span className="flex-1 text-[15px] font-medium text-[#202634] dark:text-[#f5f7fb]">{label}</span>
-      {rightContent || <ChevronRight className="h-5 w-5 text-[#98a2b3] dark:text-[#8995aa]" />}
+      <Icon
+        className={`h-5 w-5 flex-shrink-0 ${
+          danger ? "text-[#ef2f36]" : "text-[#2877e9]"
+        }`}
+        strokeWidth={1.9}
+      />
+      <span className="flex-1 text-[15px] font-medium">{label}</span>
+      {rightContent || (
+        <ChevronRight
+          className={`h-5 w-5 ${danger ? "text-[#ef2f36]" : "text-[#2877e9]/70"}`}
+        />
+      )}
     </button>
+  );
+}
+
+function SectionTitle({ children }) {
+  return (
+    <div className="px-1 pb-2 pt-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#7d8aa2] dark:text-[#8995aa]">
+      {children}
+    </div>
   );
 }
 
@@ -186,7 +212,7 @@ function MainProfileView({
       </Modal>
 
       <div className="min-h-[100dvh] bg-[#f5f6fa] dark:bg-[#0f1420] pb-5">
-        <div className="relative overflow-hidden bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] px-5 pb-6 pt-4 text-white">
+        <div className="sticky top-0 z-30 overflow-hidden bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] px-5 pb-6 pt-4 text-white shadow-[0_8px_24px_rgba(20,84,197,0.18)]">
           <div className="pointer-events-none absolute -right-12 -top-20 h-48 w-48 rounded-full bg-white/[0.08]" />
           <h1 className="relative text-[16px] font-semibold">
             {t("My Profile")}
@@ -278,13 +304,90 @@ function MainProfileView({
             />
           </div>
 
+          <SectionTitle>{t("Settings & support")}</SectionTitle>
+
           <div className="overflow-hidden rounded-[22px] bg-white dark:bg-[#171e2d]">
             <MainRow
               icon={CircleHelp}
-              label={t("Settings & support")}
-              onClick={() => navigate("/profile/settings")}
+              label={t("Learn how to use the app")}
+              onClick={() =>
+                window.open(
+                  "https://youtube.com/@mlmboosterapp?si=4AQiHvcR8x6CmOHX",
+                  "_blank",
+                )
+              }
+            />
+            <div className="ml-12 h-px bg-[#e7eaf0] dark:bg-white/10" />
+            <MainRow
+              icon={Users}
+              label={t("Customer care")}
+              onClick={() => navigate("/profile/customer-care")}
+            />
+            <div className="ml-12 h-px bg-[#e7eaf0] dark:bg-white/10" />
+            <MainRow
+              icon={MessageSquare}
+              label={t("Chat with an expert")}
+              onClick={() =>
+                window.open(
+                  `https://wa.me/${SUPPORT_PHONE.replace(/\D/g, "")}`,
+                  "_blank",
+                )
+              }
             />
           </div>
+
+          <SectionTitle>{t("Security")}</SectionTitle>
+          <div className="overflow-hidden rounded-[22px] bg-white dark:bg-[#171e2d]">
+            <MainRow
+              icon={LockKeyhole}
+              label={t("Change PIN")}
+              onClick={() => navigate("/profile/change-pin")}
+            />
+          </div>
+
+          <SectionTitle>{t("About")}</SectionTitle>
+          <div className="overflow-hidden rounded-[22px] bg-white dark:bg-[#171e2d]">
+            <MainRow
+              icon={Star}
+              label={t("Feedback & review")}
+              onClick={() => navigate("/profile/feedback")}
+            />
+            <div className="ml-12 h-px bg-[#e7eaf0] dark:bg-white/10" />
+            <MainRow
+              icon={CircleHelp}
+              label={t("Privacy policy")}
+              onClick={() => window.open("https://mlmlive.in/Privacy.html", "_blank")}
+            />
+            <div className="ml-12 h-px bg-[#e7eaf0] dark:bg-white/10" />
+            <MainRow
+              icon={MessageSquare}
+              label={t("Terms & conditions")}
+              onClick={() => window.open("https://mlmlive.in/Term.html", "_blank")}
+            />
+          </div>
+
+          <SectionTitle>{t("Account")}</SectionTitle>
+          <div className="overflow-hidden rounded-[22px] bg-white dark:bg-[#171e2d]">
+            <MainRow
+              icon={UserRoundX}
+              label={t("Delete my account")}
+              onClick={() => navigate("/profile/delete-account")}
+              danger
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate("/logout")}
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-[18px] border border-[#ef2f36]/15 bg-[#fbecef] text-[15px] font-semibold text-[#ef2f36] active:scale-[0.99] dark:bg-[#ef2f36]/10"
+          >
+            <LogOut className="h-5 w-5" />
+            {t("Log out securely")}
+          </button>
+
+          <p className="pb-3 pt-1 text-center text-[11px] font-bold uppercase tracking-[0.08em] text-[#8e98ac] dark:text-[#8995aa]">
+            {t("Made in India")}
+          </p>
         </div>
       </div>
     </>
@@ -350,7 +453,7 @@ function Myprofile() {
     setEditOpen(true);
   };
 
-  if (location.pathname === "/profile/settings") return <SettingsSupportPage />;
+  if (location.pathname === "/profile/settings") return <Navigate to="/profile" replace />;
   if (location.pathname === "/profile/language") return <LanguagePage />;
   if (location.pathname === "/profile/change-pin") return <ChangePinPage />;
   if (location.pathname === "/profile/delete-account") return <DeleteAccountPage />;

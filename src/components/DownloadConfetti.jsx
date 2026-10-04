@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DOWNLOAD_SUCCESS_EVENT } from "../utils/downloadCelebration";
 
 const COLORS = [
-  "#0088DA",
+  "#2F80EA",
   "#FFD54A",
   "#FF4D6D",
   "#35D07F",

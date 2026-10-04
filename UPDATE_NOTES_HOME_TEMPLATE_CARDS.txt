@@ -1,0 +1,11 @@
+MLM LIVE - Home Template Card UI Update
+
+Updated:
+- All Home template tiles now use a consistent card style with square photo, centered name, soft shadow, and smooth horizontal snap scrolling.
+- Festival Calendar templates use the same card style and keep the existing date/calendar loading behavior.
+- Everyday Moments Home tiles also use the same horizontal card style; its header View All remains unchanged.
+- Capping is a special single-subtype section and shows one larger Home card while keeping its existing View All/navigation behavior.
+- View All stays only in the section header; no duplicate View All is added inside each card.
+- Existing template selection, editor navigation, Festival data fetch, and form/profile logic are unchanged.
+
+Cumulative base also retains the previously requested Video Coming Soon state, theme/Product editor updates, and inline My Profile settings update.

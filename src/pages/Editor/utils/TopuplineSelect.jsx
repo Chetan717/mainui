@@ -46,7 +46,7 @@ export default function TopuplineSelect({
                         className="w-full h-full object-cover"
                       />
                       {isSelected && (
-                        <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center">
+                        <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
                           <svg
                             className="w-3 h-3 text-white"
                             fill="none"

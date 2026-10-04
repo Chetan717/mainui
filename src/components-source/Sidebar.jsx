@@ -199,7 +199,7 @@ export default function Sidebar({
                 <span
                   className={[
                     "min-w-[20px] flex-shrink-0 transition-colors",
-                    isActive ? "text-accent" : "group-hover:text-violet-400",
+                    isActive ? "text-accent" : "group-hover:text-accent",
                   ].join(" ")}
                 >
                   <Icon className="w-5 h-5" />
@@ -217,7 +217,7 @@ export default function Sidebar({
                 </span>
 
                 {badge && !collapsed && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-500 text-white min-w-[18px] text-center leading-none">
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-accent text-white min-w-[18px] text-center leading-none">
                     {badge}
                   </span>
                 )}
@@ -226,7 +226,7 @@ export default function Sidebar({
                   <span className="pointer-events-none absolute left-full ml-3 px-2.5 py-1.5 rounded-lg bg-gray-900 dark:bg-gray-700 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg hidden md:flex items-center gap-1.5">
                     {label}
                     {badge && (
-                      <span className="px-1 py-0.5 bg-violet-500 rounded-full text-[9px] leading-none">
+                      <span className="px-1 py-0.5 bg-accent rounded-full text-[9px] leading-none">
                         {badge}
                       </span>
                     )}
@@ -251,7 +251,7 @@ export default function Sidebar({
                   isLogout
                     ? "text-white font-bold hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500"
                     : isActive
-                      ? "bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400"
+                      ? "bg-accent/10 dark:bg-accent/10 text-accent dark:text-accent"
                       : "text-black dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/60 hover:text-gray-700 dark:hover:text-gray-200",
                 ].join(" ")}
               >

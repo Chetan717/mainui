@@ -490,7 +490,7 @@ export default function ImageAudioToVideo() {
               </div>
               <button
                 onClick={downloadVideo}
-                className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 transition-colors text-white font-semibold text-sm"
+                className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl bg-accent hover:brightness-95 transition-colors text-white font-semibold text-sm"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 4v11" />
@@ -508,7 +508,7 @@ export default function ImageAudioToVideo() {
             disabled={!canCreate}
             className={`flex-1 py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-300
               ${canCreate
-                ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-900/40 hover:scale-[1.01] active:scale-[0.99]"
+                ? "bg-gradient-to-r from-[#2F80EA] to-[#236FDE] hover:brightness-95 text-white shadow-lg shadow-accent/20 hover:scale-[1.01] active:scale-[0.99]"
                 : "bg-white/5 text-white/20 cursor-not-allowed border border-white/10"
               }`}
           >

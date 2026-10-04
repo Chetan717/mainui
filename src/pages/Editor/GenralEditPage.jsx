@@ -522,6 +522,7 @@ const FadeLeftFilter = (imageData) => {
 };
 
 const NO_FOOTER_TYPES = new Set([
+  "Product",
   ...RANK_PROMOTION_TYPES,
   "Bonanza",
   "Domestic_Trip",
@@ -1650,6 +1651,8 @@ function GeneralEditPage({
   if (bgStatus === "loaded" || bgImage) bgFirstLoadDoneRef.current = true;
   const selectedVideoUrl =
     selected?.backgroundVideoUrl || selected?.videoUrl || null;
+  const isVideoUnavailable =
+    !previewOnly && activeTabFromList === "video" && !selectedVideoUrl;
 
   useEffect(() => {
     setVideoPlaying(!!selectedVideoUrl);
@@ -2944,12 +2947,12 @@ function GeneralEditPage({
             touchAction: "none",
           }}
         >
-        {bgStatus === "loading" && (
+        {bgStatus === "loading" && !isVideoUnavailable && (
           <div
             className="absolute inset-0 z-10 overflow-hidden pointer-events-none"
             style={{
               background:
-                "linear-gradient(135deg,#0088DA 0%,#1a3a7a 50%,#0088DA 100%)",
+                "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
             }}
           >
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
@@ -2987,6 +2990,26 @@ function GeneralEditPage({
                   message="Your design is loading. Large templates or slower connections may take a few extra seconds. Please wait a moment."
                 />
               </div>
+            </div>
+          </div>
+        )}
+        {isVideoUnavailable && (
+          <div
+            className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 px-6 text-center"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(0,136,218,0.10) 0%, rgba(79,111,207,0.14) 50%, rgba(0,136,218,0.10) 100%)",
+            }}
+          >
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent ring-1 ring-accent/15">
+              <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="13" height="14" rx="2" />
+                <path d="m16 10 5-3v10l-5-3" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-[15px] font-bold text-foreground">No Video Available</p>
+              <p className="mt-1 text-[11px] font-medium text-muted-foreground">Coming Soon</p>
             </div>
           </div>
         )}
@@ -4901,7 +4924,7 @@ function GeneralEditPage({
                 onClick={() => setmiddaleImage(img)}
                 className={`h-[38px] w-[38px] flex-shrink-0 overflow-hidden rounded-[5px] border bg-transparent p-[2px] transition-all ${
                   isActive
-                    ? "border-[#2C73E8] ring-1 ring-[#2C73E8]/20"
+                    ? "border-[#2F80EA] ring-1 ring-[#2F80EA]/20"
                     : "border-[#D6DCE8] dark:border-[#40506A]"
                 }`}
               >
@@ -4920,7 +4943,7 @@ function GeneralEditPage({
             data-guide="editor-music"
             title={selectedMusic ? `Music: ${selectedMusic.name}` : "Add background music"}
             onClick={() => setMusicModalOpen(true)}
-            className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#2C73E8] text-white shadow-[0_10px_22px_rgba(44,115,232,0.28)] transition-transform active:scale-95"
+            className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#2F80EA] text-white shadow-[0_10px_22px_rgba(44,115,232,0.28)] transition-transform active:scale-95"
           >
             <svg
               width="18"
@@ -4937,7 +4960,7 @@ function GeneralEditPage({
               <circle cx="18" cy="16" r="3" />
             </svg>
             {selectedMusic && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[#2C73E8] shadow-sm">
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[#2F80EA] shadow-sm">
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
@@ -4952,7 +4975,7 @@ function GeneralEditPage({
             aria-label="Download"
             onClick={() => setCaptionModalOpen(true)}
             disabled={!canExport || musicExporting}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#2C73E8] text-white shadow-[0_10px_22px_rgba(44,115,232,0.28)] transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#2F80EA] text-white shadow-[0_10px_22px_rgba(44,115,232,0.28)] transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
           >
             <svg
               width="19"
@@ -5003,7 +5026,7 @@ function GeneralEditPage({
                     setMusicModalOpen(false);
                   }
                 }}
-                className="text-[14px] font-medium text-[#2C73E8]"
+                className="text-[14px] font-medium text-[#2F80EA]"
               >
                 {selectedMusic ? "Remove" : "None"}
               </button>
@@ -5036,7 +5059,7 @@ function GeneralEditPage({
                     onClick={() => setAudioCategory(option.key)}
                     className={`whitespace-nowrap rounded-full border px-4 py-2 text-[13px] font-medium transition-colors ${
                       active
-                        ? "border-[#2C73E8] bg-[#2C73E8] text-white"
+                        ? "border-[#2F80EA] bg-[#2F80EA] text-white"
                         : "border-[#d7ddeb] dark:border-[#2d3a50] bg-white dark:bg-[#1b2536] text-[#667085] dark:text-[#b9c5d8]"
                     }`}
                   >
@@ -5071,12 +5094,12 @@ function GeneralEditPage({
                   <span className="block text-[14px] font-semibold text-[#1f2937] dark:text-white">Upload from device</span>
                   <span className="block text-[12px] text-[#98a2b3] dark:text-[#9eabc0]">MP3, M4A or WAV · up to 60 sec</span>
                 </span>
-                <span className="text-[14px] font-medium text-[#2C73E8]">Browse</span>
+                <span className="text-[14px] font-medium text-[#2F80EA]">Browse</span>
               </button>
               {deviceLoading && (
                 <div className="mt-2 overflow-hidden rounded-full bg-[#d8e4fb]">
                   <div
-                    className="h-1.5 rounded-full bg-[#2C73E8] transition-all duration-300"
+                    className="h-1.5 rounded-full bg-[#2F80EA] transition-all duration-300"
                     style={{ width: `${audioUploadProgress}%` }}
                   />
                 </div>
@@ -5091,7 +5114,7 @@ function GeneralEditPage({
               <div className="space-y-2">
                 {audioLoading && firestoreAudios.length === 0 && (
                   <div className="flex items-center justify-center gap-3 py-10">
-                    <div className="h-6 w-6 rounded-full border-2 border-[#d0d5dd] border-t-[#2C73E8] animate-spin" />
+                    <div className="h-6 w-6 rounded-full border-2 border-[#d0d5dd] border-t-[#2F80EA] animate-spin" />
                     <span className="text-sm text-[#667085] dark:text-[#b9c5d8]">Loading tracks...</span>
                   </div>
                 )}
@@ -5124,7 +5147,7 @@ function GeneralEditPage({
                         onClick={() => handlePlayAudio(track)}
                         className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${
                           isActive || isPlaying
-                            ? "bg-[#2C73E8] text-white"
+                            ? "bg-[#2F80EA] text-white"
                             : "bg-[#eef2f8] dark:bg-[#223047] text-[#667085] dark:text-[#b9c5d8]"
                         }`}
                       >
@@ -5157,7 +5180,7 @@ function GeneralEditPage({
                         disabled={isLoadingT}
                         className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border ${
                           isActive
-                            ? "border-[#2C73E8] bg-[#2C73E8] text-white"
+                            ? "border-[#2F80EA] bg-[#2F80EA] text-white"
                             : "border-[#d0d5dd] bg-white text-transparent"
                         }`}
                       >
@@ -5178,7 +5201,7 @@ function GeneralEditPage({
 
                 {audioLoading && firestoreAudios.length > 0 && (
                   <div className="flex justify-center py-3">
-                    <div className="h-5 w-5 rounded-full border-2 border-[#d0d5dd] border-t-[#2C73E8] animate-spin" />
+                    <div className="h-5 w-5 rounded-full border-2 border-[#d0d5dd] border-t-[#2F80EA] animate-spin" />
                   </div>
                 )}
               </div>
@@ -5187,7 +5210,7 @@ function GeneralEditPage({
             <div className="border-t border-[#e7ebf3] dark:border-[#2a3548] bg-[#f8f9fd] dark:bg-[#111827] px-4 py-4">
               <Button
                 onClick={() => setMusicModalOpen(false)}
-                className="h-14 w-full rounded-2xl bg-[#2C73E8] text-base font-semibold text-white shadow-none"
+                className="h-14 w-full rounded-2xl bg-[#2F80EA] text-base font-semibold text-white shadow-none"
               >
                 Apply music
               </Button>
@@ -5259,7 +5282,7 @@ function GeneralEditPage({
                   style={{
                     width: `${displayProgress}%`,
                     background:
-                      "linear-gradient(90deg, #0088DA, #0088DA, #0088DA)",
+                      "linear-gradient(90deg, #2F80EA, #2F80EA, #2F80EA)",
                   }}
                 />
               </div>
@@ -5335,7 +5358,7 @@ function GeneralEditPage({
                   className="h-full rounded-full transition-all duration-500"
                   style={{
                     width: `${displayProgress}%`,
-                    background: "linear-gradient(90deg, #0088DA, #4f6fd0)",
+                    background: "linear-gradient(90deg, #2F80EA, #4f6fd0)",
                   }}
                 />
               </div>

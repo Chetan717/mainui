@@ -30,7 +30,7 @@ import { COLLECTIONS } from "../../collections";
 
 /* ─── Shared time-range builder (mirrors MemberGraph logic) ─── */
 const GRAPH_METRICS = [
-  { key: "plan",   label: "Plan",   color: "#0088DA" },
+  { key: "plan",   label: "Plan",   color: "#2F80EA" },
   { key: "follow", label: "Follow", color: "#1a6fbf" },
   { key: "kit",    label: "Kit",    color: "#2196f3" },
   { key: "sp",     label: "SP",     color: "#43a047" },
@@ -143,7 +143,7 @@ function MemberFilterPicker({ members, selected, onSelect, onClose }) {
                     isSelected ? "bg-accent/10 border border-accent/30" : "hover:bg-accent/5"
                   }`}>
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold shrink-0"
-                    style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+                    style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
                     {m.name?.[0]?.toUpperCase() || "?"}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -426,7 +426,7 @@ function PendingRequestCard({ request, onApprove, onDeny }) {
       <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#f59e0b,#ef4444)" }} />
       <div className="bg-amber-50 dark:bg-amber-950/20 px-4 py-3 flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+          style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
           <ShieldAlert className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1 min-w-0">
@@ -590,7 +590,7 @@ function TeamMembersList({ myId, onUnassigned }) {
             }`}>
             <div className="flex items-center gap-3 px-3 py-2.5">
               <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold shrink-0"
-                style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+                style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
                 {member.name?.[0]?.toUpperCase() || "?"}
               </div>
               <div className="flex-1 min-w-0">
@@ -740,7 +740,7 @@ function AddToTeamSection({ profile, onRequestSent }) {
     <div className="rounded-2xl border border-border bg-card shadow-sm p-4 space-y-3">
       <div className="flex items-center gap-2.5">
         <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+          style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
           <UserPlus className="w-4 h-4 text-white" />
         </div>
         <div>
@@ -766,7 +766,7 @@ function AddToTeamSection({ profile, onRequestSent }) {
           onClick={handleFind}
           disabled={fetching || !input}
           className="px-4 py-2.5 rounded-xl text-white text-[12px] font-bold disabled:opacity-60 flex items-center gap-1.5 transition-opacity shrink-0"
-          style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}
+          style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}
         >
           {fetching
             ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -817,7 +817,7 @@ function AddToTeamSection({ profile, onRequestSent }) {
               <XCircle className="w-4 h-4" /> Cannot Add — Already in a Team
             </button>
           ) : requestSent ? (
-            <button disabled className="w-full py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-[13px] font-bold cursor-not-allowed flex items-center justify-center gap-2">
+            <button disabled className="w-full py-2.5 rounded-xl bg-accent/5 border border-accent/20 text-accent text-[13px] font-bold cursor-not-allowed flex items-center justify-center gap-2">
               <Clock className="w-4 h-4" /> Request Sent — Awaiting Approval
             </button>
           ) : (
@@ -825,7 +825,7 @@ function AddToTeamSection({ profile, onRequestSent }) {
               onClick={handleSendRequest}
               disabled={sending}
               className="w-full py-2.5 rounded-xl text-white text-[13px] font-bold disabled:opacity-60 flex items-center justify-center gap-2 transition-opacity"
-              style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}
+              style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}
             >
               {sending
                 ? <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -962,7 +962,7 @@ function DashboardContent({ profile, selfProfile, myId, currentRequest, handleAp
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+              style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
               <Eye className="w-4 h-4 text-white" />
             </div>
             <div className="text-left">
@@ -1038,10 +1038,10 @@ export default function UnifiedView({ profile: initialProfile, activeTab }) {
 
         {/* Invite section */}
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-          <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#0088DA,#4f6fcf)" }} />
+          <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#2F80EA,#236FDE)" }} />
           <div className="px-4 py-3.5 flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+              style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
               <UserPlus className="w-4 h-4 text-white" />
             </div>
             <div>
@@ -1125,10 +1125,10 @@ export default function UnifiedView({ profile: initialProfile, activeTab }) {
       <div className="px-4 py-5 space-y-4 max-w-2xl mx-auto">
         {/* Header card */}
         <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-          <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#0088DA,#4f6fcf)" }} />
+          <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#2F80EA,#236FDE)" }} />
           <div className="px-4 py-3.5 flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+              style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
               <GitBranch className="w-4 h-4 text-white" />
             </div>
             <div>

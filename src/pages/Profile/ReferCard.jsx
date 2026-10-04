@@ -106,14 +106,14 @@ export default function ReferCard() {
       onClick={() => navigate("/profile/refer")}
       className="flex w-full items-center gap-3 rounded-[20px] bg-[#e5f0ff] px-4 py-4 text-left active:scale-[0.99]"
     >
-      <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#2877e9] text-white">
+      <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-[#2F80EA] text-white">
         <Share2 className="h-5 w-5" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[15px] font-medium text-[#202634] dark:text-[#f5f7fb]">{t("Free credits per referral")}</span>
         <span className="mt-0.5 block text-[11px] text-[#667085] dark:text-[#b6c0d1]">{t("Share MLM LIVE with your team")}</span>
       </span>
-      <ChevronRight className="h-5 w-5 text-[#2877e9]" />
+      <ChevronRight className="h-5 w-5 text-[#2F80EA]" />
     </button>
   );
 }
@@ -163,7 +163,7 @@ export function ReferEarnPage() {
         <ProfileHeader title={t("Refer & earn")} onBack={() => navigate("/profile")} />
         <div className="relative flex flex-col items-center px-4 pb-9 pt-2">
           <div className="pointer-events-none absolute -bottom-20 -left-20 h-52 w-52 rounded-full bg-white/[0.08]" />
-          <div className="flex h-20 w-20 items-center justify-center rounded-[24px] bg-white dark:bg-[#171e2d] text-[#2877e9] shadow-sm">
+          <div className="flex h-20 w-20 items-center justify-center rounded-[24px] bg-white dark:bg-[#171e2d] text-[#2F80EA] shadow-sm">
             <Gift className="h-8 w-8" />
           </div>
           <h2 className="mt-4 text-[18px] font-semibold">{t("Free credits per referral!")}</h2>
@@ -173,9 +173,9 @@ export function ReferEarnPage() {
       <div className="px-4 pt-5">
         <div className="rounded-[22px] bg-white dark:bg-[#171e2d] p-4">
           <p className="mb-2 text-center text-[11px] font-bold uppercase tracking-[0.08em] text-[#8e98ac] dark:text-[#8995aa]">{t("YOUR REFERRAL CODE")}</p>
-          <div className="flex items-center gap-3 rounded-[16px] border-2 border-dashed border-[#2877e9] px-4 py-3">
+          <div className="flex items-center gap-3 rounded-[16px] border-2 border-dashed border-[#2F80EA] px-4 py-3">
             <span className="min-w-0 flex-1 truncate text-[17px] font-bold text-[#202634] dark:text-[#f5f7fb]">{referCode}</span>
-            <button type="button" onClick={copyCode} className="flex items-center gap-1.5 rounded-full bg-[#edf4ff] px-3 py-2 text-[12px] font-medium text-[#2877e9]">
+            <button type="button" onClick={copyCode} className="flex items-center gap-1.5 rounded-full bg-[#edf4ff] px-3 py-2 text-[12px] font-medium text-[#2F80EA]">
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               {copied ? t("Copied") : t("Copy")}
             </button>
@@ -183,7 +183,7 @@ export function ReferEarnPage() {
         </div>
 
         <div className="mt-4 grid grid-cols-[1fr_104px] gap-3">
-          <button type="button" onClick={() => shareReferral(referCode, true)} className="h-14 rounded-[14px] bg-[#2877e9] text-[14px] font-semibold text-white">
+          <button type="button" onClick={() => shareReferral(referCode, true)} className="h-14 rounded-[14px] bg-[#2F80EA] text-[14px] font-semibold text-white">
             {t("Share on WhatsApp")}
           </button>
           <button type="button" onClick={() => shareReferral(referCode)} className="h-14 rounded-[14px] border border-[#cbd3e2] bg-white dark:bg-[#171e2d] text-[14px] font-semibold text-[#202634] dark:text-[#f5f7fb]">
@@ -196,7 +196,7 @@ export function ReferEarnPage() {
           {steps.map((step, index) => (
             <React.Fragment key={step.title}>
               <div className="flex gap-3 px-4 py-4">
-                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#eaf3ff] text-[12px] font-semibold text-[#2877e9]">{index + 1}</span>
+                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#eaf3ff] text-[12px] font-semibold text-[#2F80EA]">{index + 1}</span>
                 <div className="min-w-0">
                   <p className="text-[14px] font-medium text-[#202634] dark:text-[#f5f7fb]">{step.title}</p>
                   <p className="mt-0.5 text-[11px] leading-4 text-[#8e98ac] dark:text-[#8995aa]">{step.subtitle}</p>
@@ -214,7 +214,7 @@ export function ReferEarnPage() {
             </p>
             <p className="text-[11px] text-[#8e98ac] dark:text-[#8995aa]">Credits are shown at checkout</p>
           </div>
-          <ChevronRight className="h-5 w-5 text-[#2877e9]" />
+          <ChevronRight className="h-5 w-5 text-[#2F80EA]" />
         </div>
       </div>
     </div>

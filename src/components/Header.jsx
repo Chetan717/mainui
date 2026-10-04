@@ -572,7 +572,7 @@ export default function Header({
             {/* Menu Header */}
             <div
               className="flex items-center justify-between px-4 py-3 border-b border-border"
-              style={{ background: "linear-gradient(135deg,#0088DA,#0088DA)" }}
+              style={{ background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)" }}
             >
               <span className="text-white font-bold text-[14px]">
                 Reporting Menu

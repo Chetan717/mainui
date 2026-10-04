@@ -63,7 +63,7 @@ export default function Reporting() {
   //       <p className="text-[12px] text-muted-foreground">Please check your connection and try again.</p>
   //       <button onClick={() => window.location.reload()}
   //         className="px-5 py-2 rounded-xl text-white text-[13px] font-bold"
-  //         style={{ background: "linear-gradient(135deg,#0088DA,#0088DA)" }}>
+  //         style={{ background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)" }}>
   //         Retry
   //       </button>
   //     </div>

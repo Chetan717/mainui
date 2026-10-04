@@ -30,16 +30,16 @@ export default function Onboarding() {
     <div
       className="fixed inset-0 z-[9999] flex flex-col overflow-hidden select-none"
       style={{
-        background: "linear-gradient(160deg, #040c22 0%, #0088DA 45%, #1a3a8f 100%)",
+        background: "linear-gradient(160deg, #040c22 0%, #2F80EA 45%, #1a3a8f 100%)",
       }}
     >
       <div
         className="absolute -top-24 -left-24 w-64 h-64 rounded-full opacity-10"
-        style={{ background: "radial-gradient(circle, #0088DA, transparent)" }}
+        style={{ background: "radial-gradient(circle, #2F80EA, transparent)" }}
       />
       <div
         className="absolute -bottom-32 -right-20 w-72 h-72 rounded-full opacity-10"
-        style={{ background: "radial-gradient(circle, #0088DA, transparent)" }}
+        style={{ background: "radial-gradient(circle, #2F80EA, transparent)" }}
       />
 
       <div className="relative flex-1 flex flex-col items-center justify-center px-8 gap-4 overflow-hidden">
@@ -82,7 +82,7 @@ export default function Onboarding() {
           onTap={() => markDone("/login")}
           className="w-full max-w-sm h-14 rounded-2xl text-white font-bold text-base shadow-xl"
           style={{
-            background: "linear-gradient(135deg, #0055a5 0%, #0088DA 100%)",
+            background: "linear-gradient(135deg, #0055a5 0%, #2F80EA 100%)",
             boxShadow: "0 8px 24px rgba(0,136,218,0.4), 0 2px 6px rgba(0,0,0,0.2)",
             touchAction: "manipulation",
           }}

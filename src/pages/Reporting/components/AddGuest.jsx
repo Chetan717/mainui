@@ -47,11 +47,11 @@ export default function AddGuest({ memberProfile }) {
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-      <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#0088DA,#4f6fcf)" }} />
+      <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#2F80EA,#236FDE)" }} />
 
       <div className="px-4 pt-4 pb-2 flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+          style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
           <UserPlus className="w-4 h-4 text-white" />
         </div>
         <div>
@@ -140,7 +140,7 @@ export default function AddGuest({ memberProfile }) {
           onClick={handleSubmit}
           disabled={saving}
           className="w-full py-3 rounded-xl text-white text-[13px] font-bold flex items-center justify-center gap-2 disabled:opacity-60 transition-opacity mt-1"
-          style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}
+          style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}
         >
           {saving ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>

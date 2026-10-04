@@ -236,7 +236,7 @@ function LazyVideo({ src }) {
   );
 }
 
-function EmptyState({ label }) {
+function EmptyState({ label, sublabel = "" }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
@@ -257,7 +257,12 @@ function EmptyState({ label }) {
           strokeLinecap="round"
         />
       </svg>
-      <p className="text-xs font-medium">{label}</p>
+      <div className="text-center">
+        <p className="text-xs font-semibold text-foreground/80">{label}</p>
+        {sublabel ? (
+          <p className="mt-1 text-[10px] font-medium text-muted-foreground">{sublabel}</p>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -293,7 +298,7 @@ function Tile({ item, isSelected, onSelect, isVideo }) {
       onClick={() => onSelect(item)}
       className={`relative aspect-square overflow-hidden rounded-[14px] border-2 bg-[#edf1f7] dark:bg-[#1b2536] transition-all duration-150 focus:outline-none ${
         isSelected
-          ? "border-[#2C73E8] shadow-[0_6px_16px_rgba(44,115,232,0.15)]"
+          ? "border-[#2F80EA] shadow-[0_6px_16px_rgba(44,115,232,0.15)]"
           : "border-transparent hover:border-[#9ec3ff]"
       }`}
     >
@@ -338,7 +343,7 @@ function Tile({ item, isSelected, onSelect, isVideo }) {
       )}
 
       {isSelected && (
-        <div className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#2C73E8] shadow">
+        <div className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#2F80EA] shadow">
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <polyline
               points="1.5,5 4,7.5 8.5,2.5"
@@ -362,14 +367,14 @@ function TabBtn({ active, onClick, icon, label, count }) {
       className={`flex flex-1 items-center justify-center gap-1.5 rounded-[14px] px-3 py-2 text-[12px] font-semibold transition-all duration-200 ${
         active
           ? "bg-white dark:bg-[#151d2b] text-[#111827] dark:text-white shadow-sm"
-          : "text-[#667085] dark:text-[#b9c5d8] hover:text-[#2C73E8]"
+          : "text-[#667085] dark:text-[#b9c5d8] hover:text-[#2F80EA]"
       }`}
     >
       {icon}
       {label}
       {count != null && (
         <span
-          className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${active ? "bg-[#d9e7ff] text-[#2C73E8]" : "bg-white/70 dark:bg-[#223047] text-[#667085] dark:text-[#b9c5d8]"}`}
+          className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${active ? "bg-[#d9e7ff] text-[#2F80EA]" : "bg-white/70 dark:bg-[#223047] text-[#667085] dark:text-[#b9c5d8]"}`}
         >
           {count}
         </span>
@@ -993,8 +998,8 @@ export default function ListOfTemplates({
             aria-expanded={categoryOpen}
             className={`flex min-w-0 items-center justify-center gap-1.5 rounded-[14px] px-3 py-2 text-[12px] font-semibold transition-all duration-200 ${
               categoryKey
-                ? "bg-white text-[#2C73E8] shadow-sm dark:bg-[#151d2b]"
-                : "text-[#667085] dark:text-[#b9c5d8] hover:text-[#2C73E8]"
+                ? "bg-white text-[#2F80EA] shadow-sm dark:bg-[#151d2b]"
+                : "text-[#667085] dark:text-[#b9c5d8] hover:text-[#2F80EA]"
             }`}
           >
             <svg
@@ -1074,9 +1079,10 @@ export default function ListOfTemplates({
           <EmptyState
             label={
               activeTab === "video"
-                ? "No video templates available"
+                ? "No Video Available"
                 : "No image templates found"
             }
+            sublabel={activeTab === "video" ? "Coming Soon" : ""}
           />
         )}
 

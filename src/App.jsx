@@ -73,7 +73,7 @@ const progressStyle = `
   }
   .route-bar-fill {
     position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 9999;
-    background: linear-gradient(90deg, #0088DA 0%, #4f6fcf 50%, #0088DA 100%);
+    background: linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%);
     background-size: 200% 100%;
     transform-origin: left center;
     transform: scaleX(0);

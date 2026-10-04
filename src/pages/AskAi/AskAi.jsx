@@ -28,7 +28,7 @@ const formatMb = (bytes) => `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 function EmptyResult({ analyzing }) {
   return (
     <div className="flex min-h-[360px] flex-col items-center justify-center px-6 text-center">
-      <div className="relative flex h-20 w-20 items-center justify-center rounded-[28px] bg-gradient-to-br from-[#e9f4ff] via-[#f2edff] to-[#ffeef5] dark:from-blue-950 dark:via-violet-950 dark:to-fuchsia-950">
+      <div className="relative flex h-20 w-20 items-center justify-center rounded-[28px] bg-gradient-to-br from-[#e9f7ff] via-[#eef2ff] to-[#e9f7ff] dark:from-[#10283d] dark:via-[#172344] dark:to-[#10283d]">
         {analyzing ? (
           <LoaderCircle className="h-9 w-9 animate-spin text-accent" />
         ) : (
@@ -180,7 +180,7 @@ export default function AskAi() {
         <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 text-white">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#2F80EA] to-[#236FDE] text-white">
                 <Sparkles className="h-4 w-4" />
               </span>
               MLM LIVE AI
@@ -258,7 +258,7 @@ export default function AskAi() {
                 disabled={optimizing || noCredits}
                 className="group mt-4 flex min-h-[310px] w-full flex-col items-center justify-center rounded-[24px] border border-dashed border-accent/35 bg-gradient-to-b from-accent/[0.06] to-transparent px-7 text-center transition hover:border-accent/70 hover:from-accent/[0.1] disabled:cursor-not-allowed disabled:opacity-55"
               >
-                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e8f4ff] to-[#eee9ff] text-accent transition group-hover:scale-105 dark:from-blue-950 dark:to-violet-950">
+                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e8f6ff] to-[#eef1ff] text-accent transition group-hover:scale-105 dark:from-[#10283d] dark:to-[#172344]">
                   {optimizing ? (
                     <LoaderCircle className="h-8 w-8 animate-spin" />
                   ) : (
@@ -308,7 +308,7 @@ export default function AskAi() {
                   data-guide="ask-ai-read"
                   onClick={analyze}
                   disabled={analyzing || creditLoading || noCredits}
-                  className="relative mt-4 flex h-13 w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-[#087fd1] via-[#596fdc] to-[#8b5cd7] px-5 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="relative mt-4 flex h-13 w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#2F80EA_0%,#236FDE_48%,#1454C5_100%)] px-5 text-sm font-bold text-white shadow-lg shadow-accent/20 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {analyzing ? (
                     <LoaderCircle className="h-5 w-5 animate-spin" />
@@ -347,7 +347,7 @@ export default function AskAi() {
               <div>
                 <div className="flex items-start justify-between gap-3 border-b border-border pb-4">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-violet-500 text-white">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2F80EA] to-[#236FDE] text-white">
                       <Sparkles className="h-5 w-5" />
                     </span>
                     <div>
@@ -445,7 +445,7 @@ export default function AskAi() {
                   </div>
                 )}
 
-                <div className="mt-5 rounded-2xl bg-gradient-to-br from-accent/[0.09] to-violet-500/[0.07] p-4">
+                <div className="mt-5 rounded-2xl bg-gradient-to-br from-accent/[0.09] to-[#236FDE]/[0.07] p-4">
                   <h3 className="text-sm font-bold text-foreground">
                     Simple explanation
                   </h3>

@@ -206,7 +206,7 @@ export default function Leaderboard({ profile }) {
         <div className="h-1 w-full" style={{ background: "linear-gradient(90deg,#f59e0b,#eab308,#f97316)" }} />
         <div className="p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: "linear-gradient(135deg,#f59e0b,#f97316)" }}>
+            style={{ background: "var(--app-header-gradient)" }}>
             <Trophy className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -266,7 +266,7 @@ export default function Leaderboard({ profile }) {
           onClick={handleApply}
           disabled={loading}
           className="w-full py-2.5 rounded-xl text-white text-[13px] font-bold flex items-center justify-center gap-2 disabled:opacity-60 transition-opacity"
-          style={{ background: "linear-gradient(135deg,#f59e0b,#f97316)" }}
+          style={{ background: "var(--app-header-gradient)" }}
         >
           {loading
             ? <><Loader2 className="w-4 h-4 animate-spin" /> Loading...</>
@@ -276,7 +276,7 @@ export default function Leaderboard({ profile }) {
 
       {loading && (
         <div className="flex flex-col items-center justify-center gap-3 py-12 text-[12px] text-muted-foreground">
-          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
           Fetching scores...
         </div>
       )}

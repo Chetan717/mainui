@@ -121,7 +121,7 @@ function NodeReportModal({ node, onClose }) {
         <div className="flex items-center justify-between px-5 py-4 border-b border-border sticky top-0 bg-card dark:bg-gray-900 rounded-t-2xl shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[14px] font-bold shrink-0"
-              style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}>
+              style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}>
               {node.name?.[0]?.toUpperCase() || "?"}
             </div>
             <div>
@@ -163,7 +163,7 @@ function NodeReportModal({ node, onClose }) {
             onClick={handleGenerate}
             disabled={generating || !dateFrom || !dateTo}
             className="w-full py-3 rounded-xl text-white text-[13px] font-bold flex items-center justify-center gap-2 disabled:opacity-60 transition-opacity"
-            style={{ background: "linear-gradient(135deg,#0088DA,#0088DA)" }}
+            style={{ background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)" }}
           >
             {generating ? (
               <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
@@ -178,7 +178,7 @@ function NodeReportModal({ node, onClose }) {
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Summary</p>
                 <div className="grid grid-cols-5 gap-1.5">
                   {[
-                    { label: "Plan",   value: totals?.plan   ?? 0, color: "#0088DA" },
+                    { label: "Plan",   value: totals?.plan   ?? 0, color: "#2F80EA" },
                     { label: "Follow", value: totals?.follow ?? 0, color: "#1a6fbf" },
                     { label: "Kit",    value: totals?.kit    ?? 0, color: "#2196f3" },
                     { label: "SP",     value: totals?.sp     ?? 0, color: "#43a047" },
@@ -215,7 +215,7 @@ function NodeReportModal({ node, onClose }) {
                     }
                   }}
                   className="flex items-center justify-center gap-2 py-3 rounded-xl text-white font-bold text-[13px]"
-                  style={{ background: "linear-gradient(135deg,#0088DA,#0088DA)" }}
+                  style={{ background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)" }}
                 >
                   <Download className="w-4 h-4" /> Download
                 </button>
@@ -270,7 +270,7 @@ function TreeNode({ node, depth = 0, isRoot = false, onReportClick }) {
             <button
               onClick={() => onReportClick(node)}
               className="flex items-center gap-0.5 px-2 py-1 rounded-lg text-[9px] font-bold text-white transition-opacity"
-              style={{ background: "linear-gradient(135deg,#0088DA,#4f6fcf)" }}
+              style={{ background: "linear-gradient(135deg,#2F80EA,#236FDE)" }}
               title="View / Download Report"
             >
               <FileText className="w-3 h-3" />
@@ -341,7 +341,7 @@ export default function NetworkTree({ profile }) {
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg,#0088DA,#0088DA)" }}>
+              style={{ background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)" }}>
               <Users className="w-4 h-4 text-white" />
             </div>
             <div className="text-left">

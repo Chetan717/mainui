@@ -13,17 +13,17 @@ export default function ProfileCard({ profile }) {
 
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-      <div className="h-2 w-full" style={{ background: "linear-gradient(90deg,#0088da,#0088DA,#4f6fcf)" }} />
+      <div className="h-2 w-full" style={{ background: "linear-gradient(90deg,#2F80EA,#2F80EA,#236FDE)" }} />
       <div className="p-4">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-            style={{ background: "linear-gradient(135deg,#0088da,#0088DA)" }}>
+            style={{ background: "linear-gradient(135deg,#2F80EA,#2F80EA)" }}>
             <User className="w-6 h-6 text-white" />
           </div>
           <div>
             <p className="font-bold text-foreground text-[15px] leading-tight">{profile.name}</p>
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full mt-0.5 inline-block"
-              style={{ background: "rgba(0,136,218,0.1)", color: "#0088da" }}>
+              style={{ background: "rgba(0,136,218,0.1)", color: "#2F80EA" }}>
               Network Member
             </span>
           </div>

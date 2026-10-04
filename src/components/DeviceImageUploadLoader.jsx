@@ -116,7 +116,7 @@ export default function DeviceImageUploadLoader() {
             />
           )}
           <div className="absolute inset-0 flex items-center justify-center bg-black/15">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/40 border-t-[#2877e9] shadow-lg" />
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/40 border-t-[#2F80EA] shadow-lg" />
           </div>
         </div>
 

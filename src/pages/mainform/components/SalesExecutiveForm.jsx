@@ -1434,7 +1434,7 @@ export default function SalesExecutiveForm() {
                 }
                 style={{
                   background:
-                    "linear-gradient(135deg, #0088DA 0%, #0088DA 100%)",
+                    "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
                 }}
               >
                 Save &amp; Create Design

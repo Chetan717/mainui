@@ -1,8 +1,27 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { useGeneralData } from "../../../Context/GeneralContext";
 import { useNavigate } from "react-router";
-import { ArrowUpRight, Sparkles } from "@gravity-ui/icons";
-import { ImageIcon } from "lucide-react";
+import { ArrowUpRight } from "@gravity-ui/icons";
+import {
+  Award,
+  Banknote,
+  Cake,
+  Dumbbell,
+  Gift,
+  Handshake,
+  Heart,
+  ImageIcon,
+  Lightbulb,
+  Medal,
+  Monitor,
+  PackageOpen,
+  Plane,
+  Quote,
+  Sparkles,
+  Sunrise,
+  Trophy,
+  Users,
+} from "lucide-react";
 import {
   preloadImage,
   markImageSeen,
@@ -69,7 +88,7 @@ function CreateProfileModal({ onConfirm, onDismiss }) {
           onClick={onConfirm}
           className="w-full py-3.5 mt-5 rounded-2xl text-white font-bold text-[14px] shadow-lg shadow-accent/20 "
           style={{
-            background: "linear-gradient(135deg, #0088DA 0%, #0088DA 100%)",
+            background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
           }}
         >
           Create Profile →
@@ -225,6 +244,47 @@ function normalizeCompanyDesignations(company) {
     .filter(Boolean);
 }
 
+const TEMPLATE_SECTION_ICON_BY_TYPE = {
+  Today_Trending: Sparkles,
+  Product: PackageOpen,
+  Motivational: Lightbulb,
+  Rank_Promotion: Trophy,
+  Rank_Promotion_B: Medal,
+  Bonanza: Gift,
+  Domestic_Trip: Plane,
+  Welcome_Closing: Handshake,
+  Training: Monitor,
+  Meeting: Users,
+  General_Meeting: Users,
+  Achievements: Award,
+  Anniversary_Birthday: Cake,
+  Income: Banknote,
+  ThankYou_Banner_B: Heart,
+  ThankYou_Birthday_Anniversary: Heart,
+  Capping: Trophy,
+  Good_Morning: Sunrise,
+  Sport: Dumbbell,
+  Daily_Life: Sparkles,
+  Greeting_Wishes: Heart,
+  Health_Tips: Heart,
+  Devotional_Spiritual: Sparkles,
+  Leader_Quotes: Quote,
+};
+
+function TemplateSectionHeading({ type, label }) {
+  const Icon = TEMPLATE_SECTION_ICON_BY_TYPE[type] || Sparkles;
+  return (
+    <div className="flex min-w-0 items-center gap-2.5">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+        <Icon className="h-5 w-5" strokeWidth={1.8} />
+      </span>
+      <h2 className="truncate text-lg font-display font-bold text-foreground">
+        {label}
+      </h2>
+    </div>
+  );
+}
+
 const GENERAL_SELECT_TYPES = new Set([
   // "Trending",
   // "Today_Trending",
@@ -271,7 +331,7 @@ const CheckIcon = ({ size = "sm" }) => {
 };
 
 const NewBadge = () => (
-  <div className="absolute top-2 left-2 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500 shadow-md pointer-events-none">
+  <div className="absolute top-2 left-2 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-accent shadow-md pointer-events-none">
     <span className="relative flex h-1.5 w-1.5 shrink-0">
       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-70" />
       <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
@@ -316,8 +376,7 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
   const handleViewAll = useCallback(
     (group) => {
       const selttype = {
-        MainType:
-          group?.templates?.[0]?.MainType || group?.MainType || "General",
+        MainType: group?.templates?.[0]?.MainType || group?.MainType || "General",
         type: group.type,
         id: group.templates?.[0]?.id,
         serial: group.templates?.[0]?.serial,
@@ -517,49 +576,65 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
       onClick={() => handleViewAll(group)}
       className="flex items-center gap-1 text-xs font-bold text-accent dark:text-white bg-accent/10 dark:bg-white/10 px-3 py-1.5 rounded-full"
     >
-      See all
+      View All
       <ArrowUpRight className="w-3 h-3" />
     </button>
   );
 
-  const renderGroupTemplates = (group, displayName) => (
-    <div className="-mx-3 overflow-x-auto px-3 pb-1 hide-scrollbar scroll-gpu md:-mx-6 md:px-6">
-      <div className="flex w-max min-w-full gap-3 pr-1">
-        {(group.templates || []).map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => handleImagePress(item)}
-            className="w-[108px] shrink-0 text-left active:scale-[0.985]"
-          >
-            <div
-              className={`relative aspect-square w-full overflow-hidden rounded-[12px] border bg-[#EAF1FB] shadow-[0_2px_8px_rgba(26,45,76,0.035)] dark:bg-[#172235] ${
+  const renderGroupTemplates = (group, displayName) => {
+    const isCapping = group?.type === "Capping";
+    const items = isCapping
+      ? (group.templates || []).slice(0, 1)
+      : group.templates || [];
+
+    return (
+      <div className="-mx-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-3 pb-2 hide-scrollbar scroll-gpu md:-mx-6 md:px-6">
+        <div className="flex w-max min-w-full gap-3 pr-1">
+          {items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => handleImagePress(item)}
+              className={`${
+                isCapping ? "w-[72vw] min-w-[220px] max-w-[280px]" : "w-[118px]"
+              } shrink-0 snap-start overflow-hidden rounded-[15px] border bg-white text-center shadow-[0_4px_14px_rgba(28,54,92,0.08)] transition-transform duration-150 active:scale-[0.985] dark:bg-[#111827] ${
                 selectedTemp?.id === item?.id
-                  ? "border-[#2C7BE5] ring-2 ring-[#2C7BE5]/20"
-                  : "border-[#E1E8F2] dark:border-[#263146]"
+                  ? "border-[#2F80EA] ring-2 ring-[#2F80EA]/20"
+                  : "border-[#E4EAF3] dark:border-[#263146]"
               }`}
             >
-              {item?.image ? (
-                <ImageWithSkeleton
-                  src={item.image}
-                  className="h-full w-full object-cover"
-                  alt={item.Subtype || displayName}
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-[#8ABAF2] dark:text-[#5F86B4]">
-                  <ImageIcon className="h-4 w-4" strokeWidth={1.6} />
-                </div>
-              )}
-              {isNewTemplate(item.serial) ? <NewBadge /> : null}
-            </div>
-            <p className="mt-2 line-clamp-2 min-h-[22px] text-[9px] font-medium leading-[11px] text-[#2B3344] dark:text-[#CBD4E4]">
-              {item?.Subtype || displayName}
-            </p>
-          </button>
-        ))}
+              <div className="relative aspect-square w-full overflow-hidden bg-[#EAF1FB] dark:bg-[#172235]">
+                {item?.image ? (
+                  <ImageWithSkeleton
+                    src={item.image}
+                    className="h-full w-full object-cover"
+                    alt={item.Subtype || displayName}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-[#8ABAF2] dark:text-[#5F86B4]">
+                    <ImageIcon className="h-4 w-4" strokeWidth={1.6} />
+                  </div>
+                )}
+                {isNewTemplate(item.serial) ? <NewBadge /> : null}
+              </div>
+
+              <div className={`${isCapping ? "px-3 py-3" : "px-2.5 py-2.5"}`}>
+                <p
+                  className={`line-clamp-2 font-semibold text-[#20283A] dark:text-[#E4EAF4] ${
+                    isCapping
+                      ? "min-h-[18px] text-[12px] leading-[16px]"
+                      : "min-h-[26px] text-[10px] leading-[13px]"
+                  }`}
+                >
+                  {item?.Subtype || displayName}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const visibleGroups = (Array.isArray(templates) ? templates : []).filter(
     (group) => Array.isArray(group?.templates) && group.templates.length > 0,
@@ -603,17 +678,10 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
             return (
               <section key={group.type} className="min-w-0">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="truncate text-[13px] font-bold leading-5 text-[#161D2D] dark:text-white">
-                      {displayName === "Training"
-                        ? "Seat Booking"
-                        : displayName}
-                    </h2>
-                    <p className="text-[8px] font-medium text-[#9AA4B5] dark:text-[#778297]">
-                      {group.templates.length} design
-                      {group.templates.length === 1 ? "" : "s"}
-                    </p>
-                  </div>
+                  <TemplateSectionHeading
+                    type={group.type}
+                    label={displayName === "Training" ? "Seat Booking" : displayName}
+                  />
                   {renderViewAllButton(group)}
                 </div>
                 {renderGroupTemplates(group, displayName)}
@@ -625,8 +693,10 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
             <section className="min-w-0">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="h-6 w-1 rounded-full bg-[#1FA8E8]" />
-                  <h2 className="truncate text-[15px] font-bold leading-5 text-[#161D2D] dark:text-white">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                    <Sparkles className="h-5 w-5" strokeWidth={1.8} />
+                  </span>
+                  <h2 className="truncate text-lg font-display font-bold text-foreground">
                     Everyday Moments
                   </h2>
                 </div>
@@ -635,44 +705,49 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
                   onClick={() =>
                     navigate(buildEverydayMomentsAllTemplatesPath())
                   }
-                  className="flex items-center gap-1 rounded-full bg-[#E8F5FD] px-3 py-1.5 text-[11px] font-semibold text-[#1787D6] dark:bg-[#17314A] dark:text-[#74C8FF]"
+                  className="flex items-center gap-1 rounded-full bg-[#E8F5FD] px-3 py-1.5 text-[11px] font-semibold text-[#2F80EA] dark:bg-[#17314A] dark:text-[#74C8FF]"
                 >
                   View All
                   <ArrowUpRight className="h-3 w-3" />
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                {everydayMomentCards.map(({ type, label, item }) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => handleImagePress(item)}
-                    className="min-w-0 active:scale-[0.985]"
-                    aria-label={label}
-                  >
-                    <div
-                      className={`relative aspect-square w-full overflow-hidden rounded-[12px] border bg-[#EAF1FB] shadow-[0_2px_8px_rgba(26,45,76,0.05)] dark:bg-[#172235] ${
+              <div className="-mx-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-3 pb-2 hide-scrollbar scroll-gpu md:-mx-6 md:px-6">
+                <div className="flex w-max min-w-full gap-3 pr-1">
+                  {everydayMomentCards.map(({ type, label, item }) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => handleImagePress(item)}
+                      className={`w-[118px] shrink-0 snap-start overflow-hidden rounded-[15px] border bg-white text-center shadow-[0_4px_14px_rgba(28,54,92,0.08)] transition-transform duration-150 active:scale-[0.985] dark:bg-[#111827] ${
                         selectedTemp?.id === item?.id
-                          ? "border-[#2C7BE5] ring-2 ring-[#2C7BE5]/20"
-                          : "border-[#E1E8F2] dark:border-[#263146]"
+                          ? "border-[#2F80EA] ring-2 ring-[#2F80EA]/20"
+                          : "border-[#E4EAF3] dark:border-[#263146]"
                       }`}
+                      aria-label={label}
                     >
-                      {item?.image ? (
-                        <ImageWithSkeleton
-                          src={item.image}
-                          className="h-full w-full object-cover"
-                          alt={label}
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-[#8ABAF2] dark:text-[#5F86B4]">
-                          <ImageIcon className="h-4 w-4" strokeWidth={1.6} />
-                        </div>
-                      )}
-                      {isNewTemplate(item.serial) ? <NewBadge /> : null}
-                    </div>
-                  </button>
-                ))}
+                      <div className="relative aspect-square w-full overflow-hidden bg-[#EAF1FB] dark:bg-[#172235]">
+                        {item?.image ? (
+                          <ImageWithSkeleton
+                            src={item.image}
+                            className="h-full w-full object-cover"
+                            alt={label}
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-[#8ABAF2] dark:text-[#5F86B4]">
+                            <ImageIcon className="h-4 w-4" strokeWidth={1.6} />
+                          </div>
+                        )}
+                        {isNewTemplate(item.serial) ? <NewBadge /> : null}
+                      </div>
+                      <div className="px-2.5 py-2.5">
+                        <p className="line-clamp-2 min-h-[26px] text-[10px] font-semibold leading-[13px] text-[#20283A] dark:text-[#E4EAF4]">
+                          {label}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
             </section>
           )}
@@ -706,7 +781,7 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
 
       {loading && templates?.length > 0 && (
         <div className="flex justify-center py-4">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#DCE4EF] border-t-[#2C7BE5] dark:border-[#2A3548] dark:border-t-[#70AFFF]" />
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#DCE4EF] border-t-[#2F80EA] dark:border-[#2A3548] dark:border-t-[#70AFFF]" />
         </div>
       )}
     </div>
