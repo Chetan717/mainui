@@ -1,0 +1,19 @@
+This patch was made from the latest uploaded mainui-main.zip in this chat, not from the older patch ZIPs.
+
+Copy/replace these files in the same paths of your current project:
+- src/pages/Homepage/Component/ListOfGenaraltemp.jsx
+- src/index.css
+- src/pages/Editor/GenralEditPage.jsx
+- src/pages/Editor/components/ListOfTemplates.jsx
+
+Included tests:
+- tests/oct4RequestedCardPatch.test.mjs
+- tests/oct4VideoHomeThemeProduct.test.mjs
+
+Requested UI changes included:
+1) Home cards keep a small inset from screen edges.
+2) Card label area is compact; text is one line and smaller.
+3) Only labels that overflow auto-scroll; short labels stay centered and do not move.
+4) Capping is one responsive 16:9 horizontal card with mobile screen-based width.
+5) Empty Video tab hides the design canvas completely and shows: No Video Available Soon.
+6) Download is disabled while the empty Video state is active.

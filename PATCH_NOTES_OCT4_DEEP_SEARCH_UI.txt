@@ -1,0 +1,19 @@
+MLM Live - Oct 4 Deep Search + Home UI Patch
+Base: user-provided mainui-main.zip
+
+Included changes:
+1. Home section View All button stays fixed one-line size even with long headings; heading truncates.
+2. Home card labels are smaller, one-line, compact, and only long labels auto-scroll left like a news ticker.
+3. Horizontal card rails keep a small screen-edge inset while still showing the next partial card.
+4. Capping card is responsive horizontal 16:9 with screen-aware width.
+5. Everyday Moments > View All subtype card image covers the whole card; subtype label overlays at the bottom.
+6. Search performs deep subtype matching across all bundled General templates. Exact/strong subtype matches come first; normal cached cards remain after them. Example: "Goa" promotes subtype "GOA" to the first result.
+7. Video tab with no video template shows a fully opaque blank canvas with only: "No Video Available Soon". Download is disabled in this state.
+
+Validation:
+- TypeScript parser syntax check passed for all changed source files.
+- Relevant Oct 4 tests: 9/9 passed.
+- Real bundled-data check: search "Goa" => Bonanza / GOA first.
+
+Apply:
+Copy/overwrite the files from this patch into the same paths in your mainui-main project.

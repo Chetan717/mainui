@@ -6,16 +6,16 @@ import test from "node:test";
 const root = resolve(import.meta.dirname, "..");
 const read = (path) => readFileSync(join(root, path), "utf8");
 
-test("empty editor video tab shows coming-soon state instead of preparing-design loader", () => {
+test("empty editor video tab hides the design and shows the exact unavailable message", () => {
   const editor = read("src/pages/Editor/GenralEditPage.jsx");
   const list = read("src/pages/Editor/components/ListOfTemplates.jsx");
 
   assert.match(editor, /const isVideoUnavailable[\s\S]*activeTabFromList === "video"/);
   assert.match(editor, /bgStatus === "loading" && !isVideoUnavailable/);
-  assert.match(editor, /No Video Available/);
-  assert.match(editor, /Coming Soon/);
-  assert.match(list, /No Video Available/);
-  assert.match(list, /Coming Soon/);
+  assert.match(editor, /No Video Available Soon/);
+  assert.match(editor, /z-50[\s\S]*bg-\[#F5F7FC\]/);
+  assert.match(editor, /const canExport = !subLoading && !exportLoading && !isVideoUnavailable/);
+  assert.match(list, /No Video Available Soon/);
 });
 
 test("all Home template groups render Festival-style icon plus template name", () => {

@@ -1,0 +1,6 @@
+October 4 UI patch
+
+1. Home template rows keep a small left/right inset so cards no longer touch the screen edge while scrolling.
+2. Card labels are compact, one line, and smaller. Only labels that actually overflow their card auto-pan horizontally; short labels stay still and centered.
+3. Capping renders as one responsive 16:9 horizontal card sized to the device width (with a desktop max width).
+4. When the Video tab has no video template, the design canvas is fully hidden and replaced by a solid blank state reading “No Video Available Soon”. Download is disabled in that state.

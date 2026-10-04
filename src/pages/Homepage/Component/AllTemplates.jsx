@@ -291,6 +291,7 @@ function SubtypeChoiceCard({ section, parentType, onOpenGrid }) {
     previewGraphic?.url ||
     previewGraphic?.backgroundVideoUrl ||
     "";
+  const subtypeLabel = displayLabel(section.subtype);
 
   return (
     <button
@@ -298,22 +299,19 @@ function SubtypeChoiceCard({ section, parentType, onOpenGrid }) {
       onPointerEnter={() => previewGraphic?.url && preloadImage(previewGraphic.url)}
       onPointerDown={() => previewGraphic?.url && preloadImage(previewGraphic.url)}
       onClick={() => onOpenGrid(section.subtype, parentType)}
-      aria-label={`View all ${displayLabel(section.subtype)} designs`}
-      className="w-[118px] shrink-0 snap-start overflow-hidden rounded-[16px] border border-[#E5EAF2] bg-white text-left shadow-[0_2px_10px_rgba(28,54,92,0.04)] card-press dark:border-border dark:bg-black/20"
+      aria-label={`View all ${subtypeLabel} designs`}
+      className="relative aspect-square w-[118px] shrink-0 snap-start overflow-hidden rounded-[16px] border border-[#E5EAF2] bg-muted/40 text-left shadow-[0_2px_10px_rgba(28,54,92,0.04)] card-press dark:border-border"
     >
-      <div className="relative aspect-square w-full overflow-hidden bg-muted/40">
-        <ShowcaseImage
-          src={preview}
-          alt={displayLabel(section.subtype)}
-          aggressiveLazy
-        />
-      </div>
-      <div className="px-2.5 py-2.5">
-        <p className="truncate text-xs font-bold text-foreground">
-          {displayLabel(section.subtype)}
-        </p>
-        <div className="mt-1 flex items-center justify-between gap-1 text-[10px] font-bold text-accent dark:text-white">
-          <span>View All</span>
+      <ShowcaseImage
+        src={preview}
+        alt={subtypeLabel}
+        aggressiveLazy
+      />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-2.5 pb-2 pt-8 text-white">
+        <div className="flex items-center gap-1">
+          <span className="min-w-0 flex-1 truncate text-[10px] font-bold">
+            {subtypeLabel}
+          </span>
           <ChevronRight className="h-3 w-3 shrink-0" />
         </div>
       </div>
@@ -346,7 +344,7 @@ function EverydayTypeSubtypeSection({ typeSection, onOpenGrid }) {
   return (
     <section
       ref={sectionRef}
-      style={{ contentVisibility: "auto", containIntrinsicSize: "230px" }}
+      style={{ contentVisibility: "auto", containIntrinsicSize: "170px" }}
     >
       <div className="mb-4 flex items-end justify-between gap-3 border-b border-border/70 pb-3">
         <div className="min-w-0">
@@ -361,7 +359,7 @@ function EverydayTypeSubtypeSection({ typeSection, onOpenGrid }) {
 
       {typeSection.subtypeSections.length > 0 ? (
         renderChoices ? (
-          <div className="hide-scrollbar scroll-gpu flex min-h-[183px] snap-x gap-3 overflow-x-auto px-0.5 pb-2 pt-0.5">
+          <div className="hide-scrollbar scroll-gpu flex min-h-[122px] snap-x gap-3 overflow-x-auto px-0.5 pb-2 pt-0.5">
             {typeSection.subtypeSections.map((section) => (
               <SubtypeChoiceCard
                 key={`${typeSection.type}-${section.subtype}`}
@@ -373,7 +371,7 @@ function EverydayTypeSubtypeSection({ typeSection, onOpenGrid }) {
           </div>
         ) : (
           <div
-            className="h-[183px] rounded-xl bg-muted/20"
+            className="h-[122px] rounded-xl bg-muted/20"
             aria-hidden="true"
           />
         )

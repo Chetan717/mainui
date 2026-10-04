@@ -274,13 +274,68 @@ const TEMPLATE_SECTION_ICON_BY_TYPE = {
 function TemplateSectionHeading({ type, label }) {
   const Icon = TEMPLATE_SECTION_ICON_BY_TYPE[type] || Sparkles;
   return (
-    <div className="flex min-w-0 items-center gap-2.5">
+    <div className="flex min-w-0 flex-1 items-center gap-2.5">
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
         <Icon className="h-5 w-5" strokeWidth={1.8} />
       </span>
-      <h2 className="truncate text-lg font-display font-bold text-foreground">
+      <h2
+        className="min-w-0 flex-1 truncate text-lg font-display font-bold text-foreground"
+        title={label}
+      >
         {label}
       </h2>
+    </div>
+  );
+}
+
+function AutoScrollCardLabel({ label }) {
+  const viewportRef = React.useRef(null);
+  const measureRef = React.useRef(null);
+  const [shouldScroll, setShouldScroll] = useState(false);
+
+  useEffect(() => {
+    const measure = () => {
+      const viewport = viewportRef.current;
+      const text = measureRef.current;
+      if (!viewport || !text) return;
+      setShouldScroll(text.scrollWidth > viewport.clientWidth + 1);
+    };
+
+    measure();
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", measure);
+      return () => window.removeEventListener("resize", measure);
+    }
+
+    const observer = new ResizeObserver(measure);
+    if (viewportRef.current) observer.observe(viewportRef.current);
+    if (measureRef.current) observer.observe(measureRef.current);
+    return () => observer.disconnect();
+  }, [label]);
+
+  return (
+    <div
+      ref={viewportRef}
+      className="relative w-full overflow-hidden whitespace-nowrap text-[9px] font-semibold leading-none text-[#20283A] dark:text-[#E4EAF4]"
+      title={label}
+    >
+      <span
+        ref={measureRef}
+        className="pointer-events-none absolute left-0 top-0 w-max whitespace-nowrap opacity-0"
+        aria-hidden="true"
+      >
+        {label}
+      </span>
+      {shouldScroll ? (
+        <span className="template-card-news-ticker inline-flex w-max items-center whitespace-nowrap">
+          <span className="shrink-0 pr-5">{label}</span>
+          <span className="shrink-0 pr-5" aria-hidden="true">
+            {label}
+          </span>
+        </span>
+      ) : (
+        <span className="block truncate text-center">{label}</span>
+      )}
     </div>
   );
 }
@@ -574,10 +629,10 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
   const renderViewAllButton = (group) => (
     <button
       onClick={() => handleViewAll(group)}
-      className="flex items-center gap-1 text-xs font-bold text-accent dark:text-white bg-accent/10 dark:bg-white/10 px-3 py-1.5 rounded-full"
+      className="flex h-8 min-w-[78px] shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full bg-accent/10 px-3 text-xs font-bold text-accent dark:bg-white/10 dark:text-white"
     >
       View All
-      <ArrowUpRight className="w-3 h-3" />
+      <ArrowUpRight className="h-3 w-3 shrink-0" />
     </button>
   );
 
@@ -588,49 +643,50 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
       : group.templates || [];
 
     return (
-      <div className="-mx-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-3 pb-2 hide-scrollbar scroll-gpu md:-mx-6 md:px-6">
-        <div className="flex w-max min-w-full gap-3 pr-1">
-          {items.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => handleImagePress(item)}
-              className={`${
-                isCapping ? "w-[72vw] min-w-[220px] max-w-[280px]" : "w-[118px]"
-              } shrink-0 snap-start overflow-hidden rounded-[15px] border bg-white text-center shadow-[0_4px_14px_rgba(28,54,92,0.08)] transition-transform duration-150 active:scale-[0.985] dark:bg-[#111827] ${
-                selectedTemp?.id === item?.id
-                  ? "border-[#2F80EA] ring-2 ring-[#2F80EA]/20"
-                  : "border-[#E4EAF3] dark:border-[#263146]"
-              }`}
-            >
-              <div className="relative aspect-square w-full overflow-hidden bg-[#EAF1FB] dark:bg-[#172235]">
-                {item?.image ? (
-                  <ImageWithSkeleton
-                    src={item.image}
-                    className="h-full w-full object-cover"
-                    alt={item.Subtype || displayName}
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-[#8ABAF2] dark:text-[#5F86B4]">
-                    <ImageIcon className="h-4 w-4" strokeWidth={1.6} />
-                  </div>
-                )}
-                {isNewTemplate(item.serial) ? <NewBadge /> : null}
-              </div>
-
-              <div className={`${isCapping ? "px-3 py-3" : "px-2.5 py-2.5"}`}>
-                <p
-                  className={`line-clamp-2 font-semibold text-[#20283A] dark:text-[#E4EAF4] ${
-                    isCapping
-                      ? "min-h-[18px] text-[12px] leading-[16px]"
-                      : "min-h-[26px] text-[10px] leading-[13px]"
+      <div className="-mx-1.5 overflow-x-auto scroll-smooth snap-x snap-mandatory px-1.5 pb-2 hide-scrollbar scroll-gpu md:-mx-3 md:px-3">
+        <div className="flex w-max min-w-full gap-3 pr-1.5">
+          {items.map((item) => {
+            const cardLabel = item?.Subtype || displayName;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleImagePress(item)}
+                className={`${
+                  isCapping
+                    ? "w-[calc(100vw-40px)] min-w-[220px] max-w-[420px]"
+                    : "w-[118px]"
+                } shrink-0 snap-start overflow-hidden rounded-[15px] border bg-white text-center shadow-[0_4px_14px_rgba(28,54,92,0.08)] transition-transform duration-150 active:scale-[0.985] dark:bg-[#111827] ${
+                  selectedTemp?.id === item?.id
+                    ? "border-[#2F80EA] ring-2 ring-[#2F80EA]/20"
+                    : "border-[#E4EAF3] dark:border-[#263146]"
+                }`}
+              >
+                <div
+                  className={`relative w-full overflow-hidden bg-[#EAF1FB] dark:bg-[#172235] ${
+                    isCapping ? "aspect-[16/9]" : "aspect-square"
                   }`}
                 >
-                  {item?.Subtype || displayName}
-                </p>
-              </div>
-            </button>
-          ))}
+                  {item?.image ? (
+                    <ImageWithSkeleton
+                      src={item.image}
+                      className="h-full w-full object-cover"
+                      alt={cardLabel}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[#8ABAF2] dark:text-[#5F86B4]">
+                      <ImageIcon className="h-4 w-4" strokeWidth={1.6} />
+                    </div>
+                  )}
+                  {isNewTemplate(item.serial) ? <NewBadge /> : null}
+                </div>
+
+                <div className={`flex items-center ${isCapping ? "h-[30px] px-3" : "h-[27px] px-2"}`}>
+                  <AutoScrollCardLabel label={cardLabel} />
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     );
@@ -659,6 +715,19 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
 
   return (
     <div className="flex w-full flex-col pb-[14px]">
+      <style>{`
+        @keyframes templateCardNewsTicker {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .template-card-news-ticker {
+          animation: templateCardNewsTicker 6s linear infinite;
+          will-change: transform;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .template-card-news-ticker { animation: none; }
+        }
+      `}</style>
       {noResults ? (
         <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#EAF1FB] text-[#8ABAF2] dark:bg-[#172235] dark:text-[#5F86B4]">
@@ -705,15 +774,15 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
                   onClick={() =>
                     navigate(buildEverydayMomentsAllTemplatesPath())
                   }
-                  className="flex items-center gap-1 rounded-full bg-[#E8F5FD] px-3 py-1.5 text-[11px] font-semibold text-[#2F80EA] dark:bg-[#17314A] dark:text-[#74C8FF]"
+                  className="flex h-8 min-w-[78px] shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full bg-[#E8F5FD] px-3 text-[11px] font-semibold text-[#2F80EA] dark:bg-[#17314A] dark:text-[#74C8FF]"
                 >
                   View All
-                  <ArrowUpRight className="h-3 w-3" />
+                  <ArrowUpRight className="h-3 w-3 shrink-0" />
                 </button>
               </div>
 
-              <div className="-mx-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-3 pb-2 hide-scrollbar scroll-gpu md:-mx-6 md:px-6">
-                <div className="flex w-max min-w-full gap-3 pr-1">
+              <div className="-mx-1.5 overflow-x-auto scroll-smooth snap-x snap-mandatory px-1.5 pb-2 hide-scrollbar scroll-gpu md:-mx-3 md:px-3">
+                <div className="flex w-max min-w-full gap-3 pr-1.5">
                   {everydayMomentCards.map(({ type, label, item }) => (
                     <button
                       key={type}
@@ -740,10 +809,8 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
                         )}
                         {isNewTemplate(item.serial) ? <NewBadge /> : null}
                       </div>
-                      <div className="px-2.5 py-2.5">
-                        <p className="line-clamp-2 min-h-[26px] text-[10px] font-semibold leading-[13px] text-[#20283A] dark:text-[#E4EAF4]">
-                          {label}
-                        </p>
+                      <div className="flex h-[27px] items-center px-2">
+                        <AutoScrollCardLabel label={label} />
                       </div>
                     </button>
                   ))}

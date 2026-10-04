@@ -110,7 +110,10 @@ const readStoredJson = (storageType, key) => {
 const readPreviewSeedGraphic = () => {
   const seed = readStoredJson("session", "editorTemplateSeed");
   const graphic = Array.isArray(seed?.items)
-    ? seed.items.find((item) => item && (item.url || item.backgroundVideoUrl || item.videoUrl))
+    ? seed.items.find(
+        (item) =>
+          item && (item.url || item.backgroundVideoUrl || item.videoUrl),
+      )
     : null;
   if (!graphic) return null;
 
@@ -367,7 +370,6 @@ const VideoCanvas = React.memo(function VideoCanvas({
 });
 
 export const GENERAL_SELECT_TYPES = [
-  
   { name: "Motivational", value: "Motivational" },
   { name: "Thank You Rank", value: "ThankYou_Banner_B" },
   {
@@ -386,7 +388,7 @@ export const GENERAL_SELECT_TYPES2 = [
   { name: "Festival", value: "Festival" },
   { name: "Trending", value: "Trending" },
   { name: "Today_Trending", value: "Today_Trending" },
-  { name: "Product", value: "Product" }
+  { name: "Product", value: "Product" },
 ];
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
@@ -827,8 +829,8 @@ function GeneralEditPage({
     return () => ro.disconnect();
   }, []);
 
-  const [mlmForm, setMlmForm] = useState(() =>
-    previewFormData || readStoredJson("local", "mlmform"),
+  const [mlmForm, setMlmForm] = useState(
+    () => previewFormData || readStoredJson("local", "mlmform"),
   );
   const [mlmProfile, setMlmProfile] = useState(() =>
     readStoredJson("session", "mlmProfile"),
@@ -929,8 +931,6 @@ function GeneralEditPage({
     { key: "special", label: "Special" },
   ];
 
-
-
   const showToast = useCallback((message, type = "info", duration = 3000) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setToast({ message, type });
@@ -1026,10 +1026,12 @@ function GeneralEditPage({
   const isWelcome = selll?.Subtype === "WELCOME";
   const isClosing = selll?.Subtype === "CLOSING";
   const isAnyversary = selll?.type === "Anniversary_Birthday";
+  const isProduct = selll?.type === "Product";
   const isIncome = selll?.type === "Income";
   const isCapping = selll?.type === "Capping";
 
-  const isGurupornima = selll?.Subtype === "TEACHER'S DAY" || selll?.Subtype === "GURUPURNIMA ";
+  const isGurupornima =
+    selll?.Subtype === "TEACHER'S DAY" || selll?.Subtype === "GURUPURNIMA ";
 
   const isMeeting =
     selll?.type === "Meeting" || selll?.type === "General_Meeting";
@@ -2151,7 +2153,10 @@ function GeneralEditPage({
       void recordImageDownload({
         userDocumentId: userData?._documentId || userData?.id,
       }).catch((activityError) => {
-        console.warn("Last Download timestamp could not be saved.", activityError);
+        console.warn(
+          "Last Download timestamp could not be saved.",
+          activityError,
+        );
       });
       // await deductCredits(IMAGE_CREDIT_COST, "Downloaded!"); {change for free}
       setExportedUri(uri);
@@ -2916,7 +2921,7 @@ function GeneralEditPage({
     // return `Download`;
   };
 
-  const canExport = !subLoading && !exportLoading;
+  const canExport = !subLoading && !exportLoading && !isVideoUnavailable;
   // activeSub &&
   // totalDownloadsAvailable >= exportCost; {change for free}
 
@@ -2929,249 +2934,319 @@ function GeneralEditPage({
         : handleExport;
 
   return (
-    <div className={previewOnly ? "flex w-full flex-col items-center justify-start overflow-visible" : "flex flex-col justify-start items-center w-full h-[calc(100dvh-60px)] overflow-hidden"}>
+    <div
+      className={
+        previewOnly
+          ? "flex w-full flex-col items-center justify-start overflow-visible"
+          : "flex flex-col justify-start items-center w-full h-[calc(100dvh-60px)] overflow-hidden"
+      }
+    >
       {toast && <Toast message={toast.message} type={toast.type} />}
 
-      <div className={previewOnly ? "relative w-full flex-shrink-0 px-0 py-0" : "relative w-full lg:w-1/3 flex-shrink-0 px-4 py-3"}>
+      <div
+        className={
+          previewOnly
+            ? "relative w-full flex-shrink-0 px-0 py-0"
+            : "relative w-full lg:w-1/3 flex-shrink-0 px-4 py-3"
+        }
+      >
         <div
           ref={stageContainerRef}
           data-guide="editor-canvas"
           data-no-ui-translate="true"
-          className={previewOnly
-            ? "relative mx-auto flex-shrink-0 overflow-hidden rounded-none border border-[#d6dce8] bg-transparent shadow-[0_8px_20px_rgba(15,23,42,0.12)] dark:border-[#344158]"
-            : "relative mx-auto flex-shrink-0 overflow-hidden rounded-none border border-[#d6dce8] bg-transparent shadow-[0_14px_34px_rgba(15,23,42,0.16)] dark:border-[#344158]"}
+          className={
+            previewOnly
+              ? "relative mx-auto flex-shrink-0 overflow-hidden rounded-none border border-[#d6dce8] bg-transparent shadow-[0_8px_20px_rgba(15,23,42,0.12)] dark:border-[#344158]"
+              : "relative mx-auto flex-shrink-0 overflow-hidden rounded-none border border-[#d6dce8] bg-transparent shadow-[0_14px_34px_rgba(15,23,42,0.16)] dark:border-[#344158]"
+          }
           style={{
-            width: previewOnly && previewSize ? previewSize : "min(320px, 92vw)",
+            width:
+              previewOnly && previewSize ? previewSize : "min(320px, 92vw)",
             height: `${STAGE_WIDTH * stageScale}px`,
             overflow: "hidden",
             touchAction: "none",
           }}
         >
-        {bgStatus === "loading" && !isVideoUnavailable && (
-          <div
-            className="absolute inset-0 z-10 overflow-hidden pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
-            }}
-          >
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-              >
+          {bgStatus === "loading" && !isVideoUnavailable && (
+            <div
+              className="absolute inset-0 z-10 overflow-hidden pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
+              }}
+            >
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                 <div
                   style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
-                    border: "3px solid rgba(255,255,255,0.15)",
-                    borderTop: "3px solid #ffffff",
-                    animation: "spin 0.9s linear infinite",
-                  }}
-                />
-                <span
-                  style={{
-                    color: "#fff",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    letterSpacing: 0.5,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 10,
                   }}
                 >
-                  Preparing design
-                  <LoadingDots />
-                </span>
-                <SlowLoadingHint
-                  delay={3500}
-                  message="Your design is loading. Large templates or slower connections may take a few extra seconds. Please wait a moment."
-                />
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: "50%",
+                      border: "3px solid rgba(255,255,255,0.15)",
+                      borderTop: "3px solid #ffffff",
+                      animation: "spin 0.9s linear infinite",
+                    }}
+                  />
+                  <span
+                    style={{
+                      color: "#fff",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    Preparing design
+                    <LoadingDots />
+                  </span>
+                  <SlowLoadingHint
+                    delay={3500}
+                    message="Your design is loading. Large templates or slower connections may take a few extra seconds. Please wait a moment."
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        {isVideoUnavailable && (
+          )}
+          {isVideoUnavailable && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-background px-6 text-center">
+              <p className="text-[15px] font-bold text-foreground">
+                No Video Available Soon
+              </p>
+            </div>
+          )}
           <div
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 px-6 text-center"
+            aria-hidden={isVideoUnavailable}
             style={{
-              background:
-                "linear-gradient(90deg, rgba(0,136,218,0.10) 0%, rgba(79,111,207,0.14) 50%, rgba(0,136,218,0.10) 100%)",
+              width: STAGE_WIDTH,
+              height: STAGE_HEIGHT,
+              transform: `scale(${stageScale})`,
+              transformOrigin: "top left",
+              visibility: isVideoUnavailable ? "hidden" : "visible",
             }}
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent ring-1 ring-accent/15">
-              <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="3" y="5" width="13" height="14" rx="2" />
-                <path d="m16 10 5-3v10l-5-3" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-[15px] font-bold text-foreground">No Video Available</p>
-              <p className="mt-1 text-[11px] font-medium text-muted-foreground">Coming Soon</p>
-            </div>
-          </div>
-        )}
-        <div
-          style={{
-            width: STAGE_WIDTH,
-            height: STAGE_HEIGHT,
-            transform: `scale(${stageScale})`,
-            transformOrigin: "top left",
-          }}
-        >
-          <Stage
-            // ref={stageRef}
-            // width={STAGE_WIDTH}
-            // height={STAGE_HEIGHT}
-            ref={stageRef}
-            width={STAGE_WIDTH}
-            height={STAGE_HEIGHT}
-            className="bg-background border border-border shadow-lg"
-            onMouseDown={handleStageMouseDown}
-            onTouchStart={handleStageMouseDown}
-          >
-            <Layer>
-              <Image
-                image={bgImage}
-                x={0}
-                y={0}
-                width={STAGE_WIDTH}
-                height={STAGE_HEIGHT}
-              />
-
-              {isThankyouRank ? (
+            <Stage
+              // ref={stageRef}
+              // width={STAGE_WIDTH}
+              // height={STAGE_HEIGHT}
+              ref={stageRef}
+              width={STAGE_WIDTH}
+              height={STAGE_HEIGHT}
+              className="bg-background border border-border shadow-lg"
+              onMouseDown={handleStageMouseDown}
+              onTouchStart={handleStageMouseDown}
+            >
+              <Layer>
                 <Image
-                  image={tankyoubadge}
-                  x={190}
-                  y={38}
-                  width={100}
-                  height={40}
-                />
-              ) : null}
-              {isClosing ? (
-                <Image
-                  image={spdone}
-                  x={isRight ? 15 : 162.5}
-                  y={165}
-                  width={135}
-                  height={33}
-                />
-              ) : null}
-
-              {selectedVideoUrl ? (
-                <VideoCanvas
-                  src={selectedVideoUrl}
-                  playing={videoPlaying}
+                  image={bgImage}
+                  x={0}
+                  y={0}
                   width={STAGE_WIDTH}
                   height={STAGE_HEIGHT}
-                  onError={() => showToast("Video failed to load.", "error")}
-                  videoElRef={videoElRef}
                 />
-              ) : null}
-              {/* {isMlmToday ? null : ( */}
-              <Image
-                image={Imagel2}
-                x={1}
-                y={2}
-                width={woflogo1}
-                height={hoflogo1}
-              />
-              {/* )} */}
-              {/* {isMlmToday ? null : ( */}
-              {isAwpl && isMlmToday ? null : (
+
+                {isThankyouRank ? (
+                  <Image
+                    image={tankyoubadge}
+                    x={190}
+                    y={38}
+                    width={100}
+                    height={40}
+                  />
+                ) : null}
+                {isClosing ? (
+                  <Image
+                    image={spdone}
+                    x={isRight ? 15 : 162.5}
+                    y={165}
+                    width={135}
+                    height={33}
+                  />
+                ) : null}
+
+                {selectedVideoUrl ? (
+                  <VideoCanvas
+                    src={selectedVideoUrl}
+                    playing={videoPlaying}
+                    width={STAGE_WIDTH}
+                    height={STAGE_HEIGHT}
+                    onError={() => showToast("Video failed to load.", "error")}
+                    videoElRef={videoElRef}
+                  />
+                ) : null}
+                {/* {isMlmToday ? null : ( */}
                 <Image
-                  image={Imagel3}
-                  x={logo2size === "square" ? 292 : 268}
+                  image={Imagel2}
+                  x={1}
                   y={2}
-                  width={woflogo2}
-                  height={hoflogo2}
+                  width={woflogo1}
+                  height={hoflogo1}
                 />
-              )}
-              {/* )} */}
+                {/* )} */}
+                {/* {isMlmToday ? null : ( */}
+                {isAwpl && isMlmToday ? null : (
+                  <Image
+                    image={Imagel3}
+                    x={logo2size === "square" ? 292 : 268}
+                    y={2}
+                    width={woflogo2}
+                    height={hoflogo2}
+                  />
+                )}
+                {/* )} */}
 
-              {(() => {
-                const allSlots = [
-                  { img: Imagetop1, url: topuplineURLs?.[0] },
-                  { img: Imagetop2, url: topuplineURLs?.[1] },
-                  { img: Imagetop3, url: topuplineURLs?.[2] },
-                  { img: Imagetop4, url: topuplineURLs?.[3] },
-                  { img: Imagetop5, url: topuplineURLs?.[4] },
-                  { img: Imagetop6, url: topuplineURLs?.[5] },
-                  { img: Imagetop7, url: topuplineURLs?.[6] },
-                  { img: Imagetop8, url: topuplineURLs?.[7] },
-                  { img: Imagetop9, url: topuplineURLs?.[8] },
-                  { img: Imagetop10, url: topuplineURLs?.[9] },
-                  { img: Imagetop11, url: topuplineURLs?.[10] },
-                  { img: Imagetop12, url: topuplineURLs?.[11] },
-                  { img: Imagetop13, url: topuplineURLs?.[12] },
-                  { img: Imagetop14, url: topuplineURLs?.[13] },
-                  { img: Imagetop15, url: topuplineURLs?.[14] },
-                ];
+                {isProduct
+                  ? null
+                  : (() => {
+                      const allSlots = [
+                        { img: Imagetop1, url: topuplineURLs?.[0] },
+                        { img: Imagetop2, url: topuplineURLs?.[1] },
+                        { img: Imagetop3, url: topuplineURLs?.[2] },
+                        { img: Imagetop4, url: topuplineURLs?.[3] },
+                        { img: Imagetop5, url: topuplineURLs?.[4] },
+                        { img: Imagetop6, url: topuplineURLs?.[5] },
+                        { img: Imagetop7, url: topuplineURLs?.[6] },
+                        { img: Imagetop8, url: topuplineURLs?.[7] },
+                        { img: Imagetop9, url: topuplineURLs?.[8] },
+                        { img: Imagetop10, url: topuplineURLs?.[9] },
+                        { img: Imagetop11, url: topuplineURLs?.[10] },
+                        { img: Imagetop12, url: topuplineURLs?.[11] },
+                        { img: Imagetop13, url: topuplineURLs?.[12] },
+                        { img: Imagetop14, url: topuplineURLs?.[13] },
+                        { img: Imagetop15, url: topuplineURLs?.[14] },
+                      ];
 
-                if (isGurupornima) {
-                  const guruSlots = allSlots
-                    .filter((slot) => slot.url)
-                    .slice(0, 15);
-                  const lengthSlot = guruSlots.length;
+                      if (isGurupornima) {
+                        const guruSlots = allSlots
+                          .filter((slot) => slot.url)
+                          .slice(0, 15);
+                        const lengthSlot = guruSlots.length;
 
-                  // 1–8 images: 4 + 4
-                  // 9–15 images: 5 + 5 + 5
-                  const guruRows =
-                    lengthSlot <= 8
-                      ? [guruSlots.slice(0, 4), guruSlots.slice(4, 8)].filter(
-                          (row) => row.length,
-                        )
-                      : [
-                          guruSlots.slice(0, 5),
-                          guruSlots.slice(5, 10),
-                          guruSlots.slice(10, 15),
-                        ].filter((row) => row.length);
+                        // 1–8 images: 4 + 4
+                        // 9–15 images: 5 + 5 + 5
+                        const guruRows =
+                          lengthSlot <= 8
+                            ? [
+                                guruSlots.slice(0, 4),
+                                guruSlots.slice(4, 8),
+                              ].filter((row) => row.length)
+                            : [
+                                guruSlots.slice(0, 5),
+                                guruSlots.slice(5, 10),
+                                guruSlots.slice(10, 15),
+                              ].filter((row) => row.length);
 
-                  const GURU_SLOT_SIZE = lengthSlot <= 8 ? 62 : 52;
-                  const GURU_SLOT_PADDING = 3;
-                  const GURU_INNER_SIZE =
-                    GURU_SLOT_SIZE - GURU_SLOT_PADDING * 2;
-                  const GURU_COLUMN_GAP = 6;
-                  const GURU_ROW_GAP = 4;
-                  const GURU_START_Y = lengthSlot <= 4 ? 80 : 40;
+                        const GURU_SLOT_SIZE = lengthSlot <= 8 ? 62 : 52;
+                        const GURU_SLOT_PADDING = 3;
+                        const GURU_INNER_SIZE =
+                          GURU_SLOT_SIZE - GURU_SLOT_PADDING * 2;
+                        const GURU_COLUMN_GAP = 6;
+                        const GURU_ROW_GAP = 4;
+                        const GURU_START_Y = lengthSlot <= 4 ? 80 : 40;
 
-                  // Keep positions stable while the individual images load.
+                        // Keep positions stable while the individual images load.
 
-                  return guruRows.flatMap((row, rowIndex) => {
-                    const rowWidth =
-                      row.length * GURU_SLOT_SIZE +
-                      Math.max(0, row.length - 1) * GURU_COLUMN_GAP;
-                    const rowStartX = (STAGE_WIDTH - rowWidth) / 2;
-                    const y =
-                      GURU_START_Y + rowIndex * (GURU_SLOT_SIZE + GURU_ROW_GAP);
+                        return guruRows.flatMap((row, rowIndex) => {
+                          const rowWidth =
+                            row.length * GURU_SLOT_SIZE +
+                            Math.max(0, row.length - 1) * GURU_COLUMN_GAP;
+                          const rowStartX = (STAGE_WIDTH - rowWidth) / 2;
+                          const y =
+                            GURU_START_Y +
+                            rowIndex * (GURU_SLOT_SIZE + GURU_ROW_GAP);
 
-                    return row.map((slot, columnIndex) => {
-                      const x =
-                        rowStartX +
-                        columnIndex * (GURU_SLOT_SIZE + GURU_COLUMN_GAP);
+                          return row.map((slot, columnIndex) => {
+                            const x =
+                              rowStartX +
+                              columnIndex * (GURU_SLOT_SIZE + GURU_COLUMN_GAP);
 
-                      return (
-                        <React.Fragment
-                          key={`guru-top-upline-${rowIndex}-${columnIndex}`}
-                        >
-                          <Image
-                            image={ImagetopFrame}
-                            x={x}
-                            y={y}
-                            width={GURU_SLOT_SIZE}
-                            height={GURU_SLOT_SIZE}
-                          />
-                          {slot.img ? (
+                            return (
+                              <React.Fragment
+                                key={`guru-top-upline-${rowIndex}-${columnIndex}`}
+                              >
+                                <Image
+                                  image={ImagetopFrame}
+                                  x={x}
+                                  y={y}
+                                  width={GURU_SLOT_SIZE}
+                                  height={GURU_SLOT_SIZE}
+                                />
+                                {slot.img ? (
+                                  <Group
+                                    x={x}
+                                    y={y}
+                                    clipFunc={(ctx) => {
+                                      ctx.arc(
+                                        GURU_SLOT_SIZE / 2,
+                                        GURU_SLOT_SIZE / 2,
+                                        GURU_INNER_SIZE / 2,
+                                        0,
+                                        Math.PI * 2,
+                                        false,
+                                      );
+                                      ctx.closePath();
+                                    }}
+                                  >
+                                    <Image
+                                      image={slot.img}
+                                      x={GURU_SLOT_PADDING}
+                                      y={GURU_SLOT_PADDING}
+                                      width={GURU_INNER_SIZE}
+                                      height={GURU_INNER_SIZE}
+                                      crop={getPortraitFriendlySquareCrop(
+                                        slot.img,
+                                      )}
+                                      onTap={() => setIsOpen(true)}
+                                      onClick={() => setIsOpen(true)}
+                                    />
+                                  </Group>
+                                ) : null}
+                              </React.Fragment>
+                            );
+                          });
+                        });
+                      }
+
+                      const slots = allSlots.filter((slot) => slot.img);
+                      const HowMuchTopupline = topuplineURLs.length;
+                      const SLOT_SIZE =
+                        HowMuchTopupline <= 8
+                          ? 25
+                          : HowMuchTopupline <= 12
+                            ? 19
+                            : HowMuchTopupline >= 12
+                              ? 15
+                              : 15;
+                      const SLOT_PADDING = 2;
+                      const INNER_SIZE = SLOT_SIZE - SLOT_PADDING * 2;
+                      const totalWidth = slots.length * SLOT_SIZE;
+                      const extraOffset = slots.length === 7 ? -10 : 0;
+                      const startX =
+                        (STAGE_WIDTH - totalWidth) / 2 + extraOffset;
+                      return slots.map((slot, i) => {
+                        const x = startX + i * SLOT_SIZE;
+                        return (
+                          <React.Fragment key={i}>
+                            <Image
+                              image={ImagetopFrame}
+                              x={x}
+                              y={2}
+                              width={SLOT_SIZE}
+                              height={SLOT_SIZE}
+                            />
                             <Group
                               x={x}
-                              y={y}
+                              y={2}
                               clipFunc={(ctx) => {
                                 ctx.arc(
-                                  GURU_SLOT_SIZE / 2,
-                                  GURU_SLOT_SIZE / 2,
-                                  GURU_INNER_SIZE / 2,
+                                  SLOT_SIZE / 2,
+                                  SLOT_SIZE / 2,
+                                  INNER_SIZE / 2,
                                   0,
                                   Math.PI * 2,
                                   false,
@@ -3181,733 +3256,659 @@ function GeneralEditPage({
                             >
                               <Image
                                 image={slot.img}
-                                x={GURU_SLOT_PADDING}
-                                y={GURU_SLOT_PADDING}
-                                width={GURU_INNER_SIZE}
-                                height={GURU_INNER_SIZE}
-                                crop={getPortraitFriendlySquareCrop(slot.img)}
+                                x={SLOT_PADDING}
+                                y={SLOT_PADDING}
+                                width={INNER_SIZE}
+                                height={INNER_SIZE}
                                 onTap={() => setIsOpen(true)}
                                 onClick={() => setIsOpen(true)}
                               />
                             </Group>
-                          ) : null}
-                        </React.Fragment>
-                      );
-                    });
-                  });
-                }
+                          </React.Fragment>
+                        );
+                      });
+                    })()}
 
-                const slots = allSlots.filter((slot) => slot.img);
-                const HowMuchTopupline = topuplineURLs.length;
-                const SLOT_SIZE =
-                  HowMuchTopupline <= 8
-                    ? 25
-                    : HowMuchTopupline <= 12
-                      ? 19
-                      : HowMuchTopupline >= 12
-                        ? 15
-                        : 15;
-                const SLOT_PADDING = 2;
-                const INNER_SIZE = SLOT_SIZE - SLOT_PADDING * 2;
-                const totalWidth = slots.length * SLOT_SIZE;
-                const extraOffset = slots.length === 7 ? -10 : 0;
-                const startX = (STAGE_WIDTH - totalWidth) / 2 + extraOffset;
-                return slots.map((slot, i) => {
-                  const x = startX + i * SLOT_SIZE;
-                  return (
-                    <React.Fragment key={i}>
-                      <Image
-                        image={ImagetopFrame}
-                        x={x}
-                        y={2}
-                        width={SLOT_SIZE}
-                        height={SLOT_SIZE}
-                      />
-                      <Group
-                        x={x}
-                        y={2}
-                        clipFunc={(ctx) => {
-                          ctx.arc(
-                            SLOT_SIZE / 2,
-                            SLOT_SIZE / 2,
-                            INNER_SIZE / 2,
-                            0,
-                            Math.PI * 2,
-                            false,
-                          );
-                          ctx.closePath();
-                        }}
-                      >
-                        <Image
-                          image={slot.img}
-                          x={SLOT_PADDING}
-                          y={SLOT_PADDING}
-                          width={INNER_SIZE}
-                          height={INNER_SIZE}
-                          onTap={() => setIsOpen(true)}
-                          onClick={() => setIsOpen(true)}
-                        />
-                      </Group>
-                    </React.Fragment>
-                  );
-                });
-              })()}
-
-              {isMeeting ||
-              isSubGeneralType ||
-              isMlmToday ||
-              isSubGeneralType2 ? null : (
-                <Text
-                  fontFamily="Montserrat"
-                  x={
-                    isCapping
-                      ? isRight
-                        ? 24
-                        : 162
-                      : isIncome
+                {isMeeting ||
+                isSubGeneralType ||
+                isMlmToday ||
+                isSubGeneralType2 ? null : (
+                  <Text
+                    fontFamily="Montserrat"
+                    x={
+                      isCapping
                         ? isRight
-                          ? 25
-                          : 125
-                        : isAnyversary
+                          ? 24
+                          : 162
+                        : isIncome
                           ? isRight
-                            ? 7
-                            : 138
-                          : isAchievement
-                            ? 77
-                            : isClosing
-                              ? isRight
-                                ? 6
-                                : 151
-                              : isWelcome
+                            ? 25
+                            : 125
+                          : isAnyversary
+                            ? isRight
+                              ? 7
+                              : 138
+                            : isAchievement
+                              ? 77
+                              : isClosing
                                 ? isRight
                                   ? 6
                                   : 151
-                                : isBonanza
+                                : isWelcome
                                   ? isRight
-                                    ? 4
-                                    : 156
-                                  : isRank_B
+                                    ? 6
+                                    : 151
+                                  : isBonanza
                                     ? isRight
                                       ? 4
-                                      : 145
-                                    : isRank
+                                      : 156
+                                    : isRank_B
                                       ? isRight
-                                        ? 6
-                                        : 151
-                                      : isRight
-                                        ? 35
-                                        : 127
-                  }
-                  y={
-                    isCapping
-                      ? isRight
-                        ? 187
-                        : 187
-                      : isAnyversary
+                                        ? 4
+                                        : 145
+                                      : isRank
+                                        ? isRight
+                                          ? 6
+                                          : 151
+                                        : isRight
+                                          ? 35
+                                          : 127
+                    }
+                    y={
+                      isCapping
                         ? isRight
-                          ? 155
-                          : 155
-                        : isAchievement
-                          ? 97
-                          : isWelcome
-                            ? isRight
-                              ? 106
-                              : 106
-                            : isBonanza
-                              ? 97
-                              : isRank_B
-                                ? isRight
-                                  ? 102.7
-                                  : 102.7
-                                : 96
-                  }
-                  width={isCapping ? 130 : isAnyversary ? 175 : 165}
-                  height={5}
-                  text={`${formname.toUpperCase() || ActualProfilename}`}
-                  fontSize={fs(isAnyversary ? 8 : 9.5)}
-                  fill="white"
-                  fontStyle="1000"
-                  letterSpacing={0.1}
-                  verticalAlign="middle"
-                  align="center"
-                />
-              )}
-
-              {isMeeting ||
-              isSubGeneralType ||
-              isMlmToday ||
-              isSubGeneralType2 ? null : (
-                <Text
-                  fontFamily="Montserrat"
-                  x={
-                    isCapping
-                      ? isRight
-                        ? 70
-                        : 205
-                      : isIncome
-                        ? isRight
-                          ? 65
-                          : 165
+                          ? 187
+                          : 187
                         : isAnyversary
                           ? isRight
-                            ? 75
-                            : 205
+                            ? 155
+                            : 155
                           : isAchievement
-                            ? 110
-                            : isClosing
+                            ? 97
+                            : isWelcome
                               ? isRight
-                                ? 35
-                                : 185
-                              : isWelcome
+                                ? 106
+                                : 106
+                              : isBonanza
+                                ? 97
+                                : isRank_B
+                                  ? isRight
+                                    ? 102.7
+                                    : 102.7
+                                  : 96
+                    }
+                    width={isCapping ? 130 : isAnyversary ? 175 : 165}
+                    height={5}
+                    text={`${formname.toUpperCase() || ActualProfilename}`}
+                    fontSize={fs(isAnyversary ? 8 : 9.5)}
+                    fill="white"
+                    fontStyle="1000"
+                    letterSpacing={0.1}
+                    verticalAlign="middle"
+                    align="center"
+                  />
+                )}
+
+                {isMeeting ||
+                isSubGeneralType ||
+                isMlmToday ||
+                isSubGeneralType2 ? null : (
+                  <Text
+                    fontFamily="Montserrat"
+                    x={
+                      isCapping
+                        ? isRight
+                          ? 70
+                          : 205
+                        : isIncome
+                          ? isRight
+                            ? 65
+                            : 165
+                          : isAnyversary
+                            ? isRight
+                              ? 75
+                              : 205
+                            : isAchievement
+                              ? 110
+                              : isClosing
                                 ? isRight
                                   ? 35
                                   : 185
-                                : isBonanza
+                                : isWelcome
                                   ? isRight
-                                    ? 40
-                                    : 190
-                                  : isRank_B
+                                    ? 35
+                                    : 185
+                                  : isBonanza
                                     ? isRight
-                                      ? 35
-                                      : 180
-                                    : isRank
+                                      ? 40
+                                      : 190
+                                    : isRank_B
                                       ? isRight
                                         ? 35
-                                        : 185
-                                      : isRight
-                                        ? 98
-                                        : 188
-                  }
-                  y={
-                    isCapping
-                      ? isRight
-                        ? 198
-                        : 198
-                      : isAnyversary
-                        ? 176
-                        : isAchievement
-                          ? 113
-                          : isWelcome
-                            ? isRight
-                              ? 124
-                              : 126
-                            : isBonanza
-                              ? isRight
-                                ? 112
-                                : 112
-                              : isRank_B
-                                ? isRight
-                                  ? 113.7
-                                  : 113.7
-                                : 112
-                  }
-                  width={100}
-                  height={5}
-                  text={"FROM/" + `${formcity.toUpperCase() || ""}`}
-                  fontSize={fs(7)}
-                  fill="white"
-                  fontStyle="bold"
-                  letterSpacing={0.1}
-                  verticalAlign="middle"
-                  align="center"
-                />
-              )}
-
-              {isWelcome ? (
-                <Image
-                  image={Imagel2}
-                  x={isRight ? 70 : 180}
-                  y={178}
-                  width={60}
-                  height={60}
-                />
-              ) : null}
-
-              {isSubGeneralType ? (
-                <Image
-                  ref={profileImageRef}
-                  image={ImageProfile}
-                  x={isRight ? 190 : -10}
-                  y={56}
-                  width={175}
-                  height={230}
-                  scaleX={profileAttrs.scaleX}
-                  offsetX={profileAttrs.offsetX}
-                  scaleY={profileAttrs.scaleY}
-                  offsetY={profileAttrs.offsetY}
-                  // draggable
-                  onClick={handleImageClick("profile")}
-                  onTap={handleImageClick("profile")}
-                  // onDragMove={makeDragMove("profile")}
-                  // onDragEnd={handleDragEnd("profile")}
-                  // onTouchMove={makePinchMove("profile")}
-                  // onTouchEnd={handlePinchEnd}
-                  // onTouchCancel={handleTouchCancel}
-                  // onTransformEnd={handleTransformEnd("profile")}
-                />
-              ) : isSubGeneralType2 || isAchievement ? null : (
-                // <Image
-                //   ref={rankImageRef}
-                //   image={isMeeting ? ImageChief : ImageRank}
-                //   x={rankAttrs.x}
-                //   y={rankAttrs.y}
-                //   width={rankAttrs.width}
-                //   height={rankAttrs.height}
-                //   scaleX={rankAttrs.scaleX}
-                //   offsetX={rankAttrs.offsetX}
-                //   scaleY={rankAttrs.scaleY}
-                //   offsetY={rankAttrs.offsetY}
-                //   draggable
-                //   onClick={handleImageClick("rank")}
-                //   onTap={handleImageClick("rank")}
-                //   onDragMove={makeDragMove("rank")}
-                //   onDragEnd={handleDragEnd("rank")}
-                //   onTouchMove={makePinchMove("rank")}
-                //   onTouchEnd={handlePinchEnd}
-                //   onTouchCancel={handleTouchCancel}
-                //   onTransformEnd={handleTransformEnd("rank")}
-                // />
-                <Image
-                  ref={rankImageRef}
-                  image={isMeeting ? ImageChief : ImageRank}
-                  x={rankAttrs.x}
-                  y={rankAttrs.y}
-                  width={rankAttrs.width}
-                  height={rankAttrs.height}
-                  scaleX={rankAttrs.scaleX}
-                  offsetX={rankAttrs.offsetX}
-                  scaleY={rankAttrs.scaleY}
-                  offsetY={rankAttrs.offsetY}
-                  filters={
-                    isWelcomeClosing ? [FadeBottomFilter] : [FadeEdgesFilter]
-                  }
-                  // draggable
-                  onClick={handleImageClick("rank")}
-                  onTap={handleImageClick("rank")}
-                  // onDragMove={makeDragMove("rank")}
-                  // onDragEnd={handleDragEnd("rank")}
-                  // onTouchMove={makePinchMove("rank")}
-                  // onTouchEnd={handlePinchEnd}
-                  // onTouchCancel={handleTouchCancel}
-                  // onTransformEnd={handleTransformEnd("rank")}
-                />
-              )}
-
-              {isMeeting || isSubGeneralType || isSubGeneralType2 ? null : (
-                <Image
-                  ref={stickerImageRef}
-                  image={Sticker}
-                  x={stickerAttrs.x}
-                  y={stickerAttrs.y}
-                  width={stickerAttrs.width}
-                  height={stickerAttrs.height}
-                  scaleX={stickerAttrs.scaleX}
-                  offsetX={stickerAttrs.offsetX}
-                  scaleY={stickerAttrs.scaleY}
-                  offsetY={stickerAttrs.offsetY}
-                  // draggable
-                  // onClick={handleImageClick("sticker")}
-                  // onTap={handleImageClick("sticker")}
-                  // onDragMove={makeDragMove("sticker")}
-                  // onDragEnd={handleDragEnd("sticker")}
-                  // onTouchMove={makePinchMove("sticker")}
-                  // onTouchEnd={handlePinchEnd}
-                  // onTouchCancel={handleTouchCancel}
-                  // onTransformEnd={handleTransformEnd("sticker")}
-                />
-              )}
-
-              {isRank ? (
-                <Image
-                  image={rankbadge}
-                  x={isRank_B ? (isRight ? 4 : 146) : isRight ? 12 : 145}
-                  y={isRank_B ? 148 : 134}
-                  width={170}
-                  height={55}
-                />
-              ) : null}
-
-              {isBonanza ? (
-                <Image
-                  x={isRight ? 100 : 170}
-                  y={isRight ? 210 : 200}
-                  width={70}
-                  height={70}
-                  image={imgBonanza}
-                />
-              ) : null}
-              {isBonanza ? (
-                <Image
-                  x={isRight ? 135 : 235}
-                  y={isRight ? 230 : 220}
-                  width={30}
-                  height={30}
-                  image={imgBonanzafamily}
-                />
-              ) : null}
-
-              {isTraining ? (
-                <Image
-                  x={isRight ? 10 : 155}
-                  y={isRight ? 115 : 115}
-                  width={150}
-                  height={100}
-                  image={imgTraining}
-                />
-              ) : null}
-
-              {isMeeting ? (
-                <Image
-                  x={isRight ? 10 : 155}
-                  y={isRight ? 62 : 62}
-                  width={150}
-                  height={90}
-                  image={imgMeeting}
-                />
-              ) : null}
-
-              {isTraining ? (
-                <Text
-                  fontFamily="Montserrat"
-                  x={isRight ? 178 : 8}
-                  y={231}
-                  width={150}
-                  height={30}
-                  text={String(trainingDate?.toUpperCase() || "")}
-                  fontSize={fs(12)}
-                  fill="white"
-                  fontStyle="1000"
-                  letterSpacing={0}
-                  verticalAlign="center"
-                  align="center"
-                />
-              ) : null}
-
-              {isAchievement ? (
-                <Text
-                  fontFamily="Montserrat"
-                  x={110}
-                  y={232}
-                  width={130}
-                  height={30}
-                  text={String(AchiveName.toUpperCase() || "")}
-                  fontSize={fs(18)}
-                  fill="gold"
-                  fontStyle="1000"
-                  letterSpacing={0}
-                  verticalAlign="center"
-                  align="center"
-                />
-              ) : null}
-
-              {isIncome ? (
-                <Text
-                  fontFamily="Montserrat"
-                  x={isRight ? 60 : 165}
-                  y={isRight ? 195 : 197}
-                  width={130}
-                  height={30}
-                  text={`${incomeDay} ${incomeType.toUpperCase()}`}
-                  fontSize={fs(18)}
-                  fill="white"
-                  fontStyle="1000"
-                  letterSpacing={0}
-                  verticalAlign="center"
-                  align="center"
-                />
-              ) : null}
-
-              {isRank ? (
-                <Image
-                  image={trip_detail_image}
-                  x={isRank_B ? (isRight ? -25 : 132) : isRight ? 12 : 145}
-                  y={isRank_B ? 198 : 134}
-                  width={215}
-                  height={11.3}
-                />
-              ) : null}
-              {isRank ? (
-                <Image
-                  image={tripbadge}
-                  x={isRank_B ? (isRight ? 105 : 132) : isRight ? 12 : 145}
-                  y={isRank_B ? 193 : 134}
-                  width={83}
-                  height={83}
-                />
-              ) : null}
-
-              {isSubGeneralType ||
-              isSubGeneralType2 ||
-              Template_Type === "Anniversary_Birthday" ||
-              isBonanza ||
-              Template_Type === "Capping" ||
-              isWelcome ||
-              isMeeting ||
-              isTraining ? null : (
-                <GoldenAmountImages
-                  amountText={amountText}
-                  digitImageMap={digitImageMap}
-                  // startX={(() => {
-                  //   const SPACING = 1.5;
-                  //   const dh = isIncome ? 26 : isClosing ? 30 : 32;
-                  //   if (isIncome)  return isRight ? 20  : 135;
-                  //   if (isClosing) return isRight ? 49  : 145;
-                  //   if (!isRight)  return 0;
-
-                  //   const maxW = computeAmountWidth("₹XX,XX,XXX", dh, SPACING);
-                  //   const curW = computeAmountWidth(amountText, dh, SPACING);
-                  //   return Math.max(0, 125 + (maxW - curW));
-                  // })()}
-                  startX={
-                    isIncome
-                      ? isRight
-                        ? 20
-                        : 135
-                      : isClosing
+                                        : 180
+                                      : isRank
+                                        ? isRight
+                                          ? 35
+                                          : 185
+                                        : isRight
+                                          ? 98
+                                          : 188
+                    }
+                    y={
+                      isCapping
                         ? isRight
-                          ? 30
-                          : 175
-                        : isRight
-                          ? charslen?.length === 10
-                            ? 143
-                            : charslen?.length === 9
-                              ? 143
-                              : charslen?.length === 8
-                                ? 140
-                                : charslen?.length === 7
-                                  ? 160
-                                  : charslen?.length === 6
-                                    ? 165
-                                    : 181
-                          : isRank_B
-                            ? charslen?.length === 6
-                              ? 22
-                              : charslen?.length === 7
-                                ? 17
-                                : charslen?.length === 9
-                                  ? 5
-                                  : charslen?.length === 10
-                                    ? 5
-                                    : 22
-                            : 1.5
-                  }
-                  y={
-                    isIncome
-                      ? 132
-                      : isClosing
-                        ? 132
-                        : charslen?.length === 10
-                          ? 250
-                          : isRank_B
-                            ? 236.5
-                            : 250
-                  }
-                  digitHeight={
-                    isIncome
-                      ? 26
-                      : isClosing
-                        ? 28
-                        : charslen?.length === 10
-                          ? 32
-                          : isRank_B
-                            ? 29
-                            : 32
-                  }
-                  spacing={charslen?.length === 6 ? 1.5 : 0}
-                />
-              )}
-
-              {isIncome ? (
-                <Group x={isRight ? 100 : 170} y={107}>
-                  <Image
-                    x={10}
-                    y={120}
-                    width={50}
-                    height={50}
-                    image={MainIncomeProof}
+                          ? 198
+                          : 198
+                        : isAnyversary
+                          ? 176
+                          : isAchievement
+                            ? 113
+                            : isWelcome
+                              ? isRight
+                                ? 124
+                                : 126
+                              : isBonanza
+                                ? isRight
+                                  ? 112
+                                  : 112
+                                : isRank_B
+                                  ? isRight
+                                    ? 113.7
+                                    : 113.7
+                                  : 112
+                    }
+                    width={100}
+                    height={5}
+                    text={"FROM/" + `${formcity.toUpperCase() || ""}`}
+                    fontSize={fs(7)}
+                    fill="white"
+                    fontStyle="bold"
+                    letterSpacing={0.1}
+                    verticalAlign="middle"
+                    align="center"
                   />
+                )}
+
+                {isWelcome ? (
                   <Image
-                    x={5}
-                    y={115}
+                    image={Imagel2}
+                    x={isRight ? 70 : 180}
+                    y={178}
                     width={60}
                     height={60}
-                    image={AchiveFrame}
                   />
-                </Group>
-              ) : null}
+                ) : null}
 
-              {isAchievement ? (
-                <Image
-                  rotationDeg={-10}
-                  x={10}
-                  y={120}
-                  width={40}
-                  height={40}
-                  image={Imagef1}
-                />
-              ) : null}
-              {isAchievement ? (
-                <Image
-                  rotationDeg={10}
-                  x={265}
-                  y={115}
-                  width={40}
-                  height={40}
-                  image={Imagef2}
-                />
-              ) : null}
-              {isAchievement ? (
-                <Image
-                  rotationDeg={10}
-                  x={265}
-                  y={175}
-                  width={40}
-                  height={40}
-                  image={Imagef3}
-                />
-              ) : null}
-              {isAchievement ? (
-                <Group x={76} y={120} width={200} height={100}>
-                  <Image width={165} height={90} image={MainAchieveImage} />
+                {isSubGeneralType ? (
                   <Image
-                    width={182}
-                    x={-2}
-                    y={-2}
-                    height={110}
-                    image={AchiveFrame}
+                    ref={profileImageRef}
+                    image={ImageProfile}
+                    x={isRight ? 190 : -10}
+                    y={56}
+                    width={175}
+                    height={230}
+                    scaleX={profileAttrs.scaleX}
+                    offsetX={profileAttrs.offsetX}
+                    scaleY={profileAttrs.scaleY}
+                    offsetY={profileAttrs.offsetY}
+                    // draggable
+                    onClick={handleImageClick("profile")}
+                    onTap={handleImageClick("profile")}
+                    // onDragMove={makeDragMove("profile")}
+                    // onDragEnd={handleDragEnd("profile")}
+                    // onTouchMove={makePinchMove("profile")}
+                    // onTouchEnd={handlePinchEnd}
+                    // onTouchCancel={handleTouchCancel}
+                    // onTransformEnd={handleTransformEnd("profile")}
                   />
-                </Group>
-              ) : null}
+                ) : isSubGeneralType2 || isAchievement ? null : (
+                  // <Image
+                  //   ref={rankImageRef}
+                  //   image={isMeeting ? ImageChief : ImageRank}
+                  //   x={rankAttrs.x}
+                  //   y={rankAttrs.y}
+                  //   width={rankAttrs.width}
+                  //   height={rankAttrs.height}
+                  //   scaleX={rankAttrs.scaleX}
+                  //   offsetX={rankAttrs.offsetX}
+                  //   scaleY={rankAttrs.scaleY}
+                  //   offsetY={rankAttrs.offsetY}
+                  //   draggable
+                  //   onClick={handleImageClick("rank")}
+                  //   onTap={handleImageClick("rank")}
+                  //   onDragMove={makeDragMove("rank")}
+                  //   onDragEnd={handleDragEnd("rank")}
+                  //   onTouchMove={makePinchMove("rank")}
+                  //   onTouchEnd={handlePinchEnd}
+                  //   onTouchCancel={handleTouchCancel}
+                  //   onTransformEnd={handleTransformEnd("rank")}
+                  // />
+                  <Image
+                    ref={rankImageRef}
+                    image={isMeeting ? ImageChief : ImageRank}
+                    x={rankAttrs.x}
+                    y={rankAttrs.y}
+                    width={rankAttrs.width}
+                    height={rankAttrs.height}
+                    scaleX={rankAttrs.scaleX}
+                    offsetX={rankAttrs.offsetX}
+                    scaleY={rankAttrs.scaleY}
+                    offsetY={rankAttrs.offsetY}
+                    filters={
+                      isWelcomeClosing ? [FadeBottomFilter] : [FadeEdgesFilter]
+                    }
+                    // draggable
+                    onClick={handleImageClick("rank")}
+                    onTap={handleImageClick("rank")}
+                    // onDragMove={makeDragMove("rank")}
+                    // onDragEnd={handleDragEnd("rank")}
+                    // onTouchMove={makePinchMove("rank")}
+                    // onTouchEnd={handlePinchEnd}
+                    // onTouchCancel={handleTouchCancel}
+                    // onTransformEnd={handleTransformEnd("rank")}
+                  />
+                )}
 
-              {isMeeting ? (
-                <>
+                {isMeeting || isSubGeneralType || isSubGeneralType2 ? null : (
+                  <Image
+                    ref={stickerImageRef}
+                    image={Sticker}
+                    x={stickerAttrs.x}
+                    y={stickerAttrs.y}
+                    width={stickerAttrs.width}
+                    height={stickerAttrs.height}
+                    scaleX={stickerAttrs.scaleX}
+                    offsetX={stickerAttrs.offsetX}
+                    scaleY={stickerAttrs.scaleY}
+                    offsetY={stickerAttrs.offsetY}
+                    // draggable
+                    // onClick={handleImageClick("sticker")}
+                    // onTap={handleImageClick("sticker")}
+                    // onDragMove={makeDragMove("sticker")}
+                    // onDragEnd={handleDragEnd("sticker")}
+                    // onTouchMove={makePinchMove("sticker")}
+                    // onTouchEnd={handlePinchEnd}
+                    // onTouchCancel={handleTouchCancel}
+                    // onTransformEnd={handleTransformEnd("sticker")}
+                  />
+                )}
+
+                {isRank ? (
+                  <Image
+                    image={rankbadge}
+                    x={isRank_B ? (isRight ? 4 : 146) : isRight ? 12 : 145}
+                    y={isRank_B ? 148 : 134}
+                    width={170}
+                    height={55}
+                  />
+                ) : null}
+
+                {isBonanza ? (
+                  <Image
+                    x={isRight ? 100 : 170}
+                    y={isRight ? 210 : 200}
+                    width={70}
+                    height={70}
+                    image={imgBonanza}
+                  />
+                ) : null}
+                {isBonanza ? (
+                  <Image
+                    x={isRight ? 135 : 235}
+                    y={isRight ? 230 : 220}
+                    width={30}
+                    height={30}
+                    image={imgBonanzafamily}
+                  />
+                ) : null}
+
+                {isTraining ? (
+                  <Image
+                    x={isRight ? 10 : 155}
+                    y={isRight ? 115 : 115}
+                    width={150}
+                    height={100}
+                    image={imgTraining}
+                  />
+                ) : null}
+
+                {isMeeting ? (
+                  <Image
+                    x={isRight ? 10 : 155}
+                    y={isRight ? 62 : 62}
+                    width={150}
+                    height={90}
+                    image={imgMeeting}
+                  />
+                ) : null}
+
+                {isTraining ? (
                   <Text
                     fontFamily="Montserrat"
-                    x={isRight ? -13 : 135}
+                    x={isRight ? 178 : 8}
+                    y={231}
+                    width={150}
+                    height={30}
+                    text={String(trainingDate?.toUpperCase() || "")}
+                    fontSize={fs(12)}
+                    fill="white"
+                    fontStyle="1000"
+                    letterSpacing={0}
+                    verticalAlign="center"
+                    align="center"
+                  />
+                ) : null}
+
+                {isAchievement ? (
+                  <Text
+                    fontFamily="Montserrat"
+                    x={110}
+                    y={232}
+                    width={130}
+                    height={30}
+                    text={String(AchiveName.toUpperCase() || "")}
+                    fontSize={fs(18)}
+                    fill="gold"
+                    fontStyle="1000"
+                    letterSpacing={0}
+                    verticalAlign="center"
+                    align="center"
+                  />
+                ) : null}
+
+                {isIncome ? (
+                  <Text
+                    fontFamily="Montserrat"
+                    x={isRight ? 60 : 165}
+                    y={isRight ? 195 : 197}
+                    width={130}
+                    height={30}
+                    text={`${incomeDay} ${incomeType.toUpperCase()}`}
+                    fontSize={fs(18)}
+                    fill="white"
+                    fontStyle="1000"
+                    letterSpacing={0}
+                    verticalAlign="center"
+                    align="center"
+                  />
+                ) : null}
+
+                {isRank ? (
+                  <Image
+                    image={trip_detail_image}
+                    x={isRank_B ? (isRight ? -25 : 132) : isRight ? 12 : 145}
+                    y={isRank_B ? 198 : 134}
+                    width={215}
+                    height={11.3}
+                  />
+                ) : null}
+                {isRank ? (
+                  <Image
+                    image={tripbadge}
+                    x={isRank_B ? (isRight ? 105 : 132) : isRight ? 12 : 145}
+                    y={isRank_B ? 193 : 134}
+                    width={83}
+                    height={83}
+                  />
+                ) : null}
+
+                {isSubGeneralType ||
+                isSubGeneralType2 ||
+                Template_Type === "Anniversary_Birthday" ||
+                isBonanza ||
+                Template_Type === "Capping" ||
+                isWelcome ||
+                isMeeting ||
+                isTraining ? null : (
+                  <GoldenAmountImages
+                    amountText={amountText}
+                    digitImageMap={digitImageMap}
+                    // startX={(() => {
+                    //   const SPACING = 1.5;
+                    //   const dh = isIncome ? 26 : isClosing ? 30 : 32;
+                    //   if (isIncome)  return isRight ? 20  : 135;
+                    //   if (isClosing) return isRight ? 49  : 145;
+                    //   if (!isRight)  return 0;
+
+                    //   const maxW = computeAmountWidth("₹XX,XX,XXX", dh, SPACING);
+                    //   const curW = computeAmountWidth(amountText, dh, SPACING);
+                    //   return Math.max(0, 125 + (maxW - curW));
+                    // })()}
+                    startX={
+                      isIncome
+                        ? isRight
+                          ? 20
+                          : 135
+                        : isClosing
+                          ? isRight
+                            ? 30
+                            : 175
+                          : isRight
+                            ? charslen?.length === 10
+                              ? 143
+                              : charslen?.length === 9
+                                ? 143
+                                : charslen?.length === 8
+                                  ? 140
+                                  : charslen?.length === 7
+                                    ? 160
+                                    : charslen?.length === 6
+                                      ? 165
+                                      : 181
+                            : isRank_B
+                              ? charslen?.length === 6
+                                ? 22
+                                : charslen?.length === 7
+                                  ? 17
+                                  : charslen?.length === 9
+                                    ? 5
+                                    : charslen?.length === 10
+                                      ? 5
+                                      : 22
+                              : 1.5
+                    }
+                    y={
+                      isIncome
+                        ? 132
+                        : isClosing
+                          ? 132
+                          : charslen?.length === 10
+                            ? 250
+                            : isRank_B
+                              ? 236.5
+                              : 250
+                    }
+                    digitHeight={
+                      isIncome
+                        ? 26
+                        : isClosing
+                          ? 28
+                          : charslen?.length === 10
+                            ? 32
+                            : isRank_B
+                              ? 29
+                              : 32
+                    }
+                    spacing={charslen?.length === 6 ? 1.5 : 0}
+                  />
+                )}
+
+                {isIncome ? (
+                  <Group x={isRight ? 100 : 170} y={107}>
+                    <Image
+                      x={10}
+                      y={120}
+                      width={50}
+                      height={50}
+                      image={MainIncomeProof}
+                    />
+                    <Image
+                      x={5}
+                      y={115}
+                      width={60}
+                      height={60}
+                      image={AchiveFrame}
+                    />
+                  </Group>
+                ) : null}
+
+                {isAchievement ? (
+                  <Image
+                    rotationDeg={-10}
+                    x={10}
+                    y={120}
+                    width={40}
+                    height={40}
+                    image={Imagef1}
+                  />
+                ) : null}
+                {isAchievement ? (
+                  <Image
+                    rotationDeg={10}
+                    x={265}
+                    y={115}
+                    width={40}
+                    height={40}
+                    image={Imagef2}
+                  />
+                ) : null}
+                {isAchievement ? (
+                  <Image
+                    rotationDeg={10}
+                    x={265}
                     y={175}
-                    width={200}
-                    height={30}
-                    text={meetingData?.chiefName.toUpperCase()}
-                    fontSize={fs(13)}
-                    fontStyle="1000"
-                    fill="white"
-                    letterSpacing={0}
-                    verticalAlign="center"
-                    align="center"
+                    width={40}
+                    height={40}
+                    image={Imagef3}
                   />
-                  <Text
-                    fontFamily="Montserrat"
-                    x={isRight ? -13 : 135}
-                    y={190}
-                    width={200}
-                    height={30}
-                    text={meetingData?.chiefDesignation.toUpperCase()}
-                    fontSize={fs(9)}
-                    fontStyle="500"
-                    fill="white"
-                    letterSpacing={0}
-                    verticalAlign="center"
-                    align="center"
-                  />
-                </>
-              ) : null}
-
-              {isMeeting ? (
-                isRight ? (
-                  <Group x={50} y={210}>
-                    <Text
-                      fontFamily="Montserrat"
-                      x={0}
-                      y={1}
-                      text={meetingData?.date}
-                      fontSize={fs(13)}
-                      fontStyle="1000"
-                      fill="white"
-                      letterSpacing={0}
-                      verticalAlign="start"
-                      align="start"
-                    />
-                    <Text
-                      fontFamily="Montserrat"
-                      x={0}
-                      y={21}
-                      text={meetingData?.time}
-                      fontSize={fs(13)}
-                      fontStyle="1000"
-                      fill="white"
-                      letterSpacing={0}
-                      verticalAlign="start"
-                      align="start"
+                ) : null}
+                {isAchievement ? (
+                  <Group x={76} y={120} width={200} height={100}>
+                    <Image width={165} height={90} image={MainAchieveImage} />
+                    <Image
+                      width={182}
+                      x={-2}
+                      y={-2}
+                      height={110}
+                      image={AchiveFrame}
                     />
                   </Group>
-                ) : (
-                  <Group x={190} y={210}>
-                    <Text
-                      fontFamily="Montserrat"
-                      x={0}
-                      y={3}
-                      text={meetingData?.date}
-                      fontSize={fs(13)}
-                      fontStyle="1000"
-                      fill="white"
-                      letterSpacing={0}
-                      verticalAlign="end"
-                      align="end"
-                    />
-                    <Text
-                      fontFamily="Montserrat"
-                      x={0}
-                      y={21}
-                      text={meetingData?.time}
-                      fontSize={fs(13)}
-                      fontStyle="1000"
-                      fill="white"
-                      letterSpacing={0}
-                      verticalAlign="end"
-                      align="end"
-                    />
-                  </Group>
-                )
-              ) : null}
+                ) : null}
 
-              {meetingData?.hostMode === "add" && isMeeting ? (
-                <Group X={isRight ? 5 : 100} Y={0.9}>
-                  <Text
-                    fontFamily="Montserrat"
-                    x={20}
-                    y={285.5}
-                    width={180}
-                    height={30}
-                    text={meetingData?.hostName.toUpperCase()}
-                    fontSize={fs(7)}
-                    fontStyle="1000"
-                    fill="white"
-                    letterSpacing={0}
-                    verticalAlign="center"
-                    align="center"
-                  />
-                  <Text
-                    fontFamily="Montserrat"
-                    x={20}
-                    y={295}
-                    width={180}
-                    height={30}
-                    text={ActualDesignation}
-                    fontSize={fs(6)}
-                    fontStyle="1000"
-                    fill="white"
-                    letterSpacing={0}
-                    verticalAlign="center"
-                    align="center"
-                  />
-                  {showMobile === "yes" ? (
+                {isMeeting ? (
+                  <>
+                    <Text
+                      fontFamily="Montserrat"
+                      x={isRight ? -13 : 135}
+                      y={175}
+                      width={200}
+                      height={30}
+                      text={meetingData?.chiefName.toUpperCase()}
+                      fontSize={fs(13)}
+                      fontStyle="1000"
+                      fill="white"
+                      letterSpacing={0}
+                      verticalAlign="center"
+                      align="center"
+                    />
+                    <Text
+                      fontFamily="Montserrat"
+                      x={isRight ? -13 : 135}
+                      y={190}
+                      width={200}
+                      height={30}
+                      text={meetingData?.chiefDesignation.toUpperCase()}
+                      fontSize={fs(9)}
+                      fontStyle="500"
+                      fill="white"
+                      letterSpacing={0}
+                      verticalAlign="center"
+                      align="center"
+                    />
+                  </>
+                ) : null}
+
+                {isMeeting ? (
+                  isRight ? (
+                    <Group x={50} y={210}>
+                      <Text
+                        fontFamily="Montserrat"
+                        x={0}
+                        y={1}
+                        text={meetingData?.date}
+                        fontSize={fs(13)}
+                        fontStyle="1000"
+                        fill="white"
+                        letterSpacing={0}
+                        verticalAlign="start"
+                        align="start"
+                      />
+                      <Text
+                        fontFamily="Montserrat"
+                        x={0}
+                        y={21}
+                        text={meetingData?.time}
+                        fontSize={fs(13)}
+                        fontStyle="1000"
+                        fill="white"
+                        letterSpacing={0}
+                        verticalAlign="start"
+                        align="start"
+                      />
+                    </Group>
+                  ) : (
+                    <Group x={190} y={210}>
+                      <Text
+                        fontFamily="Montserrat"
+                        x={0}
+                        y={3}
+                        text={meetingData?.date}
+                        fontSize={fs(13)}
+                        fontStyle="1000"
+                        fill="white"
+                        letterSpacing={0}
+                        verticalAlign="end"
+                        align="end"
+                      />
+                      <Text
+                        fontFamily="Montserrat"
+                        x={0}
+                        y={21}
+                        text={meetingData?.time}
+                        fontSize={fs(13)}
+                        fontStyle="1000"
+                        fill="white"
+                        letterSpacing={0}
+                        verticalAlign="end"
+                        align="end"
+                      />
+                    </Group>
+                  )
+                ) : null}
+
+                {meetingData?.hostMode === "add" && isMeeting ? (
+                  <Group X={isRight ? 5 : 100} Y={0.9}>
                     <Text
                       fontFamily="Montserrat"
                       x={20}
-                      y={303}
+                      y={285.5}
                       width={180}
                       height={30}
-                      text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
+                      text={meetingData?.hostName.toUpperCase()}
+                      fontSize={fs(7)}
+                      fontStyle="1000"
+                      fill="white"
+                      letterSpacing={0}
+                      verticalAlign="center"
+                      align="center"
+                    />
+                    <Text
+                      fontFamily="Montserrat"
+                      x={20}
+                      y={295}
+                      width={180}
+                      height={30}
+                      text={ActualDesignation}
                       fontSize={fs(6)}
                       fontStyle="1000"
                       fill="white"
@@ -3915,48 +3916,28 @@ function GeneralEditPage({
                       verticalAlign="center"
                       align="center"
                     />
-                  ) : null}
-                </Group>
-              ) : null}
+                    {showMobile === "yes" ? (
+                      <Text
+                        fontFamily="Montserrat"
+                        x={20}
+                        y={303}
+                        width={180}
+                        height={30}
+                        text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
+                        fontSize={fs(6)}
+                        fontStyle="1000"
+                        fill={isProduct ? `black` : `white`}
+                        letterSpacing={0}
+                        verticalAlign="center"
+                        align="center"
+                      />
+                    ) : null}
+                  </Group>
+                ) : null}
 
-              {isMeeting ||
-              isSubGeneralType ||
-              !showImageFooter ? null : isRight ? (
-                <Image
-                  scaleX={-1}
-                  scaleY={1}
-                  image={Imagefooter}
-                  x={320}
-                  y={280}
-                  width={350}
-                  height={41}
-                  onClick={() => setIsOpenFtr(true)}
-                  onTap={() => setIsOpenFtr(true)}
-                />
-              ) : (
-                <Image
-                  image={Imagefooter}
-                  x={0}
-                  y={280}
-                  width={350}
-                  height={41}
-                  onClick={() => setIsOpenFtr(true)}
-                  onTap={() => setIsOpenFtr(true)}
-                />
-              )}
-
-              {isSubGeneralType && showImageFooter ? (
-                isRight ? (
-                  <Image
-                    image={Imagefooter}
-                    x={0}
-                    y={280}
-                    width={350}
-                    height={41}
-                    onClick={() => setIsOpenFtr(true)}
-                    onTap={() => setIsOpenFtr(true)}
-                  />
-                ) : (
+                {isMeeting ||
+                isSubGeneralType ||
+                !showImageFooter ? null : isRight ? (
                   <Image
                     scaleX={-1}
                     scaleY={1}
@@ -3968,172 +3949,243 @@ function GeneralEditPage({
                     onClick={() => setIsOpenFtr(true)}
                     onTap={() => setIsOpenFtr(true)}
                   />
-                )
-              ) : null}
-              {isSubGeneralType ||
-              (isMeeting && meetingData?.hostMode === "none") ||
-              !ImageProfile
-                ? null
-                : (() => {
-                    const fW = isMeeting ? 60 : 87.5;
-                    const fH = isMeeting ? 70 : 115;
-                    const fY = isMeeting ? 250 : 210;
-                    const baseX = isRight
-                      ? isMeeting
-                        ? 60
-                        : 86
-                      : isMeeting
-                        ? 260
-                        : 234;
-                    const baseScaleX = isRight ? -1 : 1;
-                    const leftEdge = baseScaleX === -1 ? baseX - fW : baseX;
-                    const curScaleX = footerImgFlip ? -baseScaleX : baseScaleX;
-                    const curOffsetX = curScaleX === -1 ? fW : 0;
-                    return (
-                      <Image
-                        ref={profileImageRef}
-                        image={ImageProfile}
-                        x={leftEdge}
-                        y={fY}
-                        scaleX={curScaleX}
-                        offsetX={curOffsetX}
-                        width={fW}
-                        height={fH}
-                        onClick={() => setFooterImgFlip((f) => !f)}
-                        onTap={() => setFooterImgFlip((f) => !f)}
-                      />
-                    );
-                  })()}
-
-              {isMeeting ? (
-                isRight ? (
-                  <Text
-                    fontFamily="Montserrat"
-                    x={12}
-                    y={40}
-                    width={180}
-                    height={30}
-                    text={meetingData?.teamName.toUpperCase()}
-                    fontSize={fs(9)}
-                    fontStyle="1000"
-                    fill="white"
-                    letterSpacing={0}
-                    verticalAlign="center"
-                    align="center"
-                  />
                 ) : (
-                  <Text
-                    fontFamily="Montserrat"
-                    x={125}
-                    y={40}
-                    width={180}
-                    height={30}
-                    text={meetingData?.teamName.toUpperCase()}
-                    fontSize={fs(9)}
-                    fontStyle="1000"
-                    fill="white"
-                    letterSpacing={0}
-                    verticalAlign="center"
-                    align="center"
+                  <Image
+                    image={Imagefooter}
+                    x={0}
+                    y={280}
+                    width={350}
+                    height={41}
+                    onClick={() => setIsOpenFtr(true)}
+                    onTap={() => setIsOpenFtr(true)}
                   />
-                )
-              ) : null}
+                )}
 
-              {isMeeting ? (
-                meetingData?.meetingMode === "online" ? (
-                  meetingData?.platformType === "instagram" ||
-                  meetingData?.platformType === "youtube" ||
-                  meetingData?.platformType === "facebook" ? (
-                    <Group
-                      x={
-                        meetingData?.hostMode === "add"
-                          ? isRight
-                            ? 180
-                            : 0
-                          : isRight
-                            ? 135
-                            : 0
-                      }
-                      y={285}
-                    >
-                      <Image
-                        image={
-                          meetingData?.platformType === "instagram"
-                            ? insta
-                            : meetingData?.platformType === "youtube"
-                              ? yt
-                              : meetingData?.platformType === "facebook"
-                                ? fb
-                                : null
-                        }
-                        x={isRight ? 0 : 10}
-                        y={0}
-                        width={25}
-                        height={25}
-                      />
-                      <Text
-                        fontFamily="Montserrat"
-                        x={isRight ? 35 : 45}
-                        y={8}
-                        text={meetingData?.platformInput}
-                        fontSize={fs(12)}
-                        fontStyle="1000"
-                        fill="white"
-                        letterSpacing={0}
-                        verticalAlign="start"
-                        align="start"
-                      />
-                    </Group>
+                {isSubGeneralType && showImageFooter ? (
+                  isRight ? (
+                    <Image
+                      image={Imagefooter}
+                      x={0}
+                      y={280}
+                      width={350}
+                      height={41}
+                      onClick={() => setIsOpenFtr(true)}
+                      onTap={() => setIsOpenFtr(true)}
+                    />
                   ) : (
-                    <Group x={isRight ? 175 : 0} y={285}>
-                      <Image
-                        image={
-                          meetingData?.platformType === "zoom"
-                            ? zooml
-                            : meetingData?.platformType === "meet"
-                              ? meetl
-                              : null
+                    <Image
+                      scaleX={-1}
+                      scaleY={1}
+                      image={Imagefooter}
+                      x={320}
+                      y={280}
+                      width={350}
+                      height={41}
+                      onClick={() => setIsOpenFtr(true)}
+                      onTap={() => setIsOpenFtr(true)}
+                    />
+                  )
+                ) : null}
+                {isSubGeneralType ||
+                (isMeeting && meetingData?.hostMode === "none") ||
+                !ImageProfile
+                  ? null
+                  : (() => {
+                      const fW = isMeeting ? 60 : 87.5;
+                      const fH = isMeeting ? 70 : 115;
+                      const fY = isMeeting ? 250 : 210;
+                      const baseX = isRight
+                        ? isMeeting
+                          ? 60
+                          : 86
+                        : isMeeting
+                          ? 260
+                          : 234;
+                      const baseScaleX = isRight ? -1 : 1;
+                      const leftEdge = baseScaleX === -1 ? baseX - fW : baseX;
+                      const curScaleX = footerImgFlip
+                        ? -baseScaleX
+                        : baseScaleX;
+                      const curOffsetX = curScaleX === -1 ? fW : 0;
+                      return (
+                        <Image
+                          ref={profileImageRef}
+                          image={ImageProfile}
+                          x={leftEdge}
+                          y={fY}
+                          scaleX={curScaleX}
+                          offsetX={curOffsetX}
+                          width={fW}
+                          height={fH}
+                          onClick={() => setFooterImgFlip((f) => !f)}
+                          onTap={() => setFooterImgFlip((f) => !f)}
+                        />
+                      );
+                    })()}
+
+                {isMeeting ? (
+                  isRight ? (
+                    <Text
+                      fontFamily="Montserrat"
+                      x={12}
+                      y={40}
+                      width={180}
+                      height={30}
+                      text={meetingData?.teamName.toUpperCase()}
+                      fontSize={fs(9)}
+                      fontStyle="1000"
+                      fill="white"
+                      letterSpacing={0}
+                      verticalAlign="center"
+                      align="center"
+                    />
+                  ) : (
+                    <Text
+                      fontFamily="Montserrat"
+                      x={125}
+                      y={40}
+                      width={180}
+                      height={30}
+                      text={meetingData?.teamName.toUpperCase()}
+                      fontSize={fs(9)}
+                      fontStyle="1000"
+                      fill="white"
+                      letterSpacing={0}
+                      verticalAlign="center"
+                      align="center"
+                    />
+                  )
+                ) : null}
+
+                {isMeeting ? (
+                  meetingData?.meetingMode === "online" ? (
+                    meetingData?.platformType === "instagram" ||
+                    meetingData?.platformType === "youtube" ||
+                    meetingData?.platformType === "facebook" ? (
+                      <Group
+                        x={
+                          meetingData?.hostMode === "add"
+                            ? isRight
+                              ? 180
+                              : 0
+                            : isRight
+                              ? 135
+                              : 0
                         }
-                        x={isRight ? 0 : 10}
-                        y={0}
-                        width={25}
-                        height={25}
-                      />
+                        y={285}
+                      >
+                        <Image
+                          image={
+                            meetingData?.platformType === "instagram"
+                              ? insta
+                              : meetingData?.platformType === "youtube"
+                                ? yt
+                                : meetingData?.platformType === "facebook"
+                                  ? fb
+                                  : null
+                          }
+                          x={isRight ? 0 : 10}
+                          y={0}
+                          width={25}
+                          height={25}
+                        />
+                        <Text
+                          fontFamily="Montserrat"
+                          x={isRight ? 35 : 45}
+                          y={8}
+                          text={meetingData?.platformInput}
+                          fontSize={fs(12)}
+                          fontStyle="1000"
+                          fill="white"
+                          letterSpacing={0}
+                          verticalAlign="start"
+                          align="start"
+                        />
+                      </Group>
+                    ) : (
+                      <Group x={isRight ? 175 : 0} y={285}>
+                        <Image
+                          image={
+                            meetingData?.platformType === "zoom"
+                              ? zooml
+                              : meetingData?.platformType === "meet"
+                                ? meetl
+                                : null
+                          }
+                          x={isRight ? 0 : 10}
+                          y={0}
+                          width={25}
+                          height={25}
+                        />
+                        <Text
+                          fontFamily="Montserrat"
+                          x={isRight ? 35 : 45}
+                          y={4}
+                          text={meetingData?.meetingId}
+                          fontSize={fs(9)}
+                          fontStyle="1000"
+                          fill="white"
+                          letterSpacing={0}
+                          verticalAlign="start"
+                          align="start"
+                        />
+                        <Text
+                          fontFamily="Montserrat"
+                          x={isRight ? 35 : 45}
+                          y={15}
+                          text={meetingData?.meetingPassword}
+                          fontSize={fs(9)}
+                          fontStyle="1000"
+                          fill="white"
+                          letterSpacing={0}
+                          verticalAlign="start"
+                          align="start"
+                        />
+                      </Group>
+                    )
+                  ) : (
+                    <Group x={isRight ? 140 : 15} y={285}>
+                      <Image image={locl} x={0} y={0} width={25} height={25} />
                       <Text
                         fontFamily="Montserrat"
-                        x={isRight ? 35 : 45}
-                        y={4}
-                        text={meetingData?.meetingId}
-                        fontSize={fs(9)}
+                        x={30}
+                        y={5}
+                        text={meetingData?.address1}
+                        fontSize={fs(10)}
                         fontStyle="1000"
+                        fontVariant="italic"
                         fill="white"
                         letterSpacing={0}
-                        verticalAlign="start"
-                        align="start"
+                        verticalAlign="center"
+                        align="center"
                       />
                       <Text
                         fontFamily="Montserrat"
-                        x={isRight ? 35 : 45}
+                        x={30}
                         y={15}
-                        text={meetingData?.meetingPassword}
-                        fontSize={fs(9)}
+                        text={meetingData?.address2}
+                        fontSize={fs(7.5)}
                         fontStyle="1000"
+                        fontVariant="italic"
                         fill="white"
                         letterSpacing={0}
-                        verticalAlign="start"
-                        align="start"
+                        verticalAlign="end"
+                        align="end"
                       />
                     </Group>
                   )
-                ) : (
-                  <Group x={isRight ? 140 : 15} y={285}>
-                    <Image image={locl} x={0} y={0} width={25} height={25} />
+                ) : null}
+
+                {isMeeting &&
+                meetingData?.hostMode === "none" &&
+                showMobile === "yes" ? (
+                  <Group x={isRight ? 0 : 240} y={298}>
                     <Text
                       fontFamily="Montserrat"
-                      x={30}
-                      y={5}
-                      text={meetingData?.address1}
-                      fontSize={fs(10)}
+                      x={3}
+                      y={0}
+                      text={"For More Details Contact On :-"}
+                      fontSize={fs(5.5)}
                       fontStyle="1000"
                       fontVariant="italic"
                       fill="white"
@@ -4143,338 +4195,40 @@ function GeneralEditPage({
                     />
                     <Text
                       fontFamily="Montserrat"
-                      x={30}
-                      y={15}
-                      text={meetingData?.address2}
+                      x={12}
+                      y={6}
+                      text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
                       fontSize={fs(7.5)}
                       fontStyle="1000"
-                      fontVariant="italic"
-                      fill="white"
+                      fill={isProduct ? `black` : `white`}
                       letterSpacing={0}
                       verticalAlign="end"
                       align="end"
                     />
                   </Group>
-                )
-              ) : null}
-
-              {isMeeting &&
-              meetingData?.hostMode === "none" &&
-              showMobile === "yes" ? (
-                <Group x={isRight ? 0 : 240} y={298}>
-                  <Text
-                    fontFamily="Montserrat"
-                    x={3}
-                    y={0}
-                    text={"For More Details Contact On :-"}
-                    fontSize={fs(5.5)}
-                    fontStyle="1000"
-                    fontVariant="italic"
-                    fill="white"
-                    letterSpacing={0}
-                    verticalAlign="center"
-                    align="center"
-                  />
-                  <Text
-                    fontFamily="Montserrat"
-                    x={12}
-                    y={6}
-                    text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
-                    fontSize={fs(7.5)}
-                    fontStyle="1000"
-                    fill="white"
-                    letterSpacing={0}
-                    verticalAlign="end"
-                    align="end"
-                  />
-                </Group>
-              ) : null}
-              {/* original Footer  */}
-              {isMeeting || isSubGeneralType ? null : isRight ? (
-                <>
-                  {showMobile === "yes" && (
-                    <>
-                      <Text
-                        fontFamily="Montserrat"
-                        x={isSubGeneralType2 ? 240 : isRank_B ? 233 : 252}
-                        y={isRank_B ? 294 : 298}
-                        width={150}
-                        height={5}
-                        text="CALL FOR ASSOCIATION"
-                        fontSize={fs(4.5)}
-                        fill="white"
-                        fontStyle="bold"
-                        verticalAlign="middle"
-                        onClick={() => setIsOpenFtr(true)}
-                        onTap={() => setIsOpenFtr(true)}
-                      />
-                      <Text
-                        fontFamily="Montserrat"
-                        x={isSubGeneralType2 ? 235 : isRank_B ? 230 : 250}
-                        y={isRank_B ? 294 : 297}
-                        width={150}
-                        height={20}
-                        text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
-                        fontSize={fs(7.5)}
-                        fill="white"
-                        fontStyle="bold"
-                        verticalAlign="middle"
-                        onClick={() => setIsOpenFtr(true)}
-                        onTap={() => setIsOpenFtr(true)}
-                      />
-                    </>
-                  )}
-
-                  {(() => {
-                    let iconX = 0;
-                    const iconPositions = {};
-                    if (SocialURLs.Youtube) {
-                      iconPositions.youtube = iconX;
-                      iconX += 7;
-                    }
-                    if (SocialURLs.Instagram) {
-                      iconPositions.instagram = iconX;
-                      iconX += 7;
-                    }
-                    if (SocialURLs.Facebook) {
-                      iconPositions.facebook = iconX;
-                      iconX += 7;
-                    }
-                    if (SocialURLs.X) {
-                      iconPositions.x = iconX;
-                      iconX += 7;
-                    }
-                    const textStartX = iconX + 3;
-                    const socialGroupWidth = socialText
-                      ? textStartX + socialText.length * 3.5
-                      : 0;
-                    const parentCenterX = isSubGeneralType
-                      ? 140 - 300 / 2
-                      : 178 - 300 / 2;
-                    return (
-                      <Group
-                        x={parentCenterX}
-                        y={
-                          isSubGeneralType || isSubGeneralType2
-                            ? 295
-                            : isRank_B
-                              ? 295
-                              : 300
-                        }
-                      >
-                        <Text
-                          fontFamily="Montserrat"
-                          x={23}
-                          y={0}
-                          width={200}
-                          height={2}
-                          text={ActualProfilename}
-                          // main Actual
-                          fontSize={fs(profileNameFontSize)}
-                          fill="white"
-                          fontStyle="1000"
-                          align="center"
-                          verticalAlign="middle"
-                          onClick={() => setIsOpenFtr(true)}
-                          onTap={() => setIsOpenFtr(true)}
-                        />
-                        <Text
-                          fontFamily="Montserrat"
-                          x={25}
-                          y={10.5}
-                          width={200}
-                          height={2}
-                          text={ActualDesignation}
-                          fontSize={fs(6.5)}
-                          fill="white"
-                          fontStyle="bold"
-                          align="center"
-                          verticalAlign="middle"
-                          onClick={() => setIsOpenFtr(true)}
-                          onTap={() => setIsOpenFtr(true)}
-                        />
-                      </Group>
-                    );
-                  })()}
-                </>
-              ) : (
-                <>
-                  {showMobile === "yes" && (
-                    <>
-                      <Text
-                        fontFamily="Montserrat"
-                        x={isRank_B ? 38 : 30}
-                        y={isRank_B ? 295 : 298}
-                        width={150}
-                        height={5}
-                        text="CALL FOR ASSOCIATION" //ORIGINAL CALL
-                        fontSize={fs(4.5)}
-                        fill="white"
-                        fontStyle="bold"
-                        verticalAlign="middle"
-                        onClick={() => setIsOpenFtr(true)}
-                        onTap={() => setIsOpenFtr(true)}
-                      />
-                      <Text
-                        fontFamily="Montserrat"
-                        x={isRank_B ? 36 : 28}
-                        y={isRank_B ? 295 : 297}
-                        width={150}
-                        height={20}
-                        text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
-                        fontSize={fs(7.5)}
-                        fill="white"
-                        fontStyle="bold"
-                        verticalAlign="middle"
-                        onClick={() => setIsOpenFtr(true)}
-                        onTap={() => setIsOpenFtr(true)}
-                      />
-                    </>
-                  )}
-                  {(() => {
-                    let iconX = 0;
-                    const iconPositions = {};
-                    if (SocialURLs.Youtube) {
-                      iconPositions.youtube = iconX;
-                      iconX += 10;
-                    }
-                    if (SocialURLs.Instagram) {
-                      iconPositions.instagram = iconX;
-                      iconX += 10;
-                    }
-                    if (SocialURLs.Facebook) {
-                      iconPositions.facebook = iconX;
-                      iconX += 10;
-                    }
-                    if (SocialURLs.X) {
-                      iconPositions.x = iconX;
-                      iconX += 10;
-                    }
-                    const textStartX = iconX + 2;
-                    const socialGroupWidth = socialText
-                      ? textStartX + socialText.length * 3.5
-                      : 0;
-                    const parentCenterX = isSubGeneralType
-                      ? 285 - 300 / 2
-                      : 200 - 300 / 2;
-                    return (
-                      <Group
-                        x={parentCenterX}
-                        y={
-                          isSubGeneralType || isSubGeneralType2
-                            ? 295
-                            : isRank_B
-                              ? 296
-                              : 299
-                        }
-                      >
-                        <Text
-                          fontFamily="Montserrat"
-                          x={isRank_B ? 16.5 : 19.5}
-                          y={0}
-                          width={200}
-                          height={2}
-                          text={ActualProfilename}
-                          fontSize={fs(profileNameFontSize)}
-                          fill="white"
-                          fontStyle="1000"
-                          align="center"
-                          verticalAlign="middle"
-                          onClick={() => setIsOpenFtr(true)}
-                          onTap={() => setIsOpenFtr(true)}
-                        />
-                        <Text
-                          fontFamily="Montserrat"
-                          x={isRank_B ? 16.5 : 19.5}
-                          y={showSocial === "no" ? 10.5 : 9.5}
-                          width={200}
-                          height={2}
-                          text={ActualDesignation}
-                          fontSize={fs(6.5)}
-                          fill="white"
-                          fontStyle="bold"
-                          align="center"
-                          verticalAlign="middle"
-                          onClick={() => setIsOpenFtr(true)}
-                          onTap={() => setIsOpenFtr(true)}
-                        />
-                        {showSocial === "never"
-                          ? socialText && (
-                              <Group x={(200 - socialGroupWidth) / 2} y={12}>
-                                {SocialURLs.Youtube && (
-                                  <Image
-                                    image={yt}
-                                    x={iconPositions.youtube}
-                                    y={0}
-                                    width={9}
-                                    height={9}
-                                  />
-                                )}
-                                {SocialURLs.Instagram && (
-                                  <Image
-                                    image={insta}
-                                    x={iconPositions.instagram}
-                                    y={0}
-                                    width={9}
-                                    height={9}
-                                  />
-                                )}
-                                {SocialURLs.Facebook && (
-                                  <Image
-                                    image={fb}
-                                    x={iconPositions.facebook}
-                                    y={0}
-                                    width={9}
-                                    height={9}
-                                  />
-                                )}
-                                {SocialURLs.X && (
-                                  <Image
-                                    image={xlogo}
-                                    x={iconPositions.x}
-                                    y={0}
-                                    width={9}
-                                    height={9}
-                                  />
-                                )}
-                                <Text
-                                  fontFamily="Montserrat"
-                                  x={textStartX}
-                                  y={0}
-                                  width={100 - textStartX}
-                                  height={9}
-                                  text={socialText}
-                                  fontSize={fs(6)}
-                                  fill="white"
-                                  fontStyle="bold"
-                                  align="left"
-                                  verticalAlign="middle"
-                                  onClick={() => setIsOpenFtr(true)}
-                                  onTap={() => setIsOpenFtr(true)}
-                                />
-                              </Group>
-                            )
-                          : null}
-                      </Group>
-                    );
-                  })()}
-                </>
-              )}
-
-              {isSubGeneralType ? (
-                isRight ? (
+                ) : null}
+                {/* original Footer  */}
+                {isMeeting || isSubGeneralType ? null : isRight ? (
                   <>
                     {showMobile === "yes" && (
                       <>
                         <Text
                           fontFamily="Montserrat"
-                          x={35}
-                          y={298}
+                          x={
+                            isProduct
+                              ? 245
+                              : isSubGeneralType2
+                                ? 240
+                                : isRank_B
+                                  ? 233
+                                  : 252
+                          }
+                          y={isProduct ? 297.5 : isRank_B ? 294 : 298}
                           width={150}
                           height={5}
                           text="CALL FOR ASSOCIATION"
-                          fontSize={fs(4.5)}
-                          fill="white"
+                          fontSize={fs(isProduct ? 5.5 : 4.5)}
+                          fill={isProduct ? `black` : `white`}
                           fontStyle="bold"
                           verticalAlign="middle"
                           onClick={() => setIsOpenFtr(true)}
@@ -4482,13 +4236,21 @@ function GeneralEditPage({
                         />
                         <Text
                           fontFamily="Montserrat"
-                          x={30}
-                          y={297}
+                          x={
+                            isProduct
+                              ? 247
+                              : isSubGeneralType2
+                                ? 235
+                                : isRank_B
+                                  ? 230
+                                  : 250
+                          }
+                          y={isProduct ? 298 : isRank_B ? 294 : 297}
                           width={150}
                           height={20}
                           text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
                           fontSize={fs(7.5)}
-                          fill="white"
+                          fill={isProduct ? `black` : `white`}
                           fontStyle="bold"
                           verticalAlign="middle"
                           onClick={() => setIsOpenFtr(true)}
@@ -4496,6 +4258,7 @@ function GeneralEditPage({
                         />
                       </>
                     )}
+
                     {(() => {
                       let iconX = 0;
                       const iconPositions = {};
@@ -4519,15 +4282,20 @@ function GeneralEditPage({
                       const socialGroupWidth = socialText
                         ? textStartX + socialText.length * 3.5
                         : 0;
+                      const parentCenterX = isSubGeneralType
+                        ? 140 - 300 / 2
+                        : 178 - 300 / 2;
                       return (
                         <Group
-                          x={105}
+                          x={parentCenterX}
                           y={
-                            isSubGeneralType || isSubGeneralType2
-                              ? 295
-                              : isRank_B
-                                ? 290
-                                : 300
+                            isProduct
+                              ? 300
+                              : isSubGeneralType || isSubGeneralType2
+                                ? 295
+                                : isRank_B
+                                  ? 295
+                                  : 300
                           }
                         >
                           <Text
@@ -4537,6 +4305,7 @@ function GeneralEditPage({
                             width={200}
                             height={2}
                             text={ActualProfilename}
+                            // main Actual
                             fontSize={fs(profileNameFontSize)}
                             fill="white"
                             fontStyle="1000"
@@ -4552,7 +4321,7 @@ function GeneralEditPage({
                             width={200}
                             height={2}
                             text={ActualDesignation}
-                            fontSize={fs(7)}
+                            fontSize={fs(6.5)}
                             fill="white"
                             fontStyle="bold"
                             align="center"
@@ -4570,13 +4339,13 @@ function GeneralEditPage({
                       <>
                         <Text
                           fontFamily="Montserrat"
-                          x={240}
-                          y={isRank_B ? 295 : 298}
+                          x={isProduct ? 13 : isRank_B ? 38 : 30}
+                          y={isProduct ? 299.5 : isRank_B ? 295 : 298}
                           width={150}
                           height={5}
-                          text="CALL FOR ASSOCIATION"
-                          fontSize={fs(4.5)}
-                          fill="white"
+                          text="CALL FOR ASSOCIATION" //ORIGINAL CALL
+                          fontSize={fs(isProduct ? 5.5 : 4.5)}
+                          fill={isProduct ? `black` : `white`}
                           fontStyle="bold"
                           verticalAlign="middle"
                           onClick={() => setIsOpenFtr(true)}
@@ -4584,13 +4353,13 @@ function GeneralEditPage({
                         />
                         <Text
                           fontFamily="Montserrat"
-                          x={235}
-                          y={isRank_B ? 295 : 297}
+                          x={isProduct ? 15 : isRank_B ? 36 : 28}
+                          y={isProduct ? 299.5 : isRank_B ? 295 : 297}
                           width={150}
                           height={20}
                           text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
                           fontSize={fs(7.5)}
-                          fill="white"
+                          fill={isProduct ? `black` : `white`}
                           fontStyle="bold"
                           verticalAlign="middle"
                           onClick={() => setIsOpenFtr(true)}
@@ -4621,20 +4390,25 @@ function GeneralEditPage({
                       const socialGroupWidth = socialText
                         ? textStartX + socialText.length * 3.5
                         : 0;
+                      const parentCenterX = isSubGeneralType
+                        ? 285 - 300 / 2
+                        : 200 - 300 / 2;
                       return (
                         <Group
-                          x={0}
+                          x={parentCenterX}
                           y={
-                            isSubGeneralType || isSubGeneralType2
-                              ? 295
-                              : isRank_B
-                                ? 290
-                                : 300
+                            isProduct
+                              ? 300
+                              : isSubGeneralType || isSubGeneralType2
+                                ? 295
+                                : isRank_B
+                                  ? 296
+                                  : 299
                           }
                         >
                           <Text
                             fontFamily="Montserrat"
-                            x={-10}
+                            x={isRank_B ? 16.5 : 19.5}
                             y={0}
                             width={200}
                             height={2}
@@ -4649,12 +4423,12 @@ function GeneralEditPage({
                           />
                           <Text
                             fontFamily="Montserrat"
-                            x={-10}
+                            x={isRank_B ? 16.5 : 19.5}
                             y={showSocial === "no" ? 10.5 : 9.5}
                             width={200}
                             height={2}
                             text={ActualDesignation}
-                            fontSize={fs(7)}
+                            fontSize={fs(6.5)}
                             fill="white"
                             fontStyle="bold"
                             align="center"
@@ -4723,11 +4497,282 @@ function GeneralEditPage({
                       );
                     })()}
                   </>
-                )
-              ) : null}
+                )}
 
-              {/* Watermark */}
-              {/* <Text
+                {isSubGeneralType ? (
+                  isRight ? (
+                    <>
+                      {showMobile === "yes" && (
+                        <>
+                          <Text
+                            fontFamily="Montserrat"
+                            x={35}
+                            y={298}
+                            width={150}
+                            height={5}
+                            text="CALL FOR ASSOCIATION"
+                            fontSize={fs(4.5)}
+                            fill={isProduct ? `black` : `white`}
+                            fontStyle="bold"
+                            verticalAlign="middle"
+                            onClick={() => setIsOpenFtr(true)}
+                            onTap={() => setIsOpenFtr(true)}
+                          />
+                          <Text
+                            fontFamily="Montserrat"
+                            x={30}
+                            y={297}
+                            width={150}
+                            height={20}
+                            text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
+                            fontSize={fs(7.5)}
+                            fill={isProduct ? `black` : `white`}
+                            fontStyle="bold"
+                            verticalAlign="middle"
+                            onClick={() => setIsOpenFtr(true)}
+                            onTap={() => setIsOpenFtr(true)}
+                          />
+                        </>
+                      )}
+                      {(() => {
+                        let iconX = 0;
+                        const iconPositions = {};
+                        if (SocialURLs.Youtube) {
+                          iconPositions.youtube = iconX;
+                          iconX += 7;
+                        }
+                        if (SocialURLs.Instagram) {
+                          iconPositions.instagram = iconX;
+                          iconX += 7;
+                        }
+                        if (SocialURLs.Facebook) {
+                          iconPositions.facebook = iconX;
+                          iconX += 7;
+                        }
+                        if (SocialURLs.X) {
+                          iconPositions.x = iconX;
+                          iconX += 7;
+                        }
+                        const textStartX = iconX + 3;
+                        const socialGroupWidth = socialText
+                          ? textStartX + socialText.length * 3.5
+                          : 0;
+                        return (
+                          <Group
+                            x={105}
+                            y={
+                              isProduct
+                                ? 300
+                                : isSubGeneralType || isSubGeneralType2
+                                  ? 295
+                                  : isRank_B
+                                    ? 290
+                                    : 300
+                            }
+                          >
+                            <Text
+                              fontFamily="Montserrat"
+                              x={23}
+                              y={0}
+                              width={200}
+                              height={2}
+                              text={ActualProfilename}
+                              fontSize={fs(profileNameFontSize)}
+                              fill="white"
+                              fontStyle="1000"
+                              align="center"
+                              verticalAlign="middle"
+                              onClick={() => setIsOpenFtr(true)}
+                              onTap={() => setIsOpenFtr(true)}
+                            />
+                            <Text
+                              fontFamily="Montserrat"
+                              x={25}
+                              y={10.5}
+                              width={200}
+                              height={2}
+                              text={ActualDesignation}
+                              fontSize={fs(7)}
+                              fill="white"
+                              fontStyle="bold"
+                              align="center"
+                              verticalAlign="middle"
+                              onClick={() => setIsOpenFtr(true)}
+                              onTap={() => setIsOpenFtr(true)}
+                            />
+                          </Group>
+                        );
+                      })()}
+                    </>
+                  ) : (
+                    <>
+                      {showMobile === "yes" && (
+                        <>
+                          <Text
+                            fontFamily="Montserrat"
+                            x={240}
+                            y={isRank_B ? 295 : 298}
+                            width={150}
+                            height={5}
+                            text="CALL FOR ASSOCIATION"
+                            fontSize={fs(4.5)}
+                            fill={isProduct ? `black` : `white`}
+                            fontStyle="bold"
+                            verticalAlign="middle"
+                            onClick={() => setIsOpenFtr(true)}
+                            onTap={() => setIsOpenFtr(true)}
+                          />
+                          <Text
+                            fontFamily="Montserrat"
+                            x={235}
+                            y={isRank_B ? 295 : 297}
+                            width={150}
+                            height={20}
+                            text={`+91${profileMobile}` || "+91XXXXXXXXXX"}
+                            fontSize={fs(7.5)}
+                            fill={isProduct ? `black` : `white`}
+                            fontStyle="bold"
+                            verticalAlign="middle"
+                            onClick={() => setIsOpenFtr(true)}
+                            onTap={() => setIsOpenFtr(true)}
+                          />
+                        </>
+                      )}
+                      {(() => {
+                        let iconX = 0;
+                        const iconPositions = {};
+                        if (SocialURLs.Youtube) {
+                          iconPositions.youtube = iconX;
+                          iconX += 10;
+                        }
+                        if (SocialURLs.Instagram) {
+                          iconPositions.instagram = iconX;
+                          iconX += 10;
+                        }
+                        if (SocialURLs.Facebook) {
+                          iconPositions.facebook = iconX;
+                          iconX += 10;
+                        }
+                        if (SocialURLs.X) {
+                          iconPositions.x = iconX;
+                          iconX += 10;
+                        }
+                        const textStartX = iconX + 2;
+                        const socialGroupWidth = socialText
+                          ? textStartX + socialText.length * 3.5
+                          : 0;
+                        return (
+                          <Group
+                            x={0}
+                            y={
+                              isProduct
+                                ? 300
+                                : isSubGeneralType || isSubGeneralType2
+                                  ? 295
+                                  : isRank_B
+                                    ? 290
+                                    : 300
+                            }
+                          >
+                            <Text
+                              fontFamily="Montserrat"
+                              x={-10}
+                              y={0}
+                              width={200}
+                              height={2}
+                              text={ActualProfilename}
+                              fontSize={fs(profileNameFontSize)}
+                              fill="white"
+                              fontStyle="1000"
+                              align="center"
+                              verticalAlign="middle"
+                              onClick={() => setIsOpenFtr(true)}
+                              onTap={() => setIsOpenFtr(true)}
+                            />
+                            <Text
+                              fontFamily="Montserrat"
+                              x={-10}
+                              y={showSocial === "no" ? 10.5 : 9.5}
+                              width={200}
+                              height={2}
+                              text={ActualDesignation}
+                              fontSize={fs(7)}
+                              fill="white"
+                              fontStyle="bold"
+                              align="center"
+                              verticalAlign="middle"
+                              onClick={() => setIsOpenFtr(true)}
+                              onTap={() => setIsOpenFtr(true)}
+                            />
+                            {showSocial === "never"
+                              ? socialText && (
+                                  <Group
+                                    x={(200 - socialGroupWidth) / 2}
+                                    y={12}
+                                  >
+                                    {SocialURLs.Youtube && (
+                                      <Image
+                                        image={yt}
+                                        x={iconPositions.youtube}
+                                        y={0}
+                                        width={9}
+                                        height={9}
+                                      />
+                                    )}
+                                    {SocialURLs.Instagram && (
+                                      <Image
+                                        image={insta}
+                                        x={iconPositions.instagram}
+                                        y={0}
+                                        width={9}
+                                        height={9}
+                                      />
+                                    )}
+                                    {SocialURLs.Facebook && (
+                                      <Image
+                                        image={fb}
+                                        x={iconPositions.facebook}
+                                        y={0}
+                                        width={9}
+                                        height={9}
+                                      />
+                                    )}
+                                    {SocialURLs.X && (
+                                      <Image
+                                        image={xlogo}
+                                        x={iconPositions.x}
+                                        y={0}
+                                        width={9}
+                                        height={9}
+                                      />
+                                    )}
+                                    <Text
+                                      fontFamily="Montserrat"
+                                      x={textStartX}
+                                      y={0}
+                                      width={100 - textStartX}
+                                      height={9}
+                                      text={socialText}
+                                      fontSize={fs(6)}
+                                      fill="white"
+                                      fontStyle="bold"
+                                      align="left"
+                                      verticalAlign="middle"
+                                      onClick={() => setIsOpenFtr(true)}
+                                      onTap={() => setIsOpenFtr(true)}
+                                    />
+                                  </Group>
+                                )
+                              : null}
+                          </Group>
+                        );
+                      })()}
+                    </>
+                  )
+                ) : null}
+
+                {/* Watermark */}
+                {/* <Text
                 text="Design By : +919341947815"
                 x={isRight ? 313 : 2}
                 y={100}
@@ -4739,21 +4784,21 @@ function GeneralEditPage({
                 listening={false}
               /> */}
 
-              <Transformer
-                ref={transformerRef}
-                keepRatio={false}
-                rotateEnabled={false}
-                resizeEnabled={false}
-                borderEnabled={false}
-                boundBoxFunc={boundBoxFunc}
-                enabledAnchors={[]}
-              />
-            </Layer>
-          </Stage>
-        </div>
+                <Transformer
+                  ref={transformerRef}
+                  keepRatio={false}
+                  rotateEnabled={false}
+                  resizeEnabled={false}
+                  borderEnabled={false}
+                  boundBoxFunc={boundBoxFunc}
+                  enabledAnchors={[]}
+                />
+              </Layer>
+            </Stage>
+          </div>
 
-        {/* Preview-only logo: outside the Konva Stage so exports stay clean. */}
-        {/* {bgStatus === "loaded" && (
+          {/* Preview-only logo: outside the Konva Stage so exports stay clean. */}
+          {/* {bgStatus === "loaded" && (
           <div
             className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none select-none"
             aria-hidden="true"
@@ -4768,652 +4813,764 @@ function GeneralEditPage({
           </div>
         )} */}
 
-        {selectedVideoUrl && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <button
-              onClick={() => {
-                setVideoPlaying((p) => !p);
-              }}
-              title={videoPlaying ? "Pause" : "Play"}
-              className="pointer-events-auto w-14 h-14 rounded-full bg-black/45 backdrop-blur-sm text-white flex items-center justify-center shadow-lg transition-all active:scale-90 hover:bg-black/60"
-            >
-              {videoPlaying ? (
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <rect x="6" y="5" width="4" height="14" rx="1" />
-                  <rect x="14" y="5" width="4" height="14" rx="1" />
-                </svg>
-              ) : (
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              )}
-            </button>
-          </div>
-        )}
-      </div>
-      </div>
-
-
-      {!previewOnly && <>
-      {isAmountModalOpen && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.55)",
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onClick={() => setIsAmountModalOpen(false)}
-        >
-          <div
-            style={{
-              background: "var(--overlay)",
-              color: "var(--overlay-foreground)",
-              border: "1px solid var(--border)",
-              borderRadius: 24,
-              padding: 20,
-              width: "92%",
-              maxWidth: 420,
-              boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 14,
-              }}
-            >
-              <div style={{ fontSize: 16, fontWeight: 700 }}>
-                Amount Graphics
-              </div>
+          {selectedVideoUrl && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <button
-                onClick={() => setIsAmountModalOpen(false)}
-                style={{
-                  border: "none",
-                  background: "transparent",
-                  fontSize: 22,
-                  cursor: "pointer",
-                  color: "var(--muted-foreground)",
+                onClick={() => {
+                  setVideoPlaying((p) => !p);
                 }}
+                title={videoPlaying ? "Pause" : "Play"}
+                className="pointer-events-auto w-14 h-14 rounded-full bg-black/45 backdrop-blur-sm text-white flex items-center justify-center shadow-lg transition-all active:scale-90 hover:bg-black/60"
               >
-                ×
+                {videoPlaying ? (
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <rect x="6" y="5" width="4" height="14" rx="1" />
+                    <rect x="14" y="5" width="4" height="14" rx="1" />
+                  </svg>
+                ) : (
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                )}
               </button>
             </div>
+          )}
+        </div>
+      </div>
+
+      {!previewOnly && (
+        <>
+          {isAmountModalOpen && (
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                gap: 12,
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.55)",
+                zIndex: 1000,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
+              onClick={() => setIsAmountModalOpen(false)}
             >
-              {AMOUNT_GRADIENT_OPTIONS.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() => {
-                    setAmountPatternId(option.id);
-                    setIsAmountModalOpen(false);
-                  }}
+              <div
+                style={{
+                  background: "var(--overlay)",
+                  color: "var(--overlay-foreground)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 24,
+                  padding: 20,
+                  width: "92%",
+                  maxWidth: 420,
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
                   style={{
-                    cursor: "pointer",
-                    border:
-                      option.id === amountPatternId
-                        ? "2px solid #2563eb"
-                        : "1px solid var(--border)",
-                    borderRadius: 16,
-                    padding: 10,
-                    background: "var(--surface-secondary)",
-                    color: "var(--surface-secondary-foreground)",
-                    textAlign: "left",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 14,
                   }}
                 >
-                  <div
+                  <div style={{ fontSize: 16, fontWeight: 700 }}>
+                    Amount Graphics
+                  </div>
+                  <button
+                    onClick={() => setIsAmountModalOpen(false)}
                     style={{
-                      width: "100%",
-                      height: 70,
-                      borderRadius: 14,
-                      background: option.preview,
-                      overflow: "hidden",
-                      boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.16)",
-                    }}
-                  />
-                  <div
-                    style={{
-                      marginTop: 10,
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: "var(--surface-secondary-foreground)",
+                      border: "none",
+                      background: "transparent",
+                      fontSize: 22,
+                      cursor: "pointer",
+                      color: "var(--muted-foreground)",
                     }}
                   >
-                    {option.name}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="flex w-full lg:w-1/3 items-center justify-between gap-3 px-4 pt-2 pb-1 flex-shrink-0">
-        <div
-          className="flex min-w-0 flex-1 items-center gap-3 overflow-x-auto hide-scrollbar"
-          data-guide="editor-photos"
-        >
-          {(mlmProfile?.profileImageURLs || []).map((img, index) => {
-            const isActive = middaleImage === img;
-            return (
-              <button
-                key={`${img}-${index}`}
-                type="button"
-                onClick={() => setmiddaleImage(img)}
-                className={`h-[38px] w-[38px] flex-shrink-0 overflow-hidden rounded-[5px] border bg-transparent p-[2px] transition-all ${
-                  isActive
-                    ? "border-[#2F80EA] ring-1 ring-[#2F80EA]/20"
-                    : "border-[#D6DCE8] dark:border-[#40506A]"
-                }`}
-              >
-                <img
-                  src={img}
-                  alt="profile option"
-                  className="h-full w-full object-contain"
-                />
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="flex flex-shrink-0 items-center gap-2">
-          <button
-            data-guide="editor-music"
-            title={selectedMusic ? `Music: ${selectedMusic.name}` : "Add background music"}
-            onClick={() => setMusicModalOpen(true)}
-            className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#2F80EA] text-white shadow-[0_10px_22px_rgba(44,115,232,0.28)] transition-transform active:scale-95"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 18V5l12-2v13" />
-              <circle cx="6" cy="18" r="3" />
-              <circle cx="18" cy="16" r="3" />
-            </svg>
-            {selectedMusic && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[#2F80EA] shadow-sm">
-                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </span>
-            )}
-          </button>
-
-          <button
-            data-guide="editor-download"
-            type="button"
-            title="Download"
-            aria-label="Download"
-            onClick={() => setCaptionModalOpen(true)}
-            disabled={!canExport || musicExporting}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#2F80EA] text-white shadow-[0_10px_22px_rgba(44,115,232,0.28)] transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            <svg
-              width="19"
-              height="19"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 3v11" />
-              <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
-              <path d="M5 20h14" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
-
-      {/* ── Music selection modal ──────────────────────────────────────────── */}
-      {musicModalOpen && (
-        <div
-          className="fixed inset-0 z-[600] flex items-end justify-center bg-black/45 backdrop-blur-sm"
-          onClick={() => setMusicModalOpen(false)}
-        >
-          <div
-            className="flex w-full max-w-[420px] flex-col rounded-t-[28px] bg-[#f8f9fd] dark:bg-[#111827] shadow-2xl"
-            style={{ maxHeight: "78vh" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <audio
-              ref={audioPlayerRef}
-              onEnded={() => setPlayingAudioId(null)}
-            />
-
-            <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-[#d8dde8]" />
-
-            <div className="flex items-center justify-between px-4 pt-4 pb-3">
-              <h3 className="text-[15px] font-bold text-[#1f2937] dark:text-white">Add music</h3>
-              <button
-                type="button"
-                onClick={() => {
-                  if (selectedMusic) {
-                    handleRemoveMusic();
-                  } else {
-                    setMusicModalOpen(false);
-                  }
-                }}
-                className="text-[14px] font-medium text-[#2F80EA]"
-              >
-                {selectedMusic ? "Remove" : "None"}
-              </button>
-            </div>
-
-            <div className="px-4 pb-3">
-              <div className="flex items-center gap-3 rounded-[16px] border border-[#d7ddeb] dark:border-[#2d3a50] bg-white dark:bg-[#1b2536] px-4 py-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#98a2b3]">
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.35-4.35" />
-                </svg>
-                <input
-                  type="text"
-                  value={audioSearch}
-                  onChange={(e) => handleAudioSearchChange(e.target.value)}
-                  placeholder="Search tracks"
-                  maxLength={30}
-                  className="w-full bg-transparent text-[15px] text-[#344054] dark:text-white outline-none placeholder:text-[#98a2b3] dark:placeholder:text-[#91a0b8]"
-                />
+                    ×
+                  </button>
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                    gap: 12,
+                  }}
+                >
+                  {AMOUNT_GRADIENT_OPTIONS.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => {
+                        setAmountPatternId(option.id);
+                        setIsAmountModalOpen(false);
+                      }}
+                      style={{
+                        cursor: "pointer",
+                        border:
+                          option.id === amountPatternId
+                            ? "2px solid #2563eb"
+                            : "1px solid var(--border)",
+                        borderRadius: 16,
+                        padding: 10,
+                        background: "var(--surface-secondary)",
+                        color: "var(--surface-secondary-foreground)",
+                        textAlign: "left",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "100%",
+                          height: 70,
+                          borderRadius: 14,
+                          background: option.preview,
+                          overflow: "hidden",
+                          boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.16)",
+                        }}
+                      />
+                      <div
+                        style={{
+                          marginTop: 10,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "var(--surface-secondary-foreground)",
+                        }}
+                      >
+                        {option.name}
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
+          )}
 
-            <div className="flex gap-2 overflow-x-auto px-4 pb-4 hide-scrollbar">
-              {audioCategoryOptions.map((option) => {
-                const active = audioCategory === option.key;
+          <div className="flex w-full lg:w-1/3 items-center justify-between gap-3 px-4 pt-2 pb-1 flex-shrink-0">
+            <div
+              className="flex min-w-0 flex-1 items-center gap-3 overflow-x-auto hide-scrollbar"
+              data-guide="editor-photos"
+            >
+              {(mlmProfile?.profileImageURLs || []).map((img, index) => {
+                const isActive = middaleImage === img;
                 return (
                   <button
-                    key={option.key}
+                    key={`${img}-${index}`}
                     type="button"
-                    onClick={() => setAudioCategory(option.key)}
-                    className={`whitespace-nowrap rounded-full border px-4 py-2 text-[13px] font-medium transition-colors ${
-                      active
-                        ? "border-[#2F80EA] bg-[#2F80EA] text-white"
-                        : "border-[#d7ddeb] dark:border-[#2d3a50] bg-white dark:bg-[#1b2536] text-[#667085] dark:text-[#b9c5d8]"
+                    onClick={() => setmiddaleImage(img)}
+                    className={`h-[38px] w-[38px] flex-shrink-0 overflow-hidden rounded-[5px] border bg-transparent p-[2px] transition-all ${
+                      isActive
+                        ? "border-[#2F80EA] ring-1 ring-[#2F80EA]/20"
+                        : "border-[#D6DCE8] dark:border-[#40506A]"
                     }`}
                   >
-                    {option.label}
+                    <img
+                      src={img}
+                      alt="profile option"
+                      className="h-full w-full object-contain"
+                    />
                   </button>
                 );
               })}
             </div>
 
-            <div className="px-4 pb-3">
+            <div className="flex flex-shrink-0 items-center gap-2">
               <button
-                type="button"
-                onClick={() => musicInputRef.current?.click()}
-                disabled={deviceLoading}
-                className={`flex w-full items-center gap-3 rounded-[18px] border border-dashed px-3 py-3 text-left ${deviceLoading ? "border-[#9ec3ff] bg-[#edf4ff]" : "border-[#bcd1f5] dark:border-[#365378] bg-white dark:bg-[#151d2b]"}`}
+                data-guide="editor-music"
+                title={
+                  selectedMusic
+                    ? `Music: ${selectedMusic.name}`
+                    : "Add background music"
+                }
+                onClick={() => setMusicModalOpen(true)}
+                className="relative flex h-11 w-11 items-center justify-center rounded-full bg-[#2F80EA] text-white shadow-[0_10px_22px_rgba(44,115,232,0.28)] transition-transform active:scale-95"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e9eef8] text-[#9aa4b2]">
-                  {deviceLoading ? (
-                    <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
-                      <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" className="opacity-75" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <path d="M7 10l5-5 5 5" />
-                      <path d="M12 5v12" />
-                    </svg>
-                  )}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[14px] font-semibold text-[#1f2937] dark:text-white">Upload from device</span>
-                  <span className="block text-[12px] text-[#98a2b3] dark:text-[#9eabc0]">MP3, M4A or WAV · up to 60 sec</span>
-                </span>
-                <span className="text-[14px] font-medium text-[#2F80EA]">Browse</span>
-              </button>
-              {deviceLoading && (
-                <div className="mt-2 overflow-hidden rounded-full bg-[#d8e4fb]">
-                  <div
-                    className="h-1.5 rounded-full bg-[#2F80EA] transition-all duration-300"
-                    style={{ width: `${audioUploadProgress}%` }}
-                  />
-                </div>
-              )}
-            </div>
-
-            <div
-              ref={audioListRef}
-              onScroll={handleAudioListScroll}
-              className="min-h-0 flex-1 overflow-y-auto px-4 pb-4"
-            >
-              <div className="space-y-2">
-                {audioLoading && firestoreAudios.length === 0 && (
-                  <div className="flex items-center justify-center gap-3 py-10">
-                    <div className="h-6 w-6 rounded-full border-2 border-[#d0d5dd] border-t-[#2F80EA] animate-spin" />
-                    <span className="text-sm text-[#667085] dark:text-[#b9c5d8]">Loading tracks...</span>
-                  </div>
-                )}
-
-                {!audioLoading && firestoreAudios.length === 0 && (
-                  <div className="rounded-[18px] border border-dashed border-[#d7ddeb] dark:border-[#2d3a50] bg-white dark:bg-[#151d2b] px-4 py-8 text-center text-sm text-[#98a2b3]">
-                    {audioSearch
-                      ? "No tracks found for your search."
-                      : "No tracks available yet."}
-                  </div>
-                )}
-
-                {firestoreAudios.map((track) => {
-                  const isActive = selectedMusic?.name === track.Name_Music;
-                  const isLoadingT = presetLoadingUrl === track.id;
-                  const isPlaying =
-                    playingAudioId === track.id &&
-                    audioPlayerRef.current &&
-                    !audioPlayerRef.current.paused;
-                  const trackName = track.Name_Music || "Unknown Track";
-
-                  return (
-                    <div
-                      key={track.id}
-                      className={`flex items-center gap-3 rounded-[18px] px-3 py-3 transition-colors ${
-                        isActive ? "bg-[#dfe9f8] dark:bg-[#173057]" : "bg-white dark:bg-[#151d2b]"
-                      }`}
-                    >
-                      <button
-                        onClick={() => handlePlayAudio(track)}
-                        className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${
-                          isActive || isPlaying
-                            ? "bg-[#2F80EA] text-white"
-                            : "bg-[#eef2f8] dark:bg-[#223047] text-[#667085] dark:text-[#b9c5d8]"
-                        }`}
-                      >
-                        {isPlaying ? (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <rect x="6" y="4" width="4" height="16" rx="1" />
-                            <rect x="14" y="4" width="4" height="16" rx="1" />
-                          </svg>
-                        ) : (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="5 3 19 12 5 21 5 3" />
-                          </svg>
-                        )}
-                      </button>
-
-                      <button
-                        type="button"
-                        className="min-w-0 flex-1 text-left"
-                        onClick={() => handleSelectFirestoreTrack(track)}
-                      >
-                        <p className="truncate text-[14px] font-semibold text-[#1f2937] dark:text-white">{trackName}</p>
-                        <p className="text-[12px] text-[#98a2b3] dark:text-[#9eabc0]">
-                          {track.Category || track.Type || "Instrumental"}
-                          {track.duration ? ` · ${track.duration}` : ""}
-                        </p>
-                      </button>
-
-                      <button
-                        onClick={() => handleSelectFirestoreTrack(track)}
-                        disabled={isLoadingT}
-                        className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border ${
-                          isActive
-                            ? "border-[#2F80EA] bg-[#2F80EA] text-white"
-                            : "border-[#d0d5dd] bg-white text-transparent"
-                        }`}
-                      >
-                        {isLoadingT ? (
-                          <svg className="animate-spin" width="12" height="12" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
-                            <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" className="opacity-75" />
-                          </svg>
-                        ) : isActive ? (
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        ) : null}
-                      </button>
-                    </div>
-                  );
-                })}
-
-                {audioLoading && firestoreAudios.length > 0 && (
-                  <div className="flex justify-center py-3">
-                    <div className="h-5 w-5 rounded-full border-2 border-[#d0d5dd] border-t-[#2F80EA] animate-spin" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="border-t border-[#e7ebf3] dark:border-[#2a3548] bg-[#f8f9fd] dark:bg-[#111827] px-4 py-4">
-              <Button
-                onClick={() => setMusicModalOpen(false)}
-                className="h-14 w-full rounded-2xl bg-[#2F80EA] text-base font-semibold text-white shadow-none"
-              >
-                Apply music
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Hidden music file input — triggered by the compact music toggle near the download button */}
-      <input
-        ref={musicInputRef}
-        type="file"
-        accept="audio/*"
-        style={{ display: "none" }}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            const result = validateUploadFile(file, "audio");
-            if (!result.valid) {
-              showToast(result.error || "Invalid audio file.", "error");
-            } else {
-              handleDeviceMusic(file);
-            }
-          }
-          e.target.value = "";
-        }}
-      />
-
-      {/* ── Video recording progress overlay ─────────────────────────────── */}
-      {videoExporting && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/75 backdrop-blur-sm">
-          <div className="relative bg-background dark:bg-[#141824] rounded-3xl p-7 w-[88vw] max-w-[380px] shadow-2xl border border-border">
-            <div className="flex items-center justify-center mb-5">
-              <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center">
-                {/* Video camera icon */}
                 <svg
-                  className="w-7 h-7 text-accent"
-                  fill="none"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
+                  fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.8"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 8h9a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"
-                  />
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
                 </svg>
-              </div>
-            </div>
-            <h3 className="text-[16px] font-bold text-foreground text-center mb-1">
-              Recording Video
-            </h3>
-            <p className="text-[12px] text-muted-foreground text-center mb-5">
-              {progressLabel || "Preparing..."}
-            </p>
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between items-center">
-                <span className="text-[11px] text-muted-foreground">
-                  Progress
-                </span>
-                <span className="text-[13px] font-bold text-accent tabular-nums">
-                  {displayProgress}%
-                </span>
-              </div>
-              <div className="w-full h-3 bg-muted/40 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{
-                    width: `${displayProgress}%`,
-                    background:
-                      "linear-gradient(90deg, #2F80EA, #2F80EA, #2F80EA)",
-                  }}
-                />
-              </div>
-              {/* Segment markers for each second */}
-              <div className="flex justify-between px-0.5">
-                {[0, 25, 50, 75, 100].map((m) => (
-                  <span
-                    key={m}
-                    className="text-[9px] text-muted-foreground/50 tabular-nums"
-                  >
-                    {m}%
+                {selectedMusic && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[#2F80EA] shadow-sm">
+                    <svg
+                      width="9"
+                      height="9"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
                   </span>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 bg-accent/5 border border-accent/15 rounded-2xl px-4 py-2.5 mb-1">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
-              <span className="text-[11px] text-foreground/80 font-medium">
-                Recording canvas with animations
-              </span>
-            </div>
-            <p className="text-[10px] text-muted-foreground/50 text-center mt-3">
-              Do not close this screen
-            </p>
-          </div>
-        </div>
-      )}
+                )}
+              </button>
 
-      {/* ── Music + photo export progress overlay ────────────────────────── */}
-      {musicExporting && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/75 backdrop-blur-sm">
-          <div className="relative bg-background dark:bg-[#141824] rounded-3xl p-7 w-[88vw] max-w-[380px] shadow-2xl border border-border">
-            <div className="flex items-center justify-center mb-5">
-              <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center">
+              <button
+                data-guide="editor-download"
+                type="button"
+                title="Download"
+                aria-label="Download"
+                onClick={() => setCaptionModalOpen(true)}
+                disabled={!canExport || musicExporting}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-[#2F80EA] text-white shadow-[0_10px_22px_rgba(44,115,232,0.28)] transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
+              >
                 <svg
-                  className="w-7 h-7 text-accent animate-spin"
-                  fill="none"
+                  width="19"
+                  height="19"
                   viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
+                  <path d="M12 3v11" />
+                  <path d="m7.5 10.5 4.5 4.5 4.5-4.5" />
+                  <path d="M5 20h14" />
                 </svg>
-              </div>
+              </button>
             </div>
-            <h3 className="text-[16px] font-bold text-foreground text-center mb-1">
-              Creating Video
-            </h3>
-            <p className="text-[12px] text-muted-foreground text-center mb-5">
-              {progressLabel || "Processing..."}
-            </p>
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between items-center">
-                <span className="text-[11px] text-muted-foreground">
-                  Progress
-                </span>
-                <span className="text-[12px] font-bold text-accent tabular-nums">
-                  {displayProgress}%
-                </span>
-              </div>
-              <div className="w-full h-2.5 bg-muted/40 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${displayProgress}%`,
-                    background: "linear-gradient(90deg, #2F80EA, #4f6fd0)",
-                  }}
-                />
-              </div>
-            </div>
-            {progressLogs?.length > 0 && (
-              <div className="bg-black/20 dark:bg-black/40 rounded-xl p-3 space-y-0.5 max-h-[60px] overflow-hidden">
-                {progressLogs?.slice(-3).map((l, i) => (
-                  <p
-                    key={i}
-                    className="text-[10px] text-muted-foreground/60 font-mono truncate"
-                  >
-                    {l}
-                  </p>
-                ))}
-              </div>
-            )}
-            <p className="text-[10px] text-muted-foreground/50 text-center mt-3">
-              Do not close this screen
-            </p>
           </div>
-        </div>
-      )}
 
-      <div className="w-full lg:w-1/3 flex-1 min-h-0 flex flex-col overflow-hidden">
-        <ListOfTemplates
-          selected={selected}
-          setSelected={setSelected}
-          onTabChange={setActiveTabFromList}
-        />
-      </div>
+          <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 
-      {/* Download action is available as the round icon beside Music. */}
+          {/* ── Music selection modal ──────────────────────────────────────────── */}
+          {musicModalOpen && (
+            <div
+              className="fixed inset-0 z-[600] flex items-end justify-center bg-black/45 backdrop-blur-sm"
+              onClick={() => setMusicModalOpen(false)}
+            >
+              <div
+                className="flex w-full max-w-[420px] flex-col rounded-t-[28px] bg-[#f8f9fd] dark:bg-[#111827] shadow-2xl"
+                style={{ maxHeight: "78vh" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <audio
+                  ref={audioPlayerRef}
+                  onEnded={() => setPlayingAudioId(null)}
+                />
 
-      {/* ── Caption modal ───────────────────────────────────────────── */}
-      <CaptionModal
-        isOpen={captionModalOpen}
-        onClose={() => setCaptionModalOpen(false)}
-        onDownload={activeExportFn}
-        achieverInfo={
-          isRank || isBonanza
-            ? {
-                name: formname,
-                city: formcity,
-                amount: amountText,
-                rankname: selll?.Subtype,
-                selectType: selll?.type,
-                fromwish: ActualProfilename,
-                formdesignation: ActualDesignation,
-                formmobile: mlmProfile?.mobile,
+                <div className="mx-auto mt-2 h-1.5 w-12 rounded-full bg-[#d8dde8]" />
+
+                <div className="flex items-center justify-between px-4 pt-4 pb-3">
+                  <h3 className="text-[15px] font-bold text-[#1f2937] dark:text-white">
+                    Add music
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (selectedMusic) {
+                        handleRemoveMusic();
+                      } else {
+                        setMusicModalOpen(false);
+                      }
+                    }}
+                    className="text-[14px] font-medium text-[#2F80EA]"
+                  >
+                    {selectedMusic ? "Remove" : "None"}
+                  </button>
+                </div>
+
+                <div className="px-4 pb-3">
+                  <div className="flex items-center gap-3 rounded-[16px] border border-[#d7ddeb] dark:border-[#2d3a50] bg-white dark:bg-[#1b2536] px-4 py-3">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-[#98a2b3]"
+                    >
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input
+                      type="text"
+                      value={audioSearch}
+                      onChange={(e) => handleAudioSearchChange(e.target.value)}
+                      placeholder="Search tracks"
+                      maxLength={30}
+                      className="w-full bg-transparent text-[15px] text-[#344054] dark:text-white outline-none placeholder:text-[#98a2b3] dark:placeholder:text-[#91a0b8]"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 overflow-x-auto px-4 pb-4 hide-scrollbar">
+                  {audioCategoryOptions.map((option) => {
+                    const active = audioCategory === option.key;
+                    return (
+                      <button
+                        key={option.key}
+                        type="button"
+                        onClick={() => setAudioCategory(option.key)}
+                        className={`whitespace-nowrap rounded-full border px-4 py-2 text-[13px] font-medium transition-colors ${
+                          active
+                            ? "border-[#2F80EA] bg-[#2F80EA] text-white"
+                            : "border-[#d7ddeb] dark:border-[#2d3a50] bg-white dark:bg-[#1b2536] text-[#667085] dark:text-[#b9c5d8]"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="px-4 pb-3">
+                  <button
+                    type="button"
+                    onClick={() => musicInputRef.current?.click()}
+                    disabled={deviceLoading}
+                    className={`flex w-full items-center gap-3 rounded-[18px] border border-dashed px-3 py-3 text-left ${deviceLoading ? "border-[#9ec3ff] bg-[#edf4ff]" : "border-[#bcd1f5] dark:border-[#365378] bg-white dark:bg-[#151d2b]"}`}
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e9eef8] text-[#9aa4b2]">
+                      {deviceLoading ? (
+                        <svg
+                          className="animate-spin"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            className="opacity-25"
+                          />
+                          <path
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            fill="currentColor"
+                            className="opacity-75"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <path d="M7 10l5-5 5 5" />
+                          <path d="M12 5v12" />
+                        </svg>
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[14px] font-semibold text-[#1f2937] dark:text-white">
+                        Upload from device
+                      </span>
+                      <span className="block text-[12px] text-[#98a2b3] dark:text-[#9eabc0]">
+                        MP3, M4A or WAV · up to 60 sec
+                      </span>
+                    </span>
+                    <span className="text-[14px] font-medium text-[#2F80EA]">
+                      Browse
+                    </span>
+                  </button>
+                  {deviceLoading && (
+                    <div className="mt-2 overflow-hidden rounded-full bg-[#d8e4fb]">
+                      <div
+                        className="h-1.5 rounded-full bg-[#2F80EA] transition-all duration-300"
+                        style={{ width: `${audioUploadProgress}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  ref={audioListRef}
+                  onScroll={handleAudioListScroll}
+                  className="min-h-0 flex-1 overflow-y-auto px-4 pb-4"
+                >
+                  <div className="space-y-2">
+                    {audioLoading && firestoreAudios.length === 0 && (
+                      <div className="flex items-center justify-center gap-3 py-10">
+                        <div className="h-6 w-6 rounded-full border-2 border-[#d0d5dd] border-t-[#2F80EA] animate-spin" />
+                        <span className="text-sm text-[#667085] dark:text-[#b9c5d8]">
+                          Loading tracks...
+                        </span>
+                      </div>
+                    )}
+
+                    {!audioLoading && firestoreAudios.length === 0 && (
+                      <div className="rounded-[18px] border border-dashed border-[#d7ddeb] dark:border-[#2d3a50] bg-white dark:bg-[#151d2b] px-4 py-8 text-center text-sm text-[#98a2b3]">
+                        {audioSearch
+                          ? "No tracks found for your search."
+                          : "No tracks available yet."}
+                      </div>
+                    )}
+
+                    {firestoreAudios.map((track) => {
+                      const isActive = selectedMusic?.name === track.Name_Music;
+                      const isLoadingT = presetLoadingUrl === track.id;
+                      const isPlaying =
+                        playingAudioId === track.id &&
+                        audioPlayerRef.current &&
+                        !audioPlayerRef.current.paused;
+                      const trackName = track.Name_Music || "Unknown Track";
+
+                      return (
+                        <div
+                          key={track.id}
+                          className={`flex items-center gap-3 rounded-[18px] px-3 py-3 transition-colors ${
+                            isActive
+                              ? "bg-[#dfe9f8] dark:bg-[#173057]"
+                              : "bg-white dark:bg-[#151d2b]"
+                          }`}
+                        >
+                          <button
+                            onClick={() => handlePlayAudio(track)}
+                            className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${
+                              isActive || isPlaying
+                                ? "bg-[#2F80EA] text-white"
+                                : "bg-[#eef2f8] dark:bg-[#223047] text-[#667085] dark:text-[#b9c5d8]"
+                            }`}
+                          >
+                            {isPlaying ? (
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                              >
+                                <rect
+                                  x="6"
+                                  y="4"
+                                  width="4"
+                                  height="16"
+                                  rx="1"
+                                />
+                                <rect
+                                  x="14"
+                                  y="4"
+                                  width="4"
+                                  height="16"
+                                  rx="1"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                              >
+                                <polygon points="5 3 19 12 5 21 5 3" />
+                              </svg>
+                            )}
+                          </button>
+
+                          <button
+                            type="button"
+                            className="min-w-0 flex-1 text-left"
+                            onClick={() => handleSelectFirestoreTrack(track)}
+                          >
+                            <p className="truncate text-[14px] font-semibold text-[#1f2937] dark:text-white">
+                              {trackName}
+                            </p>
+                            <p className="text-[12px] text-[#98a2b3] dark:text-[#9eabc0]">
+                              {track.Category || track.Type || "Instrumental"}
+                              {track.duration ? ` · ${track.duration}` : ""}
+                            </p>
+                          </button>
+
+                          <button
+                            onClick={() => handleSelectFirestoreTrack(track)}
+                            disabled={isLoadingT}
+                            className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border ${
+                              isActive
+                                ? "border-[#2F80EA] bg-[#2F80EA] text-white"
+                                : "border-[#d0d5dd] bg-white text-transparent"
+                            }`}
+                          >
+                            {isLoadingT ? (
+                              <svg
+                                className="animate-spin"
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                              >
+                                <circle
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="3"
+                                  className="opacity-25"
+                                />
+                                <path
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                  fill="currentColor"
+                                  className="opacity-75"
+                                />
+                              </svg>
+                            ) : isActive ? (
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            ) : null}
+                          </button>
+                        </div>
+                      );
+                    })}
+
+                    {audioLoading && firestoreAudios.length > 0 && (
+                      <div className="flex justify-center py-3">
+                        <div className="h-5 w-5 rounded-full border-2 border-[#d0d5dd] border-t-[#2F80EA] animate-spin" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="border-t border-[#e7ebf3] dark:border-[#2a3548] bg-[#f8f9fd] dark:bg-[#111827] px-4 py-4">
+                  <Button
+                    onClick={() => setMusicModalOpen(false)}
+                    className="h-14 w-full rounded-2xl bg-[#2F80EA] text-base font-semibold text-white shadow-none"
+                  >
+                    Apply music
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Hidden music file input — triggered by the compact music toggle near the download button */}
+          <input
+            ref={musicInputRef}
+            type="file"
+            accept="audio/*"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const result = validateUploadFile(file, "audio");
+                if (!result.valid) {
+                  showToast(result.error || "Invalid audio file.", "error");
+                } else {
+                  handleDeviceMusic(file);
+                }
               }
-            : null
-        }
-        companyName={mlmProfile?.companyName || ""}
-      />
-      </>}
+              e.target.value = "";
+            }}
+          />
+
+          {/* ── Video recording progress overlay ─────────────────────────────── */}
+          {videoExporting && (
+            <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/75 backdrop-blur-sm">
+              <div className="relative bg-background dark:bg-[#141824] rounded-3xl p-7 w-[88vw] max-w-[380px] shadow-2xl border border-border">
+                <div className="flex items-center justify-center mb-5">
+                  <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center">
+                    {/* Video camera icon */}
+                    <svg
+                      className="w-7 h-7 text-accent"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 8h9a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <h3 className="text-[16px] font-bold text-foreground text-center mb-1">
+                  Recording Video
+                </h3>
+                <p className="text-[12px] text-muted-foreground text-center mb-5">
+                  {progressLabel || "Preparing..."}
+                </p>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] text-muted-foreground">
+                      Progress
+                    </span>
+                    <span className="text-[13px] font-bold text-accent tabular-nums">
+                      {displayProgress}%
+                    </span>
+                  </div>
+                  <div className="w-full h-3 bg-muted/40 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{
+                        width: `${displayProgress}%`,
+                        background:
+                          "linear-gradient(90deg, #2F80EA, #2F80EA, #2F80EA)",
+                      }}
+                    />
+                  </div>
+                  {/* Segment markers for each second */}
+                  <div className="flex justify-between px-0.5">
+                    {[0, 25, 50, 75, 100].map((m) => (
+                      <span
+                        key={m}
+                        className="text-[9px] text-muted-foreground/50 tabular-nums"
+                      >
+                        {m}%
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 bg-accent/5 border border-accent/15 rounded-2xl px-4 py-2.5 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
+                  <span className="text-[11px] text-foreground/80 font-medium">
+                    Recording canvas with animations
+                  </span>
+                </div>
+                <p className="text-[10px] text-muted-foreground/50 text-center mt-3">
+                  Do not close this screen
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ── Music + photo export progress overlay ────────────────────────── */}
+          {musicExporting && (
+            <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/75 backdrop-blur-sm">
+              <div className="relative bg-background dark:bg-[#141824] rounded-3xl p-7 w-[88vw] max-w-[380px] shadow-2xl border border-border">
+                <div className="flex items-center justify-center mb-5">
+                  <div className="w-14 h-14 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center">
+                    <svg
+                      className="w-7 h-7 text-accent animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <h3 className="text-[16px] font-bold text-foreground text-center mb-1">
+                  Creating Video
+                </h3>
+                <p className="text-[12px] text-muted-foreground text-center mb-5">
+                  {progressLabel || "Processing..."}
+                </p>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] text-muted-foreground">
+                      Progress
+                    </span>
+                    <span className="text-[12px] font-bold text-accent tabular-nums">
+                      {displayProgress}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2.5 bg-muted/40 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${displayProgress}%`,
+                        background: "linear-gradient(90deg, #2F80EA, #4f6fd0)",
+                      }}
+                    />
+                  </div>
+                </div>
+                {progressLogs?.length > 0 && (
+                  <div className="bg-black/20 dark:bg-black/40 rounded-xl p-3 space-y-0.5 max-h-[60px] overflow-hidden">
+                    {progressLogs?.slice(-3).map((l, i) => (
+                      <p
+                        key={i}
+                        className="text-[10px] text-muted-foreground/60 font-mono truncate"
+                      >
+                        {l}
+                      </p>
+                    ))}
+                  </div>
+                )}
+                <p className="text-[10px] text-muted-foreground/50 text-center mt-3">
+                  Do not close this screen
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="w-full lg:w-1/3 flex-1 min-h-0 flex flex-col overflow-hidden">
+            <ListOfTemplates
+              selected={selected}
+              setSelected={setSelected}
+              onTabChange={setActiveTabFromList}
+            />
+          </div>
+
+          {/* Download action is available as the round icon beside Music. */}
+
+          {/* ── Caption modal ───────────────────────────────────────────── */}
+          <CaptionModal
+            isOpen={captionModalOpen}
+            onClose={() => setCaptionModalOpen(false)}
+            onDownload={activeExportFn}
+            achieverInfo={
+              isRank || isBonanza
+                ? {
+                    name: formname,
+                    city: formcity,
+                    amount: amountText,
+                    rankname: selll?.Subtype,
+                    selectType: selll?.type,
+                    fromwish: ActualProfilename,
+                    formdesignation: ActualDesignation,
+                    formmobile: mlmProfile?.mobile,
+                  }
+                : null
+            }
+            companyName={mlmProfile?.companyName || ""}
+          />
+        </>
+      )}
     </div>
   );
 }

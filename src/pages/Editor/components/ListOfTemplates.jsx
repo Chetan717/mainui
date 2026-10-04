@@ -1079,10 +1079,10 @@ export default function ListOfTemplates({
           <EmptyState
             label={
               activeTab === "video"
-                ? "No Video Available"
+                ? "No Video Available Soon"
                 : "No image templates found"
             }
-            sublabel={activeTab === "video" ? "Coming Soon" : ""}
+            sublabel=""
           />
         )}
 

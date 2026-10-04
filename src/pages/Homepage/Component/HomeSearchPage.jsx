@@ -3,9 +3,8 @@ import { ArrowLeft, ArrowUpRight, Clock3, Search, X } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useGeneralData } from "../../../Context/GeneralContext";
 import ListOfGenaraltemp from "./ListOfGenaraltemp";
-import {
-  getHomeTemplateSearchText,
-} from "./homeTemplatePresentation";
+import { getAllGeneralTemplates } from "./Services/generalTemplateIndex";
+import { buildDeepSearchResults } from "./homeSearchRanking";
 
 const RECENT_SEARCHES_KEY = "mlmliv-recent-template-searches";
 const MAX_RECENT_SEARCHES = 6;
@@ -50,17 +49,10 @@ export default function HomeSearchPage() {
     });
   }, []);
 
-  const filteredTemplates = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return [];
-
-    return (cachedTemplates || []).filter((group) => {
-      if (getHomeTemplateSearchText(group?.type).includes(normalizedQuery)) return true;
-      return group?.templates?.some((template) =>
-        String(template?.Subtype || "").toLowerCase().includes(normalizedQuery),
-      );
-    });
-  }, [cachedTemplates, query]);
+  const filteredTemplates = useMemo(
+    () => buildDeepSearchResults(cachedTemplates, query, getAllGeneralTemplates),
+    [cachedTemplates, query],
+  );
 
   const clearRecent = () => {
     setRecentSearches([]);

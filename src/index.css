@@ -100,6 +100,29 @@ html {
   width: max-content;
 }
 
+@keyframes home-card-label-pan {
+  0%,
+  15% {
+    transform: translateX(0);
+  }
+
+  85%,
+  100% {
+    transform: translateX(calc(-1 * var(--home-card-label-overflow, 0px)));
+  }
+}
+
+.home-card-label-pan {
+  animation: home-card-label-pan 4.8s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-card-label-pan {
+    animation: none;
+  }
+}
+
 .dark,
 .default,
 [data-theme="dark"] {
