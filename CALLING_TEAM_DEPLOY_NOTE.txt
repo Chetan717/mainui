@@ -1,0 +1,12 @@
+MLMLIVE CALLING TEAM DEPLOY NOTE
+================================
+
+This app now uses Calling Team Functions in asia-south1 while keeping the existing auth functions in us-central1.
+
+Required Marketing backend callables before this app is published:
+- resolveCallingTeamCode
+- claimCallingTeamAttribution
+
+No change is required to the existing authSignupInit/authSignupVerify function source for this integration.
+
+After backend deployment, publish this updated MLMLIVE app/frontend using the same production process you already use.

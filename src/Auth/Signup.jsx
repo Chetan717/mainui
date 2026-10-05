@@ -18,6 +18,11 @@ import {
 import { setAuthFlowPending, setUser } from "../utils/authStorage";
 
 import {
+  claimCallingTeamAttribution,
+  resolveCallingTeamReferral,
+} from "../services/callingReferralService";
+
+import {
   clearCompanyProfileStorage,
   saveMlmProfileToStorage,
 } from "../utils/companyStorage";
@@ -63,6 +68,7 @@ export function Signup() {
   const [sessionId, setSessionId] = useState(verifyState?.sessionId || "");
 
   const [userMobile, setUserMobile] = useState(verifyState?.mobile || "");
+  const [callingClaimToken, setCallingClaimToken] = useState("");
 
   /*
    * Referral code can arrive from:
@@ -127,13 +133,38 @@ export function Signup() {
       setLoading(true);
       setFormError("");
 
+      // Calling Team codes are tracking-only. Resolve them to the owning
+      // Marketing Member's real referral code before the existing signup
+      // function runs, so ownership/commission stays on the main member.
+      let signupReferCode = couponCode;
+      let nextCallingClaimToken = "";
+
+      try {
+        const callingReferral = await resolveCallingTeamReferral(
+          couponCode,
+          data.mobile,
+        );
+
+        if (callingReferral?.matched) {
+          signupReferCode =
+            callingReferral.mainReferCode ||
+            callingReferral.mainCouponCode ||
+            couponCode;
+          nextCallingClaimToken = callingReferral.claimToken || "";
+        }
+      } catch {
+        // Keep the existing signup path available during a temporary resolver
+        // outage. We retry the Calling Team resolve after OTP verification.
+      }
+
       const result = await signupInit(
         data.name,
         data.mobile,
         data.pin,
-        couponCode,
+        signupReferCode,
       );
 
+      setCallingClaimToken(nextCallingClaimToken);
       setSessionId(result.sessionId);
       setUserMobile(data.mobile);
       setStep(2);
@@ -164,13 +195,60 @@ export function Signup() {
         result = await signupVerify(sessionId, enteredOtp);
       }
 
+      // A normal login-verification flow must not change marketing attribution.
+      // For a fresh signup, finish Calling Team attribution only after Firebase
+      // Auth is established by signupVerify(). Keep a failed attribution pending
+      // so AuthContext can retry it after the verified session is restored.
+      let referralHandled = Boolean(verifyState);
+      if (!verifyState) {
+        const enteredReferralCode = getSignupCouponCode(referInput);
+        let claimToken = callingClaimToken;
+
+        try {
+          if (!claimToken) {
+            const callingReferral = await resolveCallingTeamReferral(
+              enteredReferralCode,
+              userMobile,
+            );
+            if (callingReferral?.matched) {
+              claimToken = callingReferral.claimToken || "";
+            } else {
+              referralHandled = true;
+            }
+          }
+
+          if (claimToken) {
+            const attribution = await claimCallingTeamAttribution(claimToken);
+            if (attribution?.matched) {
+              referralHandled = true;
+              result.user = {
+                ...result.user,
+                referredByMteam: attribution.referredByMteam,
+                referredBy: attribution.mainReferCode,
+                mteamCouponCode: attribution.mainCouponCode,
+                callingTeamId: attribution.callingTeamId,
+                callingTeamCode: attribution.callingTeamCode,
+              };
+            }
+          }
+        } catch {
+          // Account creation is already complete. Do not trap the user on OTP
+          // because of a temporary analytics/tracking failure.
+        }
+      }
+
       setUser(result.user, true);
 
-      // Clear referral only after successful signup.
-      clearPendingReferralCode();
-      storeReferralSource("");
-
-      notifyNativeReferralCleared("REFERRAL_CODE_CONSUMED");
+      if (referralHandled) {
+        clearPendingReferralCode();
+        storeReferralSource("");
+        notifyNativeReferralCleared("REFERRAL_CODE_CONSUMED");
+      } else {
+        savePendingReferralCode(
+          getSignupCouponCode(referInput),
+          getStoredReferralSource() || "automatic",
+        );
+      }
 
       clearCompanyProfileStorage();
 
@@ -431,7 +509,7 @@ export function Signup() {
                 id="signup-coupon"
                 type="text"
                 aria-label="Coupon Code"
-                maxLength={8}
+                maxLength={12}
                 value={referInput}
                 onChange={(event) => {
                   const code = normalizeReferralCode(event.target.value);

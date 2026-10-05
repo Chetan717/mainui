@@ -2,6 +2,16 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { onIdTokenChanged, signOut } from "firebase/auth";
 import { auth } from "@firebase-config";
 import {
+  claimCallingTeamAttribution,
+  resolveCallingTeamReferral,
+} from "../services/callingReferralService";
+import {
+  clearPendingReferralCode,
+  getPendingReferralCode,
+  notifyNativeReferralCleared,
+  storeReferralSource,
+} from "../utils/referralCode";
+import {
   clearLegacyAuthStorage,
   clearCachedPii,
   isManualLogoutMarked,
@@ -177,6 +187,32 @@ export function AuthProvider({ children }) {
             null,
           role: tokenResult.claims?.role || null,
         };
+
+        // Retry a signup referral that could not be finalized immediately after
+        // OTP (for example a brief network failure). The server-bound claim is
+        // mobile-specific and one-time, so this cannot reassign another user.
+        const pendingReferralCode = getPendingReferralCode();
+        if (pendingReferralCode && identity.mobileNo) {
+          void (async () => {
+            try {
+              const callingReferral = await resolveCallingTeamReferral(
+                pendingReferralCode,
+                identity.mobileNo,
+              );
+              if (callingReferral?.matched && callingReferral.claimToken) {
+                const attribution = await claimCallingTeamAttribution(
+                  callingReferral.claimToken,
+                );
+                if (!attribution?.matched) return;
+              }
+              clearPendingReferralCode();
+              storeReferralSource("");
+              notifyNativeReferralCleared("REFERRAL_CODE_CONSUMED");
+            } catch {
+              // Leave the pending code intact; a later verified session can retry.
+            }
+          })();
+        }
 
         setVerifiedUser(identity);
         scheduleSessionExpiry(sessionExpiresAt);

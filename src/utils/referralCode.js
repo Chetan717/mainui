@@ -30,7 +30,7 @@ export function normalizeReferralCode(value) {
     .trim()
     .toUpperCase()
     .replace(/[^A-Z0-9_-]/g, "")
-    .slice(0, 8);
+    .slice(0, 12);
 }
 
 export function getSignupCouponCode(value = "") {
@@ -105,7 +105,7 @@ function extractReferralCode(value, allowPlainCode = false, depth = 0) {
       if (code) return code;
     }
 
-    if (allowPlainCode && /^[A-Za-z0-9_-]{1,8}$/.test(candidate)) {
+    if (allowPlainCode && /^[A-Za-z0-9_-]{1,12}$/.test(candidate)) {
       return normalizeReferralCode(candidate);
     }
   }
@@ -215,7 +215,7 @@ export function getReferralCodeFromBridgeMessage(rawMessage) {
   for (const key of ["referralCode", "referCode", "code", "ref"]) {
     const value = message[key];
     const code =
-      typeof value === "string" && /^[A-Za-z0-9_-]{1,8}$/.test(value.trim())
+      typeof value === "string" && /^[A-Za-z0-9_-]{1,12}$/.test(value.trim())
         ? normalizeReferralCode(value)
         : getReferralCodeFromInstallReferrer(value);
     if (code) return code;
