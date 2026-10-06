@@ -88,7 +88,8 @@ function CreateProfileModal({ onConfirm, onDismiss }) {
           onClick={onConfirm}
           className="w-full py-3.5 mt-5 rounded-2xl text-white font-bold text-[14px] shadow-lg shadow-accent/20 "
           style={{
-            background: "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
+            background:
+              "linear-gradient(135deg,#2F80EA 0%,#236FDE 48%,#1454C5 100%)",
           }}
         >
           Create Profile →
@@ -431,7 +432,8 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
   const handleViewAll = useCallback(
     (group) => {
       const selttype = {
-        MainType: group?.templates?.[0]?.MainType || group?.MainType || "General",
+        MainType:
+          group?.templates?.[0]?.MainType || group?.MainType || "General",
         type: group.type,
         id: group.templates?.[0]?.id,
         serial: group.templates?.[0]?.serial,
@@ -654,23 +656,29 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
                 onClick={() => handleImagePress(item)}
                 className={`${
                   isCapping
-                    ? "w-[calc(100vw-40px)] min-w-[220px] max-w-[420px]"
+                    ? "w-[calc(100vw-15px)] min-w-full max-w-[420px]"
                     : "w-[118px]"
-                } shrink-0 snap-start overflow-hidden rounded-[15px] border bg-white text-center shadow-[0_4px_14px_rgba(28,54,92,0.08)] transition-transform duration-150 active:scale-[0.985] dark:bg-[#111827] ${
-                  selectedTemp?.id === item?.id
-                    ? "border-[#2F80EA] ring-2 ring-[#2F80EA]/20"
-                    : "border-[#E4EAF3] dark:border-[#263146]"
-                }`}
+                } 
+                  shrink-0 snap-start overflow-hidden rounded-[15px] border bg-white text-center shadow-[0_4px_14px_rgba(28,54,92,0.08)] transition-transform duration-150 active:scale-[0.985] dark:bg-[#111827] ${
+                    selectedTemp?.id === item?.id
+                      ? "border-[#2F80EA] ring-2 ring-[#2F80EA]/20"
+                      : "border-[#E4EAF3] dark:border-[#263146]"
+                  }`
+                }
               >
                 <div
                   className={`relative w-full overflow-hidden bg-[#EAF1FB] dark:bg-[#172235] ${
-                    isCapping ? "aspect-[16/9]" : "aspect-square"
+                    isCapping ? "aspect-[14/7]" : "aspect-square"
                   }`}
                 >
                   {item?.image ? (
                     <ImageWithSkeleton
                       src={item.image}
-                      className="h-full w-full object-cover"
+                      className={`${
+                        isCapping
+                          ? "h-full w-full object-contain"
+                          : "h-full w-full object-cover"
+                      }`}
                       alt={cardLabel}
                     />
                   ) : (
@@ -681,7 +689,9 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
                   {isNewTemplate(item.serial) ? <NewBadge /> : null}
                 </div>
 
-                <div className={`flex items-center ${isCapping ? "h-[30px] px-3" : "h-[27px] px-2"}`}>
+                <div
+                  className={`flex items-center ${isCapping ? "h-[30px] px-3" : "h-[27px] px-2"}`}
+                >
                   <AutoScrollCardLabel label={cardLabel} />
                 </div>
               </button>
@@ -749,7 +759,9 @@ function ListOfGenaraltemp({ templates, loading, searchQuery, companyName }) {
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <TemplateSectionHeading
                     type={group.type}
-                    label={displayName === "Training" ? "Seat Booking" : displayName}
+                    label={
+                      displayName === "Training" ? "Seat Booking" : displayName
+                    }
                   />
                   {renderViewAllButton(group)}
                 </div>

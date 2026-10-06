@@ -3352,8 +3352,8 @@ function GeneralEditPage({
                     y={
                       isCapping
                         ? isRight
-                          ? 187
-                          : 187
+                          ? 101
+                          : 101
                         : isAnyversary
                           ? isRight
                             ? 155
@@ -3393,8 +3393,8 @@ function GeneralEditPage({
                     x={
                       isCapping
                         ? isRight
-                          ? 70
-                          : 205
+                          ? 35
+                          : 185
                         : isIncome
                           ? isRight
                             ? 65
@@ -3432,8 +3432,8 @@ function GeneralEditPage({
                     y={
                       isCapping
                         ? isRight
-                          ? 198
-                          : 198
+                          ? 111
+                          : 111
                         : isAnyversary
                           ? 176
                           : isAchievement
