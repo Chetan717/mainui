@@ -126,10 +126,10 @@ const normalizeLogoSelections = (value) =>
     return acc;
   }, []);
 
-const initialForm = (mobile = "") => ({
+const initialForm = (mobile = "", signupName = "") => ({
   logoSelectedLinks: [],
   salutation: "Mr",
-  name: "",
+  name: String(signupName || "").trim(),
   mobile,
   designation: "",
   profileImageBlobs: [],
@@ -533,8 +533,11 @@ export default function MLMProfilePage() {
   } = useSelectedCompany();
   const userMlm = getUserMlm();
   const userMobile = (userMlm.mobileNo || "").trim();
+  const signupName = String(
+    userMlm.name || userMlm.fullName || userMlm.displayName || "",
+  ).trim();
 
-  const [form, setForm] = useState(initialForm(userMobile));
+  const [form, setForm] = useState(() => initialForm(userMobile, signupName));
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState("form");
   const [editorSrc, setEditorSrc] = useState(null);
@@ -741,7 +744,7 @@ export default function MLMProfilePage() {
           companyId: "",
           companyName: "",
         };
-        setForm(initialForm(userMobile));
+        setForm(initialForm(userMobile, signupName));
       }
     } catch (err) {
       setProfileLookupState("error");
@@ -749,11 +752,11 @@ export default function MLMProfilePage() {
         companyId: "",
         companyName: "",
       };
-      setForm(initialForm(userMobile));
+      setForm(initialForm(userMobile, signupName));
     } finally {
       setLoadingProfile(false);
     }
-  }, [userMobile]);
+  }, [signupName, userMobile]);
 
   // ── Fetch on mount ─────────────────────────────────────────
   useEffect(() => {
