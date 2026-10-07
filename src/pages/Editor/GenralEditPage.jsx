@@ -1081,7 +1081,7 @@ function GeneralEditPage({
     const w = isMeeting
       ? 170
       : isCapping
-        ? 100
+        ? 160
         : isIncome
           ? 105
           : isAnyversary
@@ -1099,7 +1099,7 @@ function GeneralEditPage({
     const h = isMeeting
       ? 220
       : isCapping
-        ? 150
+        ? 200
         : isIncome
           ? 195
           : isAnyversary
@@ -1120,8 +1120,8 @@ function GeneralEditPage({
         : -16
       : isCapping
         ? isRight
-          ? 210
-          : 10
+          ? 171
+          : -10
         : isIncome
           ? isRight
             ? 210
@@ -1153,7 +1153,7 @@ function GeneralEditPage({
     const y = isMeeting
       ? 61.5
       : isCapping
-        ? 65
+        ? 30
         : isIncome
           ? 60
           : isAnyversary
@@ -1186,8 +1186,8 @@ function GeneralEditPage({
     () => ({
       x: isCapping
         ? isRight
-          ? 190
-          : 1
+          ? 168
+          : 0
         : isAnyversary
           ? isRight
             ? 155
@@ -1218,7 +1218,7 @@ function GeneralEditPage({
                         ? 190
                         : 2,
       y: isCapping
-        ? 202
+        ? 215
         : isIncome
           ? 235
           : isAnyversary
@@ -1236,40 +1236,44 @@ function GeneralEditPage({
                       : isRank
                         ? 217
                         : 218,
-      width: isIncome
-        ? 140
-        : isAnyversary
-          ? 170
-          : isAchievement
-            ? 110
-            : isWelcome
-              ? 150
-              : isClosing
-                ? 150
-                : isBonanza
-                  ? 150
-                  : isRank_B
-                    ? 225
-                    : isRank
-                      ? 150
-                      : 130,
-      height: isIncome
-        ? 40
-        : isAnyversary
-          ? 100
-          : isAchievement
-            ? 60
-            : isClosing
-              ? 32
+      width: isCapping
+        ? 150
+        : isIncome
+          ? 140
+          : isAnyversary
+            ? 170
+            : isAchievement
+              ? 110
               : isWelcome
+                ? 150
+                : isClosing
+                  ? 150
+                  : isBonanza
+                    ? 150
+                    : isRank_B
+                      ? 225
+                      : isRank
+                        ? 150
+                        : 130,
+      height: isCapping
+        ? 32
+        : isIncome
+          ? 40
+          : isAnyversary
+            ? 100
+            : isAchievement
+              ? 60
+              : isClosing
                 ? 32
-                : isBonanza
-                  ? 95
-                  : isRank_B
-                    ? 60
-                    : isRank
-                      ? 32
-                      : 30,
+                : isWelcome
+                  ? 32
+                  : isBonanza
+                    ? 95
+                    : isRank_B
+                      ? 60
+                      : isRank
+                        ? 32
+                        : 30,
       scaleX: 1,
       offsetX: 0,
       scaleY: 1,
@@ -3691,7 +3695,7 @@ function GeneralEditPage({
                 isSubGeneralType2 ||
                 Template_Type === "Anniversary_Birthday" ||
                 isBonanza ||
-                Template_Type === "Capping" ||
+                // Template_Type === "Capping" ||
                 isWelcome ||
                 isMeeting ||
                 isTraining ? null : (
@@ -3710,59 +3714,77 @@ function GeneralEditPage({
                     //   return Math.max(0, 125 + (maxW - curW));
                     // })()}
                     startX={
-                      isIncome
+                      isCapping
                         ? isRight
-                          ? 20
-                          : 135
-                        : isClosing
-                          ? isRight
-                            ? 30
-                            : 175
-                          : isRight
-                            ? charslen?.length === 10
-                              ? 143
-                              : charslen?.length === 9
-                                ? 143
-                                : charslen?.length === 8
-                                  ? 140
-                                  : charslen?.length === 7
-                                    ? 160
-                                    : charslen?.length === 6
-                                      ? 165
-                                      : 181
-                            : isRank_B
-                              ? charslen?.length === 6
-                                ? 22
+                          ? charslen?.length === 10
+                            ? 141
+                            : charslen?.length === 9
+                              ? 141
+                              : charslen?.length === 8
+                                ? 138
                                 : charslen?.length === 7
-                                  ? 17
-                                  : charslen?.length === 9
-                                    ? 5
-                                    : charslen?.length === 10
+                                  ? 158
+                                  : charslen?.length === 6
+                                    ? 163
+                                    : 179
+                          : 10
+                        : isIncome
+                          ? isRight
+                            ? 20
+                            : 135
+                          : isClosing
+                            ? isRight
+                              ? 30
+                              : 175
+                            : isRight
+                              ? charslen?.length === 10
+                                ? 143
+                                : charslen?.length === 9
+                                  ? 143
+                                  : charslen?.length === 8
+                                    ? 140
+                                    : charslen?.length === 7
+                                      ? 160
+                                      : charslen?.length === 6
+                                        ? 165
+                                        : 181
+                              : isRank_B
+                                ? charslen?.length === 6
+                                  ? 22
+                                  : charslen?.length === 7
+                                    ? 17
+                                    : charslen?.length === 9
                                       ? 5
-                                      : 22
-                              : 1.5
+                                      : charslen?.length === 10
+                                        ? 5
+                                        : 22
+                                : 1.5
                     }
                     y={
-                      isIncome
-                        ? 132
-                        : isClosing
+                      isCapping
+                        ? 247
+                        : isIncome
                           ? 132
-                          : charslen?.length === 10
-                            ? 250
-                            : isRank_B
-                              ? 236.5
-                              : 250
+                          : isClosing
+                            ? 132
+                            : charslen?.length === 10
+                              ? 250
+                              : isRank_B
+                                ? 236.5
+                                : 250
                     }
                     digitHeight={
-                      isIncome
-                        ? 26
-                        : isClosing
-                          ? 28
-                          : charslen?.length === 10
-                            ? 32
-                            : isRank_B
-                              ? 29
-                              : 32
+                      isCapping
+                        ? 36
+                        : isIncome
+                          ? 26
+                          : isClosing
+                            ? 28
+                            : charslen?.length === 10
+                              ? 32
+                              : isRank_B
+                                ? 29
+                                : 32
                     }
                     spacing={charslen?.length === 6 ? 1.5 : 0}
                   />

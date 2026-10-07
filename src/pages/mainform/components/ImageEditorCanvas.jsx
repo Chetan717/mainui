@@ -172,7 +172,7 @@ export default function ImageEditorCanvas({
   const rankW = isMeeting
     ? 170
     : isCapping
-      ? 100
+      ? 150
       : isIncome
         ? 105
         : isAnyversary
@@ -191,7 +191,7 @@ export default function ImageEditorCanvas({
   const rankH = isMeeting
     ? 220
     : isCapping
-      ? 150
+      ? 190
       : isIncome
         ? 195
         : isAnyversary
