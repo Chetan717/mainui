@@ -74,7 +74,7 @@ async function fetchCompanyDirectory({ force = false } = {}) {
       const companies = snapshot.docs
         .map(normalizeCompany)
         .filter((company) => company.active && company.launched)
-        .sort((a, b) => b.name.localeCompare(a.name, undefined, {
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, {
           sensitivity: "base",
           numeric: true,
         }));
@@ -402,8 +402,21 @@ export default function SelectComp() {
 
         <div className="mt-6 rounded-[18px] border border-accent/15 bg-accent/5 px-4 py-3 text-center">
           <p className="text-[12px] font-semibold text-foreground">Can't find your company?</p>
-          <a href="https://wa.me/919341947815" target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-[12px] font-semibold text-accent">
-            Contact us on WhatsApp
+          <a
+            href="https://wa.me/919341947815"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1.5 inline-flex items-center justify-center gap-1.5 text-[12px] font-semibold text-accent"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 32 32"
+              className="h-[17px] w-[17px] shrink-0 fill-[#25D366]"
+            >
+              <path d="M19.11 17.2c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.36-1.61-1.52-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47h-.52c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.26 0 1.33.98 2.62 1.11 2.8.14.18 1.92 2.93 4.65 4.11.65.28 1.16.45 1.55.57.65.21 1.24.18 1.71.11.52-.08 1.6-.65 1.83-1.29.23-.63.23-1.18.16-1.29-.07-.12-.25-.18-.52-.32Z" />
+              <path d="M16.04 3.2c-7.04 0-12.76 5.72-12.76 12.76 0 2.25.59 4.45 1.71 6.38L3.2 28.8l6.61-1.73a12.7 12.7 0 0 0 6.22 1.58h.01c7.03 0 12.76-5.72 12.76-12.76 0-3.41-1.33-6.61-3.74-9.02A12.67 12.67 0 0 0 16.04 3.2Zm0 23.29h-.01a10.56 10.56 0 0 1-5.38-1.47l-.39-.23-3.92 1.03 1.05-3.82-.25-.39a10.58 10.58 0 1 1 8.9 4.88Z" />
+            </svg>
+            <span>Contact us on WhatsApp</span>
           </a>
         </div>
       </div>
