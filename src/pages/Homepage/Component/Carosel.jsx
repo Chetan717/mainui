@@ -7,6 +7,17 @@ import { hasMlmProfileInStorage } from "../../../utils/companyStorage";
 import { useSelectedCompany } from "../../../Context/SelectedCompanyContext";
 import { rememberEditorBackTarget } from "../../../utils/editorNavigation";
 
+const PERMANENT_TRENDING_GIF =
+  "https://res.cloudinary.com/hrtsvyap/image/upload/v1791437768/kling_hq_720w_12fps.gif";
+
+const PERMANENT_TRENDING_SLIDE = {
+  id: "permanent-today-trending-gif",
+  type: "Today_Trending",
+  Subtype: "Today Trending",
+  image: PERMANENT_TRENDING_GIF,
+  permanentPromo: true,
+};
+
 function displayTitle(item, index) {
   const subtype = String(item?.Subtype || "").trim();
   if (subtype) return subtype;
@@ -100,16 +111,22 @@ export default function Carosel() {
     setActiveIndex(nearestIndex);
   };
 
-  const renderSlides = slides.length
+  const dynamicSlides = slides.length
     ? slides
-    : [
-        {
-          id: "fallback-trending",
-          type: "Today_Trending",
-          Subtype: "Fresh designs for today",
-          image: defaultImage,
-        },
-      ];
+    : loading
+      ? []
+      : [
+          {
+            id: "fallback-trending",
+            type: "Today_Trending",
+            Subtype: "Fresh designs for today",
+            image: defaultImage,
+          },
+        ];
+
+  // Keep the requested GIF permanently at position 1 while Firestore/company
+  // trending slides continue to refresh normally after it.
+  const renderSlides = [PERMANENT_TRENDING_SLIDE, ...dynamicSlides];
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
@@ -139,54 +156,78 @@ export default function Carosel() {
       });
       activeIndexRef.current = nextIndex;
       setActiveIndex(nextIndex);
-    }, 3000);
+    }, 6000);
 
     return () => window.clearInterval(timer);
   }, [loading, renderSlides.length]);
 
   return (
     <div className="w-full">
-      {loading ? (
-        <div className="aspect-[1.9/1] w-full animate-pulse rounded-[14px] bg-[#DCE4F1] dark:bg-[#182235]" />
-      ) : (
-        <div
-          ref={sliderRef}
-          onScroll={handleScroll}
-          onPointerDown={() => {
-            interactionRef.current = true;
-          }}
-          onPointerUp={() => {
-            interactionRef.current = false;
-          }}
-          onPointerCancel={() => {
-            interactionRef.current = false;
-          }}
-          onTouchStart={() => {
-            interactionRef.current = true;
-          }}
-          onTouchEnd={() => {
-            interactionRef.current = false;
-          }}
-          className="hide-scrollbar flex w-full snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth"
-        >
-          {renderSlides.map((item, index) => (
-            <button
-              key={item.id || `${item.type}-${index}`}
-              type="button"
-              onClick={() => handleImagePress(item)}
-              className="relative aspect-[1.9/1] min-w-full snap-center overflow-hidden rounded-[14px] border border-[#E3E8F1] bg-[#EAF0F8] text-left shadow-[0_5px_16px_rgba(34,55,88,0.08)] transition active:scale-[0.995] dark:border-[#263247] dark:bg-[#172235]"
-            >
+      <div
+        ref={sliderRef}
+        onScroll={handleScroll}
+        onPointerDown={() => {
+          interactionRef.current = true;
+        }}
+        onPointerUp={() => {
+          interactionRef.current = false;
+        }}
+        onPointerCancel={() => {
+          interactionRef.current = false;
+        }}
+        onTouchStart={() => {
+          interactionRef.current = true;
+        }}
+        onTouchEnd={() => {
+          interactionRef.current = false;
+        }}
+        className="hide-scrollbar flex w-full snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth"
+      >
+          {renderSlides.map((item, index) => {
+            const slideClassName =
+              "relative aspect-[1.9/1] min-w-full snap-center overflow-hidden rounded-[14px] border border-[#E3E8F1] bg-[#EAF0F8] text-left shadow-[0_5px_16px_rgba(34,55,88,0.08)] transition dark:border-[#263247] dark:bg-[#172235]";
+
+            const image = (
               <img
                 src={item.image || defaultImage}
                 alt={displayTitle(item, index)}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cotain"
                 loading={index === 0 ? "eager" : "lazy"}
                 decoding="async"
+                onError={(event) => {
+                  if (event.currentTarget.dataset.fallbackApplied === "true") {
+                    return;
+                  }
+                  event.currentTarget.dataset.fallbackApplied = "true";
+                  event.currentTarget.src = defaultImage;
+                }}
               />
-            </button>
-          ))}
-        </div>
-      )}
+            );
+
+            if (item.permanentPromo) {
+              return (
+                <div
+                  key={item.id}
+                  className={slideClassName}
+                  aria-label="Today Trending"
+                >
+                  {image}
+                </div>
+              );
+            }
+
+            return (
+              <button
+                key={item.id || `${item.type}-${index}`}
+                type="button"
+                onClick={() => handleImagePress(item)}
+                className={`${slideClassName} active:scale-[0.995]`}
+              >
+                {image}
+              </button>
+            );
+          })}
+      </div>
 
       <div className="mt-2 flex h-2 items-center justify-center gap-1.5" aria-hidden="true">
         {renderSlides.map((item, index) => (
