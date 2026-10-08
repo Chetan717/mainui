@@ -22,6 +22,7 @@ let _graphicsCacheGeneration = 0;
 const GRAPHICS_SESSION_CACHE_PREFIX = "mlmlive_all_template_graphics_v2:";
 
 const LIVE_GENERAL_TEMPLATE_TYPES = new Set(["Domestic_Trip"]);
+LIVE_GENERAL_TEMPLATE_TYPES.add("Latest_update");
 
 async function fetchLiveGeneralTemplates(selectedType) {
   if (!LIVE_GENERAL_TEMPLATE_TYPES.has(selectedType)) return [];

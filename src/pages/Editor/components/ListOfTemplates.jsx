@@ -640,7 +640,7 @@ export default function ListOfTemplates({
                 items.push({ ...graphic, _template: template });
               });
             }
-          } else if (filterType === "Domestic_Trip") {
+          } else if (filterType === "Domestic_Trip" || filterType === "Latest_update") {
             const snap = await getDocs(
               query(
                 collection(db, COLLECTIONS.MLMTEMPLATE),

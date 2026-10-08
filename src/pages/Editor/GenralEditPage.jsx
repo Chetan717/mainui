@@ -389,6 +389,7 @@ export const GENERAL_SELECT_TYPES2 = [
   { name: "Trending", value: "Trending" },
   { name: "Today_Trending", value: "Today_Trending" },
   { name: "Product", value: "Product" },
+  { name: "Latest Update", value: "Latest_update" },
 ];
 
 const clamp = (val, min, max) => Math.min(Math.max(val, min), max);

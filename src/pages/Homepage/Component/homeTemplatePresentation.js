@@ -8,6 +8,11 @@ export const HOME_SECTION_DEFINITIONS = Object.freeze([
     entries: [{ type: "Today_Trending" }],
   },
   {
+    id: "latest-update",
+    title: "Latest Update",
+    entries: [{ type: "Latest_update" }],
+  },
+  {
     id: "product",
     title: "Product",
     entries: [{ type: "Product" }],
@@ -103,6 +108,7 @@ for (const definition of HOME_SECTION_DEFINITIONS) {
 
 export function getTemplateTypeDisplayName(type) {
   if (type === "ThankYou_Banner_B") return "Thank You Rank & Bonanza";
+  if (type === "Latest_update") return "Latest Update";
   return String(type || "").replaceAll("_", " ");
 }
 

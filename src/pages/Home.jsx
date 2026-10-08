@@ -61,6 +61,7 @@ const PULL_REFRESH_ACTIVE_HEIGHT = 48;
 
 const HOME_UI_TEMPLATE_TYPES = [
   "Today_Trending",
+  "Latest_update",
   "Product",
   "Motivational",
   ...RANK_PROMOTION_TYPES,

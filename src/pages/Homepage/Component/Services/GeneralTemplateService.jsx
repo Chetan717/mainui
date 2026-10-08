@@ -18,6 +18,7 @@ import { RANK_PROMOTION_TYPES } from "../../../../utils/templateTypeConfig";
 const TYPE_GROUPS = [
   [
     // "Today_Trending",
+    "Latest_update",
     "Product",
     "Motivational",
     ...RANK_PROMOTION_TYPES,
@@ -47,6 +48,7 @@ const TYPE_GROUPS = [
   ],
 ];
 export const TEMPLATE_GROUP_COUNT = TYPE_GROUPS.length;
+
 
 // 5-minute memory + same-tab session cache to avoid duplicate Firestore reads.
 // Explicit refresh/company invalidation still clears the cache immediately.
@@ -145,7 +147,7 @@ export const fetchGeneralTemplates = async (groupIndex, company) => {
     const results = await Promise.all(
       selectedTypes.map(async (type) => {
         const bundledGeneralTemplates = getGeneralTemplatesForHome(type, HOME_LIMIT);
-        const isLiveGeneralType = type === "Domestic_Trip";
+        const isLiveGeneralType = type === "Domestic_Trip" || type === "Latest_update";
 
         const [liveGeneralSnapshot, mlmSnapshot] = await Promise.all([
           isLiveGeneralType
