@@ -1,3 +1,5 @@
+import { normalizeMlmProfileAssetUrls } from "./profileR2Urls.js";
+
 const MLM_PROFILE_STORAGE_KEY = "mlmProfile";
 
 export const MLM_PROFILE_CHANGED_EVENT = "mlmlive:mlm-profile-changed";
@@ -56,14 +58,17 @@ const readStoredValue = (key, { sessionOnly = false } = {}) => {
 };
 
 export const getMlmProfileFromStorage = () =>
-  readStoredValue(MLM_PROFILE_STORAGE_KEY, { sessionOnly: true });
+  normalizeMlmProfileAssetUrls(
+    readStoredValue(MLM_PROFILE_STORAGE_KEY, { sessionOnly: true }),
+  );
 
 export const saveMlmProfileToStorage = (profile) => {
   if (!profile) return;
+  const normalizedProfile = normalizeMlmProfileAssetUrls(profile);
   // Remove legacy persistent PII and keep the profile for this tab only.
   try { localStorage.removeItem(MLM_PROFILE_STORAGE_KEY); } catch {}
-  try { sessionStorage.setItem(MLM_PROFILE_STORAGE_KEY, JSON.stringify(profile)); } catch {}
-  notifyProfileChanged(profile);
+  try { sessionStorage.setItem(MLM_PROFILE_STORAGE_KEY, JSON.stringify(normalizedProfile)); } catch {}
+  notifyProfileChanged(normalizedProfile);
 };
 
 export const clearMlmProfileStorage = () => {

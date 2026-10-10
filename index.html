@@ -47,5 +47,15 @@
         document.addEventListener("message", capture);
       })();
     </script>
+    <script>
+      // Register the shared FCM/offline service worker for every visitor, not
+      // only after the notification hook mounts. This lets returning users see
+      // our own No Internet screen before the React bundle can load.
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/firebase-messaging-sw.js", { scope: "/" })
+          .catch(() => {});
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

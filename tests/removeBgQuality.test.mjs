@@ -15,6 +15,11 @@ import {
   isRetryableRemoveBgError,
   REMOVE_BG_QUALITY,
 } from "../src/pages/mainform/utils/removeBg.js";
+import {
+  BIREFNET_QUALITY_SETTINGS,
+  getBirefNetOutputSize,
+  sigmoidLogits,
+} from "../src/pages/mainform/utils/birefnetBg.js";
 
 const projectRoot = resolve(import.meta.dirname, "..");
 const read = (relativePath) =>
@@ -123,35 +128,64 @@ test("automatic retry is limited to engine startup failures", () => {
   );
 });
 
-test("all runtimes require the same continuous-alpha portrait model", () => {
+test("quality engine prefers BiRefNet and only capability-falls back to MODNet", () => {
   const removeBg = read("src/pages/mainform/utils/removeBg.js");
+  const birefnet = read("src/pages/mainform/utils/birefnetBg.js");
   assert.deepEqual(REMOVE_BG_QUALITY, {
-    engine: "hybrid-modnet-birefnet",
-    localModel: "modnet-portrait",
-    serverModel: "birefnet-portrait",
+    engine: "birefnet-webgpu-with-modnet-capability-fallback",
+    model: "birefnet-lite-512-fp16",
     continuousAlpha: true,
-    serverForComplexPortraits: true,
-    localFallbackOnServerFailure: true,
+    lowQualityFallback: false,
     originalPhotoFallback: false,
+    fallbackOnlyWhenUnsupported: true,
   });
-  assert.match(removeBg, /removeWithProfessionalMatte/);
-  assert.match(removeBg, /removeBackgroundWithModNet/);
-  assert.match(removeBg, /assessLocalMatte/);
-  assert.match(removeBg, /removeBackgroundOnServer/);
-  assert.match(removeBg, /return localResult/);
+  assert.match(removeBg, /removeBackgroundWithBirefNet/);
+  assert.match(removeBg, /error\?\.removeBgUnsupported === true/);
+  assert.doesNotMatch(removeBg, /MAX_WAIT_FOR_BACKGROUND_PRELOAD_MS|3500/);
   assert.doesNotMatch(
     removeBg,
     /removeBgWithMediaPipe|removeWithImgly|@imgly\/background-removal/,
   );
-  assert.match(removeBg, /resetModNetEngine\(\{ freshAssets: false \}\)/);
+  assert.match(birefnet, /VITE_BIREFNET_MODEL_URL/);
+  assert.match(birefnet, /models\/birefnet\/model_fp16\.onnx/);
+  assert.doesNotMatch(birefnet, /cleanPortraitMatte/);
 
   for (const path of [
     "src/pages/mainform/components/ImageUploadWithBgRemove.jsx",
     "src/pages/mainform/components/MultiImagePicker.jsx",
     "src/pages/Form/Mlmprofilemodal.jsx",
   ]) {
-    assert.match(read(path), /mainform\/utils\/removeBg|\.\.\/utils\/removeBg/);
+    const source = read(path);
+    assert.match(source, /mainform\/utils\/removeBg|\.\.\/utils\/removeBg/);
+    assert.match(source, /useEffect\(\(\) => \{[\s\S]*preloadBgModel\(\)/);
   }
+});
+
+test("BiRefNet preprocessing/output policy preserves soft alpha and safe resolution", () => {
+  assert.deepEqual(BIREFNET_QUALITY_SETTINGS, {
+    inputSize: 512,
+    maxOutputSide: 3072,
+    maxOutputPixels: 6_500_000,
+    model: "birefnet-lite-512-fp16",
+    backend: "webgpu",
+  });
+
+  const logits = sigmoidLogits(new Float32Array([-10, -2, 0, 2, 10]));
+  assert.equal(logits[0], 0);
+  assert.ok(logits[1] > 0.1 && logits[1] < 0.13);
+  assert.ok(Math.abs(logits[2] - 0.5) < 1e-6);
+  assert.ok(logits[3] > 0.87 && logits[3] < 0.9);
+  assert.equal(logits[4], 1);
+
+  assert.deepEqual(getBirefNetOutputSize(1600, 1200), {
+    width: 1600,
+    height: 1200,
+    scale: 1,
+  });
+  const large = getBirefNetOutputSize(8000, 6000);
+  assert.ok(large.width <= 3072);
+  assert.ok(large.width * large.height <= 6_500_000);
+  assert.ok(Math.abs(large.width / large.height - 4 / 3) < 0.01);
 });
 
 test("the bundled ONNX Runtime WASM is complete, versioned, and not truncated", () => {

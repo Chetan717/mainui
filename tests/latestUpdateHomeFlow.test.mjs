@@ -37,9 +37,11 @@ test("Latest Update stays a live General editor flow across View All and Editor"
   const editorList = read("src/pages/Editor/components/ListOfTemplates.jsx");
   const homeList = read("src/pages/Homepage/Component/ListOfGenaraltemp.jsx");
   const editor = read("src/pages/Editor/GenralEditPage.jsx");
+  const editorNavigation = read("src/utils/editorNavigation.js");
 
-  assert.match(allTemplates, /LIVE_GENERAL_TEMPLATE_TYPES\.add\("Latest_update"\)/);
-  assert.match(editorList, /filterType === "Domestic_Trip" \|\| filterType === "Latest_update"/);
+  assert.match(allTemplates, /FIRESTORE_FALLBACK_GENERAL_TYPES = new Set\(\["Domestic_Trip", "Latest_update"\]\)/);
+  assert.match(editorList, /fetchGeneralTypeCatalog\(filterType\)/);
   assert.match(homeList, /"Latest_update"/);
+  assert.match(editorNavigation, /"Latest_update"/);
   assert.match(editor, /\{ name: "Latest Update", value: "Latest_update" \}/);
 });

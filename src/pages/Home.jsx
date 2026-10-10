@@ -803,9 +803,20 @@ function Home() {
         href="https://wa.me/919341947815"
         target="_blank"
         rel="noopener noreferrer"
-        className="sr-only focus:not-sr-only focus:fixed focus:bottom-20 focus:right-3 focus:z-[90] focus:rounded-full focus:bg-[#25D366] focus:px-4 focus:py-2 focus:text-xs focus:font-semibold focus:text-white"
+        aria-label="Contact customer care on WhatsApp"
+        title="Contact us on WhatsApp"
+        className="fixed right-3 z-[60] flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_8px_24px_rgba(37,211,102,0.38)] transition-transform duration-150 active:scale-95 md:hidden"
+        style={{ bottom: "calc(env(safe-area-inset-bottom) + 70px)" }}
       >
-        Customer care on WhatsApp
+        <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/25" />
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 32 32"
+          className="relative h-[29px] w-[29px] fill-white"
+        >
+          <path d="M19.11 17.2c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.36-1.61-1.52-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47h-.52c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.26 0 1.33.98 2.62 1.11 2.8.14.18 1.92 2.93 4.65 4.11.65.28 1.16.45 1.55.57.65.21 1.24.18 1.71.11.52-.08 1.6-.65 1.83-1.29.23-.63.23-1.18.16-1.29-.07-.12-.25-.18-.52-.32Z" />
+          <path d="M16.04 3.2c-7.04 0-12.76 5.72-12.76 12.76 0 2.25.59 4.45 1.71 6.38L3.2 28.8l6.61-1.73a12.7 12.7 0 0 0 6.22 1.58h.01c7.03 0 12.76-5.72 12.76-12.76 0-3.41-1.33-6.61-3.74-9.02A12.67 12.67 0 0 0 16.04 3.2Zm0 23.29h-.01a10.56 10.56 0 0 1-5.38-1.47l-.39-.23-3.92 1.03 1.05-3.82-.25-.39a10.58 10.58 0 1 1 8.9 4.88Z" />
+        </svg>
       </a>
 
       <div

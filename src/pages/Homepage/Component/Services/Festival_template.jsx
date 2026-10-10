@@ -1,6 +1,7 @@
 import { db } from "@firebase-config";
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { COLLECTIONS } from "../../../../collections";
+import { fetchFestivalCatalog } from "./templateCdnService";
 
 // 5-minute memory + same-tab session cache; explicit refresh clears both.
 const _mem = new Map();
@@ -53,6 +54,23 @@ export const Festival_template = async (Selected_date, options = {}) => {
   if (!forceRefresh && hit !== null && (!bypassEmptyCache || hit.length > 0)) return hit;
 
   try {
+    const cdnItems = await fetchFestivalCatalog(Selected_date);
+    if (cdnItems !== null) {
+      const templates = cdnItems.map((data) => ({
+        id: data.id,
+        image: data.Showcase_url || data.image || "",
+        company: data.Company,
+        MainType: data.MainType,
+        type: data.SelectType || data.type,
+        Subtype: data.Subtype || "",
+        ShowCaseForm: data.ShowCaseForm,
+        serial: data.serial,
+        GraphicsLink: Array.isArray(data.GraphicsLink) ? data.GraphicsLink.filter(Boolean) : [],
+      }));
+      writeCache(Selected_date, templates);
+      return templates;
+    }
+
     const q = query(
       collection(db, COLLECTIONS.MLMTEMPLATE),
       where("MainType", "==", "General"),

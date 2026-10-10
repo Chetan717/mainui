@@ -52,10 +52,11 @@ function tagEngineError(error, stage, retryable = false) {
 }
 
 function assetUrl(fileName) {
-  const url = new URL(
-    `${import.meta.env.BASE_URL}modnet/${fileName}`,
-    window.location.href,
-  );
+  const configuredBase = String(import.meta.env.VITE_MODNET_ASSET_BASE_URL || "").trim();
+  const base = configuredBase
+    ? `${configuredBase.replace(/\/+$/, "")}/`
+    : `${import.meta.env.BASE_URL}modnet/`;
+  const url = new URL(`${base}${fileName}`, window.location.href);
   // Cache files permanently on the device while keeping future model updates
   // safe: bump this version whenever any MODNet/ORT asset changes.
   url.searchParams.set("v", MODEL_ASSET_VERSION);
@@ -109,7 +110,7 @@ async function fetchModel(onProgress) {
   const expectedSize = Number(response.headers.get("content-length")) || 0;
   if (!response.body?.getReader) {
     const bytes = new Uint8Array(await response.arrayBuffer());
-    onProgress?.("Professional AI model is ready…", 38);
+    onProgress?.("Professional AI मॉडल तैयार है…", 38);
     return bytes;
   }
 
@@ -123,7 +124,7 @@ async function fetchModel(onProgress) {
     received += value.length;
     const ratio = expectedSize > 0 ? Math.min(1, received / expectedSize) : 0;
     onProgress?.(
-      "Downloading the professional AI model for the first time…",
+      "Professional AI मॉडल पहली बार डाउनलोड हो रहा है…",
       8 + ratio * 30,
     );
   }
@@ -144,7 +145,7 @@ async function getSession(onProgress) {
         loadRuntime(),
         fetchModel(onProgress),
       ]);
-      onProgress?.("Starting the professional portrait engine…", 42);
+      onProgress?.("Professional portrait engine शुरू हो रहा है…", 42);
       return ort.InferenceSession.create(model, {
         executionProviders: ["wasm"],
         graphOptimizationLevel: "all",
@@ -813,7 +814,7 @@ export function resetModNetEngine({ freshAssets = false } = {}) {
 
 export async function removeBackgroundWithModNet(file, onProgress, signal) {
   throwIfAborted(signal);
-  onProgress?.("Preparing the professional portrait model…", 6);
+  onProgress?.("Professional portrait model तैयार हो रहा है…", 6);
   const [ort, session, decoded] = await Promise.all([
     loadRuntime(),
     getSession(onProgress),
@@ -851,7 +852,7 @@ export async function removeBackgroundWithModNet(file, onProgress, signal) {
     decoded.close();
   }
 
-  onProgress?.("AI is building clean alpha edges around hair, ears and body…", 52);
+  onProgress?.("AI बाल, कान और body की alpha edge बना रहा है…", 52);
   const globalMatte = await runModNetInference(
     sourceCanvas,
     ort,
@@ -869,7 +870,7 @@ export async function removeBackgroundWithModNet(file, onProgress, signal) {
   );
   let detailMatte = null;
   if (detailRegion) {
-    onProgress?.("Refining fine face, ear and hair details…", 72);
+    onProgress?.("छोटे चेहरे, कान और बाल detail में साफ हो रहे हैं…", 72);
     detailMatte = await runModNetInference(
       sourceCanvas,
       ort,
@@ -880,7 +881,7 @@ export async function removeBackgroundWithModNet(file, onProgress, signal) {
   }
 
   throwIfAborted(signal);
-  onProgress?.("Cleaning background particles and edge colour…", 86);
+  onProgress?.("Background particles और edge colour साफ हो रहे हैं…", 86);
 
   const sourceImage = sourceContext.getImageData(
     0,
@@ -965,7 +966,7 @@ export async function removeBackgroundWithModNet(file, onProgress, signal) {
     0,
   );
 
-  onProgress?.("Preparing a lossless transparent PNG…", 97);
+  onProgress?.("Lossless Transparent PNG तैयार हो रही है…", 97);
   return new Promise((resolve, reject) => {
     outputCanvas.toBlob(
       (blob) => {

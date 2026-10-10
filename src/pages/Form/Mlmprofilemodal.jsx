@@ -14,8 +14,6 @@ import {
 import {
   getStorage,
   ref as storageRef,
-  uploadBytes,
-  getDownloadURL,
   deleteObject,
 } from "firebase/storage";
 import { convertToWebP } from "../../lib/convertToWebP";
@@ -44,6 +42,16 @@ import {
 } from "../../utils/mlmProfileCompanyIdentity";
 import { invalidateVerifiedMlmProfileCache } from "../../utils/mlmProfileVerification";
 import { createProfileDeletedNavigationState } from "../../utils/profileDeletionNavigation";
+import {
+  getFirebaseStorageObjectPath,
+  getProfileObjectPath,
+  isR2ProfileUrl,
+  normalizeProfileUrlArray,
+} from "../../utils/profileR2Urls";
+import {
+  deleteR2ProfileAsset,
+  uploadProfileImageToR2,
+} from "../../services/profileR2Storage";
 const storage = getStorage(app);
 
 // Background removal — shared utility (GPU-accelerated, edge cleanup included).
@@ -524,6 +532,13 @@ function DisplaySettings({ accent = false }) {
 }
 
 export default function MLMProfilePage() {
+  // Preload the high-quality Remove-BG engine as soon as the profile screen
+  // opens so the first photo does not wait for the model after crop.
+  useEffect(() => {
+    void preloadBgModel().catch(() => {
+      // Actual removeBg action owns retry/error UI.
+    });
+  }, []);
   const navigate = useNavigate();
   const {
     selectedCompany: companyData,
@@ -707,10 +722,10 @@ export default function MLMProfilePage() {
         const salutation = dotIdx !== -1 ? fullName.slice(0, dotIdx) : "Mr";
         const name = dotIdx !== -1 ? fullName.slice(dotIdx + 1) : fullName;
 
-        const profileImageURLs = data.profileImageURLs || [];
+        const profileImageURLs = normalizeProfileUrlArray(data.profileImageURLs || []);
         originalProfileImageURLsRef.current = profileImageURLs;
 
-        const rawTopupURLs = data.topuplineURLs || [];
+        const rawTopupURLs = normalizeProfileUrlArray(data.topuplineURLs || []);
         originalAllTopupURLsRef.current = rawTopupURLs;
         originalTopupURLsRef.current = rawTopupURLs.filter(
           isManuallyUploadedUrl,
@@ -726,7 +741,7 @@ export default function MLMProfilePage() {
           profileImageBlobPreviews: [],
           existingProfileImageURLs: profileImageURLs,
           _pendingProfileBlobs: [],
-          topupSelectedLinks: data.topuplineURLs || [],
+          topupSelectedLinks: rawTopupURLs,
           topupCustomFiles: [],
           socials: data.socials || {
             Facebook: "",
@@ -1266,46 +1281,38 @@ export default function MLMProfilePage() {
     return Object.keys(e).length === 0;
   };
 
-  // ── Firebase helpers ───────────────────────────────────────
+  // ── Profile media helpers ──────────────────────────────────
+  // New profile/top-upline images go directly to the public profile R2 bucket
+  // through a short-lived signed PUT URL. Old Firebase URLs continue to work
+  // during the migration window and are mapped to R2 for reads.
   const uploadFile = async (file, path) => {
     const webpBlob = await convertToWebP(file);
-    const r = storageRef(storage, path.replace(/\.png$/, ".webp"));
-    await uploadBytes(r, webpBlob, { contentType: "image/webp", cacheControl: "public,max-age=31536000,immutable" });
-    return getDownloadURL(r);
+    const fileName = String(path || "topup.webp").split("/").pop().replace(/\.png$/i, ".webp");
+    return uploadProfileImageToR2(webpBlob, { scope: "topup", fileName });
   };
 
   const uploadBlob = async (blob, path) => {
     const webpBlob = await convertToWebP(blob);
-    const r = storageRef(storage, path.replace(/\.png$/, ".webp"));
-    await uploadBytes(r, webpBlob, { contentType: "image/webp", cacheControl: "public,max-age=31536000,immutable" });
-    return getDownloadURL(r);
+    const fileName = String(path || "profile.webp").split("/").pop().replace(/\.png$/i, ".webp");
+    return uploadProfileImageToR2(webpBlob, { scope: "profile", fileName });
   };
-
-  function getStoragePathFromUrl(url) {
-    try {
-      const match = url.match(/\/o\/([^?]+)/);
-      if (!match) return null;
-      return decodeURIComponent(match[1]);
-    } catch {
-      return null;
-    }
-  }
 
   async function deleteStorageUrl(url) {
     try {
-      const path = getStoragePathFromUrl(url);
-      if (!path) return;
-      const r = storageRef(storage, path);
-      await deleteObject(r);
+      if (isR2ProfileUrl(url)) {
+        await deleteR2ProfileAsset(url);
+        return;
+      }
+      const path = getFirebaseStorageObjectPath(url);
+      if (!path?.startsWith("mlmprofiles/")) return;
+      await deleteObject(storageRef(storage, path));
     } catch (err) {
-      // console.warn("Could not delete storage object:", err);
+      // Best-effort cleanup must not block saving the updated profile.
     }
   }
 
   function isManuallyUploadedUrl(url) {
-    if (!url) return false;
-    const path = getStoragePathFromUrl(url);
-    return !!(path && path.startsWith("mlmprofiles/"));
+    return !!getProfileObjectPath(url);
   }
 
   // ── Save ───────────────────────────────────────────────────

@@ -3,6 +3,7 @@ import { isValidAllTemplatesReturnPath } from "./allTemplatesNavigation.js";
 const GENERAL_TEMPLATE_TYPES = new Set([
   "Trending",
   "Festival",
+  "Latest_update",
   "Product",
   "Motivational",
   "Good_Morning",

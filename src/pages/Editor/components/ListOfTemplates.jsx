@@ -2,13 +2,18 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "@firebase-config";
 import { COLLECTIONS } from "../../../collections";
-import genaral_template_json from "../../Homepage/Component/Services/genaral_template_firestore_data.json";
 import { PAGE_REFRESH_EVENT } from "../../../utils/pageRefresh";
 import { useSelectedCompany } from "../../../Context/SelectedCompanyContext";
 import {
   AllTemplateGraphicsService,
   clearAllTemplateGraphicsCache,
 } from "../../Homepage/Component/Services/Alltemplateservice";
+import {
+  fetchGeneralMasterCatalog,
+  fetchGeneralTypeCatalog,
+  fetchMlmTypeCatalog,
+  fetchTemplateCatalogById,
+} from "../../Homepage/Component/Services/templateCdnService";
 import {
   EDITOR_TEMPLATE_SEED_KEY,
   getEditorGraphicSelectionKey,
@@ -611,22 +616,23 @@ export default function ListOfTemplates({
         } else if (isGeneralTemplate) {
           if (filterType === "Festival") {
             // Festival editor must show only the festival card the user tapped.
-            // Prefer bundled JSON (0 Firestore reads). If the app bundle is
-            // older than a newly-added festival, fall back to one document read
-            // by id instead of querying the complete Festival collection.
+            // Prefer the small R2 detail object, then the live all-General R2
+            // master. Firestore is emergency-only if CDN data is unavailable.
             let template = selType?.id
-              ? genaral_template_json?.data?.[selType.id] || null
+              ? await fetchTemplateCatalogById(String(selType.id))
               : null;
+
+            if (!template && selType?.id) {
+              const master = await fetchGeneralMasterCatalog();
+              const masterTemplate = master?.data?.[String(selType.id)] || null;
+              if (masterTemplate) template = { id: String(selType.id), ...masterTemplate };
+            }
 
             if (!template && selType?.id) {
               const snap = await getDoc(
                 doc(db, COLLECTIONS.MLMTEMPLATE, String(selType.id)),
               );
-              if (snap.exists()) {
-                template = { id: snap.id, ...snap.data() };
-              }
-            } else if (template) {
-              template = { id: selType.id, ...template };
+              if (snap.exists()) template = { id: snap.id, ...snap.data() };
             }
 
             if (
@@ -640,69 +646,85 @@ export default function ListOfTemplates({
                 items.push({ ...graphic, _template: template });
               });
             }
-          } else if (filterType === "Domestic_Trip" || filterType === "Latest_update") {
-            const snap = await getDocs(
-              query(
-                collection(db, COLLECTIONS.MLMTEMPLATE),
-                where("SelectType", "==", filterType),
-                where("MainType", "==", "General"),
-                where("Active", "==", true),
-                where("Launched", "==", true),
-              ),
-            );
-            snap.forEach((docSnap) => {
-              const template = { id: docSnap.id, ...docSnap.data() };
-              if (
-                template.MainType !== "General" ||
-                template.Active !== true ||
-                template.Launched !== true ||
-                (fetchSubType && String(template.Subtype || "").trim() !== String(fetchSubType).trim())
-              ) {
-                return;
-              }
-              (template.GraphicsLink || []).forEach((graphic) => {
-                items.push({ ...graphic, _template: template });
-              });
-            });
           } else {
-            items = getGeneralItemsForEditor(
-              genaral_template_json,
-              filterType,
-              fetchSubType,
-            );
+            // Every General editor flow is CDN-first so an Admin edit becomes
+            // visible without shipping a new app bundle. No bundled General
+            // export is used at runtime anymore.
+            const cdnTemplates = await fetchGeneralTypeCatalog(filterType);
+            if (cdnTemplates !== null) {
+              cdnTemplates.forEach((template) => {
+                if (
+                  template.MainType !== "General" ||
+                  template.Active !== true ||
+                  template.Launched !== true ||
+                  (fetchSubType && String(template.Subtype || "").trim() !== String(fetchSubType).trim())
+                ) return;
+                (template.GraphicsLink || []).forEach((graphic) => {
+                  items.push({ ...graphic, _template: template });
+                });
+              });
+            } else {
+              const master = await fetchGeneralMasterCatalog();
+              if (master) {
+                items = getGeneralItemsForEditor(master, filterType, fetchSubType);
+              } else {
+                const snap = await getDocs(
+                  query(
+                    collection(db, COLLECTIONS.MLMTEMPLATE),
+                    where("SelectType", "==", filterType),
+                    where("MainType", "==", "General"),
+                    where("Active", "==", true),
+                    where("Launched", "==", true),
+                  ),
+                );
+                snap.forEach((docSnap) => {
+                  const template = { id: docSnap.id, ...docSnap.data() };
+                  if (
+                    fetchSubType &&
+                    String(template.Subtype || "").trim() !== String(fetchSubType).trim()
+                  ) return;
+                  (template.GraphicsLink || []).forEach((graphic) => {
+                    items.push({ ...graphic, _template: template });
+                  });
+                });
+              }
+            }
           }
         } else {
-          const constraints = [
-            where("SelectType", "==", filterType),
-            where("Active", "==", true),
-          ];
-
-          if (rawFilterSubType && rawFilterSubType !== "") {
-            constraints.splice(
-              1,
-              0,
-              where("Subtype", "==", rawFilterSubType),
-            );
-          }
-
-          if (filterCompanyId) {
-            selType?.MainType === "MLM"
-              ? constraints.push(where("Company", "==", filterCompanyId))
+          const cdnTemplates =
+            selType?.MainType === "MLM" && filterCompanyId
+              ? await fetchMlmTypeCatalog(filterCompanyId, filterType)
               : null;
-          }
 
-          const q = query(
-            collection(db, COLLECTIONS.MLMTEMPLATE),
-            ...constraints,
-          );
-          const snap = await getDocs(q);
-
-          snap.forEach((docSnap) => {
-            const t = { id: docSnap.id, ...docSnap.data() };
-            (t.GraphicsLink || []).forEach((g) => {
-              items.push({ ...g, _template: t });
+          if (cdnTemplates !== null && selType?.MainType === "MLM" && filterCompanyId) {
+            cdnTemplates.forEach((t) => {
+              if (
+                rawFilterSubType &&
+                String(t?.Subtype || "").trim() !== String(rawFilterSubType).trim()
+              ) return;
+              (t.GraphicsLink || []).forEach((g) => items.push({ ...g, _template: t }));
             });
-          });
+          } else {
+            const constraints = [
+              where("SelectType", "==", filterType),
+              where("Active", "==", true),
+            ];
+
+            if (rawFilterSubType && rawFilterSubType !== "") {
+              constraints.splice(1, 0, where("Subtype", "==", rawFilterSubType));
+            }
+
+            if (filterCompanyId && selType?.MainType === "MLM") {
+              constraints.push(where("Company", "==", filterCompanyId));
+            }
+
+            const q = query(collection(db, COLLECTIONS.MLMTEMPLATE), ...constraints);
+            const snap = await getDocs(q);
+            snap.forEach((docSnap) => {
+              const t = { id: docSnap.id, ...docSnap.data() };
+              (t.GraphicsLink || []).forEach((g) => items.push({ ...g, _template: t }));
+            });
+          }
         }
 
         items.sort((a, b) => {

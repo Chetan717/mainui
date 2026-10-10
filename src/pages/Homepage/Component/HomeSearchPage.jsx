@@ -1,9 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, Clock3, Search, X } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useGeneralData } from "../../../Context/GeneralContext";
 import ListOfGenaraltemp from "./ListOfGenaraltemp";
-import { getAllGeneralTemplates } from "./Services/generalTemplateIndex";
+import {
+  getAllGeneralTemplates,
+  loadGeneralTemplateIndex,
+} from "./Services/generalTemplateIndex";
 import { buildDeepSearchResults } from "./homeSearchRanking";
 
 const RECENT_SEARCHES_KEY = "mlmliv-recent-template-searches";
@@ -33,6 +36,17 @@ export default function HomeSearchPage() {
   const { cachedTemplates } = useGeneralData();
   const [query, setQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState(() => readRecentSearches());
+  const [generalIndexRevision, setGeneralIndexRevision] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    loadGeneralTemplateIndex({ force: true }).finally(() => {
+      if (active) setGeneralIndexRevision((value) => value + 1);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const commitSearch = useCallback((rawValue) => {
     const value = String(rawValue || "").trim();
@@ -51,7 +65,7 @@ export default function HomeSearchPage() {
 
   const filteredTemplates = useMemo(
     () => buildDeepSearchResults(cachedTemplates, query, getAllGeneralTemplates),
-    [cachedTemplates, query],
+    [cachedTemplates, query, generalIndexRevision],
   );
 
   const clearRecent = () => {

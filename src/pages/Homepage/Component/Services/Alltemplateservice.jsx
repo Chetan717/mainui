@@ -11,8 +11,13 @@ import {
 } from "firebase/firestore";
 import {
   getAllGeneralTemplates,
-  getGeneralTemplatesPage,
+  loadGeneralTemplateIndex,
 } from "./generalTemplateIndex";
+import {
+  fetchGeneralTypeCatalog,
+  fetchMlmTypeCatalog,
+  getTemplateCatalogVersion,
+} from "./templateCdnService";
 
 export const ALL_TEMPLATE_GRAPHICS_CACHE_TTL_MS = 5 * 60 * 1000;
 
@@ -21,11 +26,25 @@ const _graphicsRequests = new Map();
 let _graphicsCacheGeneration = 0;
 const GRAPHICS_SESSION_CACHE_PREFIX = "mlmlive_all_template_graphics_v2:";
 
-const LIVE_GENERAL_TEMPLATE_TYPES = new Set(["Domestic_Trip"]);
-LIVE_GENERAL_TEMPLATE_TYPES.add("Latest_update");
+async function fetchGeneralTemplatesForType(selectedType) {
+  // Every General type is CDN-first. Static bundled JSON is only an emergency
+  // fallback for legacy types; Latest Update/Domestic Trip still fall back to
+  // Firestore because they were never bundled as authoritative live data.
+  const cdnItems = await fetchGeneralTypeCatalog(selectedType);
+  if (cdnItems !== null) {
+    return cdnItems
+      .filter((data) => data?.MainType === "General" && data?.Active === true && data?.Launched === true)
+      .map(normalizeRaw)
+      .sort((a, b) => Number(a.serial || 0) - Number(b.serial || 0));
+  }
 
-async function fetchLiveGeneralTemplates(selectedType) {
-  if (!LIVE_GENERAL_TEMPLATE_TYPES.has(selectedType)) return [];
+  const indexState = await loadGeneralTemplateIndex();
+  if (indexState?.source === "cdn") {
+    return getAllGeneralTemplates(selectedType);
+  }
+
+  // Emergency only when both the per-type CDN object and all-General master
+  // are unavailable. Normal runtime performs zero Firestore reads here.
   const snapshot = await getDocs(
     query(
       collection(db, COLLECTIONS.MLMTEMPLATE),
@@ -38,11 +57,7 @@ async function fetchLiveGeneralTemplates(selectedType) {
   return snapshot.docs
     .filter((docSnap) => {
       const data = docSnap.data();
-      return (
-        data?.MainType === "General" &&
-        data?.Active === true &&
-        data?.Launched === true
-      );
+      return data?.MainType === "General" && data?.Active === true && data?.Launched === true;
     })
     .map(normalizeDoc)
     .sort((a, b) => Number(a.serial || 0) - Number(b.serial || 0));
@@ -104,48 +119,49 @@ export function primeAllTemplateGraphicsCache(
   selectedType,
   companyName,
   templates,
+  catalogVersion = "",
 ) {
   if (!Array.isArray(templates)) return;
 
   const cacheKey = getGraphicsCacheKey(selectedType, companyName);
-  const entry = { timestamp: Date.now(), templates };
+  const entry = { timestamp: Date.now(), templates, catalogVersion };
   _graphicsCache.set(cacheKey, entry);
   writeGraphicsSessionCache(cacheKey, entry);
 }
 
-const normalizeDoc = (doc) => {
-  const data = doc.data();
-  return {
-    id: doc.id,
-    image: data.Showcase_url || "",
-    company: data.Company,
-    Subtype: data.Subtype,
-    type: data.SelectType,
-    ShowCaseForm: data?.ShowCaseForm,
-    serial: data?.serial,
-    MainType: data.MainType,
-    GraphicsLink: data.GraphicsLink || [],
-  };
-};
+const normalizeRaw = (data) => ({
+  id: data?.id || "",
+  image: data?.Showcase_url || data?.image || "",
+  company: data?.Company || data?.company || "",
+  Subtype: data?.Subtype,
+  type: data?.SelectType || data?.type,
+  ShowCaseForm: data?.ShowCaseForm,
+  serial: data?.serial,
+  MainType: data?.MainType,
+  GraphicsLink: Array.isArray(data?.GraphicsLink) ? data.GraphicsLink : [],
+});
+const normalizeDoc = (doc) => normalizeRaw({ id: doc.id, ...doc.data() });
 
 export const AllTemplateGraphicsService = async (
   selectedType,
   companyName,
 ) => {
   const cacheKey = getGraphicsCacheKey(selectedType, companyName);
+  const catalogVersion = await getTemplateCatalogVersion();
   const cached = _graphicsCache.get(cacheKey);
   if (
     cached &&
-    Date.now() - cached.timestamp < ALL_TEMPLATE_GRAPHICS_CACHE_TTL_MS
+    Date.now() - cached.timestamp < ALL_TEMPLATE_GRAPHICS_CACHE_TTL_MS &&
+    String(cached.catalogVersion || "") === String(catalogVersion || "")
   ) {
     return cached.templates;
   }
 
-  // Keep the exact existing 5-minute freshness window across a hard reload.
-  // Explicit Home/company invalidation calls clearAllTemplateGraphicsCache(),
-  // so this only removes duplicate reads inside the same freshness window.
   const persisted = readGraphicsSessionCache(cacheKey);
-  if (persisted) {
+  if (
+    persisted &&
+    String(persisted.catalogVersion || "") === String(catalogVersion || "")
+  ) {
     _graphicsCache.set(cacheKey, persisted);
     return persisted.templates;
   }
@@ -155,29 +171,32 @@ export const AllTemplateGraphicsService = async (
 
   const requestGeneration = _graphicsCacheGeneration;
   const request = (async () => {
-    const generalTemplates = LIVE_GENERAL_TEMPLATE_TYPES.has(selectedType)
-      ? await fetchLiveGeneralTemplates(selectedType)
-      : getAllGeneralTemplates(selectedType);
+    const generalTemplates = await fetchGeneralTemplatesForType(selectedType);
     let mlmTemplates = [];
 
     if (companyName) {
-      const mlmSnapshot = await getDocs(
-        query(
-          collection(db, COLLECTIONS.MLMTEMPLATE),
-          where("SelectType", "==", `${selectedType}`),
-          where("MainType", "==", "MLM"),
-          where("Company", "==", companyName),
-          where("Active", "==", true),
-          where("Launched", "==", true),
-          orderBy("serial"),
-        ),
-      );
-      mlmTemplates = mlmSnapshot.docs.map(normalizeDoc);
+      const cdnItems = await fetchMlmTypeCatalog(companyName, selectedType);
+      if (cdnItems !== null) {
+        mlmTemplates = cdnItems.map(normalizeRaw);
+      } else {
+        const mlmSnapshot = await getDocs(
+          query(
+            collection(db, COLLECTIONS.MLMTEMPLATE),
+            where("SelectType", "==", `${selectedType}`),
+            where("MainType", "==", "MLM"),
+            where("Company", "==", companyName),
+            where("Active", "==", true),
+            where("Launched", "==", true),
+            orderBy("serial"),
+          ),
+        );
+        mlmTemplates = mlmSnapshot.docs.map(normalizeDoc);
+      }
     }
 
     const templates = [...mlmTemplates, ...generalTemplates];
     if (requestGeneration === _graphicsCacheGeneration) {
-      const entry = { timestamp: Date.now(), templates };
+      const entry = { timestamp: Date.now(), templates, catalogVersion };
       _graphicsCache.set(cacheKey, entry);
       writeGraphicsSessionCache(cacheKey, entry);
     }
@@ -201,66 +220,57 @@ export const Alltemplateservice = async (
   companyName,
 ) => {
   try {
-    const lastSerialForJson = lastDoc?._generalLastSerial ?? null;
-    const isLiveGeneralType = LIVE_GENERAL_TEMPLATE_TYPES.has(Selected_type);
-
-    const liveGeneralTemplates = isLiveGeneralType
-      ? await fetchLiveGeneralTemplates(Selected_type)
-      : null;
-    const liveStartIndex = isLiveGeneralType
-      ? Number(lastDoc?._liveGeneralOffset || 0)
-      : 0;
-    const livePage = isLiveGeneralType
-      ? liveGeneralTemplates.slice(liveStartIndex, liveStartIndex + pageSize)
-      : null;
-    const generalResult = isLiveGeneralType
-      ? {
-          templates: livePage,
-          hasMore: liveStartIndex + pageSize < liveGeneralTemplates.length,
-          lastSerial: livePage.length
-            ? Number(livePage[livePage.length - 1]?.serial || 0)
-            : null,
-        }
-      : getGeneralTemplatesPage(Selected_type, pageSize, lastSerialForJson);
-    const generalTemplates = generalResult.templates;
+    const allGeneralTemplates = await fetchGeneralTemplatesForType(Selected_type);
+    const generalOffset = Number(lastDoc?._generalOffset || 0);
+    const generalTemplates = allGeneralTemplates.slice(generalOffset, generalOffset + pageSize);
+    const nextGeneralOffset = generalOffset + generalTemplates.length;
+    const generalHasMore = nextGeneralOffset < allGeneralTemplates.length;
 
     let mlmTemplates = [];
     let mlmLastDoc = null;
+    let mlmOffset = Number(lastDoc?._mlmOffset || 0);
+    let mlmHasMore = false;
 
     if (companyName) {
-      const mlmConstraints = [
-        where("SelectType", "==", `${Selected_type}`),
-        where("MainType", "==", "MLM"),
-        where("Company", "==", companyName),
-        where("Active", "==", true),
-        where("Launched", "==", true),
-        orderBy("serial"),
-        limit(pageSize),
-      ];
+      const cdnItems = await fetchMlmTypeCatalog(companyName, Selected_type);
+      if (cdnItems !== null) {
+        const normalized = cdnItems.map(normalizeRaw);
+        mlmTemplates = normalized.slice(mlmOffset, mlmOffset + pageSize);
+        mlmOffset += mlmTemplates.length;
+        mlmHasMore = mlmOffset < normalized.length;
+      } else {
+        const mlmConstraints = [
+          where("SelectType", "==", `${Selected_type}`),
+          where("MainType", "==", "MLM"),
+          where("Company", "==", companyName),
+          where("Active", "==", true),
+          where("Launched", "==", true),
+          orderBy("serial"),
+          limit(pageSize),
+        ];
 
-      if (lastDoc?._mlmLastDoc) {
-        mlmConstraints.splice(-1, 0, startAfter(lastDoc._mlmLastDoc));
+        if (lastDoc?._mlmLastDoc) {
+          mlmConstraints.splice(-1, 0, startAfter(lastDoc._mlmLastDoc));
+        }
+
+        const mlmSnapshot = await getDocs(
+          query(collection(db, COLLECTIONS.MLMTEMPLATE), ...mlmConstraints)
+        );
+        mlmTemplates = mlmSnapshot.docs.map(normalizeDoc);
+        mlmLastDoc = mlmSnapshot.docs[mlmSnapshot.docs.length - 1] || null;
+        mlmHasMore = mlmTemplates.length === pageSize;
       }
-
-      const mlmSnapshot = await getDocs(
-        query(collection(db, COLLECTIONS.MLMTEMPLATE), ...mlmConstraints)
-      );
-
-      mlmTemplates = mlmSnapshot.docs.map(normalizeDoc);
-      mlmLastDoc = mlmSnapshot.docs[mlmSnapshot.docs.length - 1] || null;
     }
 
     const templates = [...mlmTemplates, ...generalTemplates];
 
     const newLastDoc = {
-      _generalLastSerial: generalResult.lastSerial,
-      _liveGeneralOffset: isLiveGeneralType
-        ? liveStartIndex + generalTemplates.length
-        : undefined,
+      _generalOffset: nextGeneralOffset,
       _mlmLastDoc: mlmLastDoc,
+      _mlmOffset: mlmOffset,
     };
 
-    const hasMore = generalResult.hasMore || mlmTemplates.length === pageSize;
+    const hasMore = generalHasMore || mlmHasMore;
 
     return { templates, lastDoc: newLastDoc, hasMore };
   } catch (error) {

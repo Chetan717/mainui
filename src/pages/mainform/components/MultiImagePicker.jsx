@@ -42,6 +42,13 @@ export default function MultiImagePicker({
   maxImages = 15,
   inlineStrip = false,
 }) {
+  // Warm BiRefNet while the picker is visible, before a user chooses a photo.
+  useEffect(() => {
+    void preloadBgModel().catch(() => {
+      // removeBg() reports/retries if the user actually processes a photo.
+    });
+  }, []);
+
   const [tab, setTab] = useState("company");
   const [open, setOpen] = useState(false);
   const internalRef = useRef(null);
@@ -136,7 +143,7 @@ export default function MultiImagePicker({
     // then replace its source with the transparent result for the final crop.
     const previewUrl = URL.createObjectURL(blob);
     setBgPreviewUrl(previewUrl);
-    setBgProgressMsg("Preparing your photo with AI…");
+    setBgProgressMsg("AI आपकी फोटो तैयार कर रहा है…");
     setBgProgressPct(0);
     setBgLoading(true);
     const controller = new AbortController();
@@ -160,7 +167,7 @@ export default function MultiImagePicker({
         if (err?.name === "AbortError" || controller.signal.aborted) return;
         
         toast.danger(
-          "Background removal could not start. Skipping this photo for now; please select it again and retry.",
+          "Background removal शुरू नहीं हो पाया. इस photo को छोड़कर आगे बढ़ रहे हैं—इसे दोबारा select करके Retry करें.",
         );
         // Do not redisplay the same unchanged crop with another Done button.
         // Skip only this failed item and continue the remaining queue; the

@@ -1,31 +1,29 @@
 /**
- * Hybrid production background removal for MLM LIVE.
+ * Client-only background removal shared by every MLM LIVE photo flow.
  *
- * 1) Bundled MODNet always gives us a private, free on-device result.
- * 2) That matte is inspected locally. Simple/clean portraits finish instantly.
- * 3) Complex portraits are sent to the private BiRefNet VPS for the final PNG.
- * 4) If the VPS is busy/offline/times out, the already-computed MODNet result
- *    is returned automatically so a server incident never becomes a user-flow
- *    failure while the local engine is available.
+ * Quality tier:
+ *   - WebGPU-capable devices: BiRefNet Lite 512 FP16 from Cloudflare R2.
+ *   - Devices that are genuinely not capable of running the WebGPU model:
+ *     bundled MODNet continuous-alpha portrait fallback.
+ *
+ * There is intentionally NO short timeout that downgrades a capable device to
+ * MODNet while BiRefNet is still downloading. The quality model is preloaded
+ * when the editor/photo UI mounts and is cached persistently after first use.
  */
 
-import {
-  assessLocalMatte,
-  removeBackgroundOnServer,
-} from "./removeBgServer.js";
-
 export const REMOVE_BG_QUALITY = Object.freeze({
-  engine: "hybrid-modnet-birefnet",
-  localModel: "modnet-portrait",
-  serverModel: "birefnet-portrait",
+  engine: "birefnet-webgpu-with-modnet-capability-fallback",
+  model: "birefnet-lite-512-fp16",
   continuousAlpha: true,
-  serverForComplexPortraits: true,
-  localFallbackOnServerFailure: true,
+  lowQualityFallback: false,
   originalPhotoFallback: false,
+  fallbackOnlyWhenUnsupported: true,
 });
 
+let birefNetPromise = null;
 let modNetPromise = null;
 let preloadPromise = null;
+let selectedEnginePromise = null;
 let activeProgress = null;
 let processingTail = Promise.resolve();
 
@@ -39,8 +37,17 @@ function throwIfAborted(signal) {
 
 function emitProgress(stage, percentage) {
   if (!activeProgress) return;
-  const safePercentage = Math.max(0, Math.min(100, Math.round(percentage)));
-  activeProgress(stage, safePercentage);
+  activeProgress(stage, Math.max(0, Math.min(100, Math.round(percentage))));
+}
+
+async function loadBirefNetEngine() {
+  if (!birefNetPromise) {
+    birefNetPromise = import("./birefnetBg.js").catch((error) => {
+      birefNetPromise = null;
+      throw error;
+    });
+  }
+  return birefNetPromise;
 }
 
 async function loadModNetEngine() {
@@ -53,47 +60,62 @@ async function loadModNetEngine() {
   return modNetPromise;
 }
 
-function reportNativeFailure(error, extra = {}) {
+async function selectBestEngine() {
+  if (!selectedEnginePromise) {
+    selectedEnginePromise = (async () => {
+      try {
+        const { getBirefNetCapability } = await loadBirefNetEngine();
+        const capability = await getBirefNetCapability();
+        if (capability.supported) return "birefnet";
+      } catch {
+        // Import/capability failure means this browser cannot use the quality
+        // engine, so it is safe to choose the local fallback before download.
+      }
+      return "modnet";
+    })();
+  }
+  return selectedEnginePromise;
+}
+
+function reportNativeFailure(error, engine) {
   try {
     window.ReactNativeWebView?.postMessage(
       JSON.stringify({
         type: "REMOVE_BG_ERROR",
-        engine: REMOVE_BG_QUALITY.engine,
+        engine,
         message: error?.message || String(error),
-        ...extra,
       }),
     );
   } catch {
-    // Diagnostics must never affect image processing.
+    // Diagnostics must never hide the original processing error.
   }
 }
 
-function reportNativeRoute(route, extra = {}) {
-  try {
-    window.ReactNativeWebView?.postMessage(
-      JSON.stringify({
-        type: "REMOVE_BG_ROUTE",
-        route,
-        ...extra,
-      }),
-    );
-  } catch {
-    // Optional diagnostics only.
-  }
-}
-
-/** Download and initialise the local portrait model ahead of the Done tap. */
+/** Start loading the final engine as early as possible. */
 export async function preloadBgModel(onProgress) {
   if (typeof window === "undefined") return "unavailable";
   if (onProgress) activeProgress = onProgress;
 
   if (!preloadPromise) {
     preloadPromise = (async () => {
+      const engine = await selectBestEngine();
+      if (engine === "birefnet") {
+        const { preloadBirefNet } = await loadBirefNetEngine();
+        try {
+          await preloadBirefNet((stage, percentage) => emitProgress(stage, percentage));
+          return "birefnet-webgpu";
+        } catch (error) {
+          // Only a genuine runtime/device incompatibility is allowed to route
+          // to MODNet. Slow download/network errors stay on BiRefNet and are
+          // surfaced/retried later instead of silently lowering quality.
+          if (error?.removeBgUnsupported !== true) throw error;
+          selectedEnginePromise = Promise.resolve("modnet");
+        }
+      }
+
       const { preloadModNet } = await loadModNetEngine();
-      await preloadModNet((stage, percentage) =>
-        emitProgress(stage, percentage),
-      );
-      return "modnet-continuous-portrait-matte";
+      await preloadModNet((stage, percentage) => emitProgress(stage, percentage));
+      return "modnet-capability-fallback";
     })().catch((error) => {
       preloadPromise = null;
       throw error;
@@ -123,7 +145,6 @@ function raceWithAbort(promise, signal) {
 }
 
 function queueProcessing(task, signal) {
-  // One local model run at a time protects lower-memory Android WebViews.
   const scheduled = processingTail.then(async () => {
     throwIfAborted(signal);
     return task();
@@ -132,21 +153,31 @@ function queueProcessing(task, signal) {
   return raceWithAbort(scheduled, signal);
 }
 
-async function removeWithProfessionalMatte(file, signal) {
-  const { removeBackgroundWithModNet } = await loadModNetEngine();
-  await preloadBgModel(activeProgress);
+async function runBirefNet(file, signal) {
+  const { removeBackgroundWithBirefNet } = await loadBirefNetEngine();
+  throwIfAborted(signal);
+  const result = await removeBackgroundWithBirefNet(
+    file,
+    (stage, percentage) => emitProgress(stage, percentage),
+    signal,
+  );
+  if (!(result instanceof Blob) || result.size === 0) {
+    throw new Error("BiRefNet returned an empty image.");
+  }
+  return result;
+}
+
+async function runModNet(file, signal) {
+  const { preloadModNet, removeBackgroundWithModNet } = await loadModNetEngine();
+  await preloadModNet((stage, percentage) => emitProgress(stage, percentage));
   throwIfAborted(signal);
   const result = await removeBackgroundWithModNet(
     file,
-    (stage, percentage) => {
-      // Reserve progress space for quality inspection/server routing.
-      emitProgress(stage, Math.min(68, Math.round(percentage * 0.68)));
-    },
+    (stage, percentage) => emitProgress(stage, percentage),
     signal,
   );
-  throwIfAborted(signal);
   if (!(result instanceof Blob) || result.size === 0) {
-    throw new Error("Local portrait model returned an empty image.");
+    throw new Error("Portrait fallback returned an empty image.");
   }
   return result;
 }
@@ -162,141 +193,88 @@ export function isRetryableRemoveBgError(error) {
   return false;
 }
 
-async function prepareSameQualityRetry() {
+async function retrySameEngine(engine) {
   preloadPromise = null;
+  if (engine === "birefnet") {
+    const { resetBirefNetEngine } = await loadBirefNetEngine();
+    // Keep the cached 94 MB file. A transient session failure should not force
+    // a second giant network download.
+    await resetBirefNetEngine({ freshAssets: false });
+    return;
+  }
   const { resetModNetEngine } = await loadModNetEngine();
   resetModNetEngine({ freshAssets: false });
 }
 
-async function runLocalWithStartupRetry(file, signal) {
-  try {
-    return await removeWithProfessionalMatte(file, signal);
-  } catch (firstError) {
-    if (firstError?.name === "AbortError" || signal?.aborted) {
-      throw abortError();
-    }
-    if (!isRetryableRemoveBgError(firstError)) throw firstError;
+async function removeWithSelectedEngine(file, signal) {
+  let engine = await selectBestEngine();
 
-    console.warn("[removeBg] Local portrait retry:", firstError);
-    emitProgress("Retrying on-device AI…", 8);
-    await prepareSameQualityRetry();
-    return removeWithProfessionalMatte(file, signal);
+  if (engine === "birefnet") {
+    try {
+      return { blob: await runBirefNet(file, signal), engine };
+    } catch (error) {
+      if (error?.removeBgUnsupported === true) {
+        // This is not a timeout. The WebGPU runtime has positively rejected the
+        // device/provider, so the bundled continuous-alpha fallback is valid.
+        selectedEnginePromise = Promise.resolve("modnet");
+        preloadPromise = null;
+        engine = "modnet";
+        emitProgress("इस device पर compatible portrait AI use हो रहा है…", 12);
+        return { blob: await runModNet(file, signal), engine };
+      }
+      throw Object.assign(error, { removeBgEngine: engine });
+    }
+  }
+
+  try {
+    return { blob: await runModNet(file, signal), engine };
+  } catch (error) {
+    throw Object.assign(error, { removeBgEngine: engine });
   }
 }
 
-async function tryServer(file, signal) {
-  return removeBackgroundOnServer(file, signal, (stage, pct) =>
-    emitProgress(stage, pct),
-  );
-}
-
 /**
- * Remove a portrait background with automatic local/server routing.
- *
- * @param {File|Blob} file
- * @param {(stage: string, pct: number) => void} [onProgress]
- * @param {AbortSignal} [signal]
- * @returns {Promise<Blob>} transparent PNG
+ * Remove a portrait background entirely on the user's device.
+ * No photo bytes are uploaded to the model host.
  */
 export async function removeBg(file, onProgress, signal) {
   if (!(file instanceof Blob) || file.size === 0) {
     throw new Error("Please select a valid image.");
   }
   throwIfAborted(signal);
-  onProgress?.("Preparing on-device portrait AI…", 2);
+  onProgress?.("High-quality portrait AI तैयार हो रहा है…", 2);
 
   return queueProcessing(async () => {
     throwIfAborted(signal);
     activeProgress = onProgress || null;
-
-    let localResult = null;
-    let localError = null;
-
+    let engine = await selectBestEngine();
     try {
-      // Local processing is intentionally first: it gives simple portraits an
-      // instant/private path and leaves us with a ready fallback before the VPS
-      // is contacted for complex hair/edges.
       try {
-        localResult = await runLocalWithStartupRetry(file, signal);
-      } catch (error) {
-        if (error?.name === "AbortError" || signal?.aborted) throw abortError();
-        localError = error;
-        console.warn("[removeBg] Local engine failed; trying VPS:", error);
-      }
+        const { blob, engine: usedEngine } = await removeWithSelectedEngine(file, signal);
+        engine = usedEngine;
+        emitProgress("Clean transparent photo तैयार है", 100);
+        return blob;
+      } catch (firstError) {
+        if (firstError?.name === "AbortError" || signal?.aborted) throw abortError();
+        engine = firstError?.removeBgEngine || engine;
+        if (!isRetryableRemoveBgError(firstError)) throw firstError;
 
-      throwIfAborted(signal);
-
-      if (localResult) {
-        emitProgress("Checking photo complexity…", 70);
-        let assessment;
-        try {
-          assessment = await assessLocalMatte(localResult);
-        } catch (error) {
-          // If quality inspection itself is unavailable, be conservative and
-          // let the higher-quality server have a chance.
-          console.warn("[removeBg] Matte inspection failed:", error);
-          assessment = { complex: true, reasons: ["inspection-failed"] };
-        }
-
-        if (!assessment.complex) {
-          reportNativeRoute("local-simple", { metrics: assessment.metrics });
-          emitProgress("Transparent photo is ready", 100);
-          return localResult;
-        }
-
-        reportNativeRoute("server-complex", { reasons: assessment.reasons });
-        try {
-          const serverResult = await tryServer(file, signal);
-          emitProgress("Transparent photo is ready", 100);
-          return serverResult;
-        } catch (serverError) {
-          if (serverError?.name === "AbortError" || signal?.aborted) {
-            throw abortError();
-          }
-
-          // Critical reliability rule: complex photos still complete using the
-          // local result if the VPS is busy, offline, blocked by CORS/mixed
-          // content, or temporarily unhealthy.
-          console.warn(
-            "[removeBg] VPS unavailable; using local fallback:",
-            serverError,
-          );
-          reportNativeRoute("local-server-fallback", {
-            reason: serverError?.message || "server-unavailable",
-          });
-          emitProgress("Server is busy — using the clean local result", 94);
-          emitProgress("Transparent photo is ready", 100);
-          return localResult;
-        }
-      }
-
-      // Local engine itself could not produce a PNG. Give the VPS one final
-      // independent chance before showing an error.
-      emitProgress("On-device AI unavailable — trying the server…", 72);
-      try {
-        const serverResult = await tryServer(file, signal);
-        reportNativeRoute("server-local-failed");
-        emitProgress("Transparent photo is ready", 100);
-        return serverResult;
-      } catch (serverError) {
-        if (serverError?.name === "AbortError" || signal?.aborted) {
-          throw abortError();
-        }
-        const combined = new Error(
-          "Both local and server background removal are unavailable.",
-          { cause: serverError },
-        );
-        combined.localCause = localError;
-        throw combined;
+        console.warn(`[removeBg] ${engine} retry:`, firstError);
+        emitProgress("High-quality AI clean retry कर रहा है…", 7);
+        await retrySameEngine(engine);
+        const retried =
+          engine === "birefnet"
+            ? await runBirefNet(file, signal)
+            : await runModNet(file, signal);
+        emitProgress("Clean transparent photo तैयार है", 100);
+        return retried;
       }
     } catch (error) {
       if (error?.name === "AbortError" || signal?.aborted) throw abortError();
-      console.error("[removeBg] Hybrid background removal failed:", error);
-      reportNativeFailure(error, {
-        localMessage: localError?.message || null,
-      });
+      console.error("[removeBg] Portrait removal failed:", error);
+      reportNativeFailure(error, engine);
       throw new Error(
-        "Background removal is temporarily unavailable. Please check your connection and try again.",
+        "Clean background removal पूरा नहीं हुआ. Internet चालू रखकर Retry करें—background वाली photo save नहीं की गई है.",
         { cause: error },
       );
     } finally {
@@ -305,14 +283,20 @@ export async function removeBg(file, onProgress, signal) {
   }, signal);
 }
 
-/** Force a clean local model/session retry after a corrupt cached download. */
+/** Force a fresh model download only after the user explicitly retries repair. */
 export function refreshRemoveBgKeys() {
   preloadPromise = null;
+  selectedEnginePromise = null;
+  if (birefNetPromise) {
+    void birefNetPromise
+      .then(({ resetBirefNetEngine }) => resetBirefNetEngine({ freshAssets: true }))
+      .catch(() => {
+        birefNetPromise = null;
+      });
+  }
   if (modNetPromise) {
     void modNetPromise
-      .then(({ resetModNetEngine }) =>
-        resetModNetEngine({ freshAssets: true }),
-      )
+      .then(({ resetModNetEngine }) => resetModNetEngine({ freshAssets: true }))
       .catch(() => {
         modNetPromise = null;
       });

@@ -37,6 +37,17 @@ export default function ImageUploadWithBgRemove({
   const [dots, setDots] = useState("");
   const [processingPreview, setProcessingPreview] = useState(null);
 
+  // Begin the quality model download as soon as the photo/editor control is on
+  // screen. There is no short timeout downgrade; removeBg() reuses this exact
+  // preload when the user finishes the crop.
+  useEffect(() => {
+    if (skipBackgroundRemoval) return undefined;
+    void preloadBgModel().catch(() => {
+      // The processing action owns retry/error UI. Preload stays silent.
+    });
+    return undefined;
+  }, [skipBackgroundRemoval]);
+
   useEffect(() => {
     if (!load) { setDots(""); return; }
     const id = setInterval(() => {
@@ -106,14 +117,14 @@ export default function ImageUploadWithBgRemove({
     const previewUrl = URL.createObjectURL(croppedBlob);
     setProcessingPreview(previewUrl);
     setLoad(true);
-    setProgressMsg("Preparing your photo with AI…");
+    setProgressMsg("AI आपकी फोटो तैयार कर रहा है…");
     setProgressPct(0);
     const controller = new AbortController();
     abortRef.current = controller;
     publishProcessing({
       active: true,
       previewUrl,
-      progressMessage: "Preparing your photo with AI…",
+      progressMessage: "AI आपकी फोटो तैयार कर रहा है…",
       progressPct: 0,
       onCancel: cancelRemoveBg,
     });
@@ -161,7 +172,7 @@ export default function ImageUploadWithBgRemove({
         
         console.error("[removeBg] Image processing failed:", err, err?.cause);
         toast.danger(
-          "Background removal could not start. Please select the photo again and retry.",
+          "Background removal शुरू नहीं हो पाया. Photo दोबारा select करके Retry करें.",
         );
 
         // Never return the unchanged crop to another Done button. That looked
@@ -197,7 +208,7 @@ export default function ImageUploadWithBgRemove({
         processingId === processingIdRef.current
       ) {
         openFinalCrop(finalImage, true);
-        toast("Background removed. Adjust the final crop, then tap Done.");
+        toast("Adjust the final crop, then tap Done.");
       }
     })();
 

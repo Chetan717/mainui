@@ -1,6 +1,7 @@
 import { db } from "@firebase-config";
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { COLLECTIONS } from "../../../../collections";
+import { fetchMlmTypeCatalog, fetchTrendingGeneralCatalog } from "./templateCdnService";
 
 function mapDoc(doc) {
   const data = doc.data();
@@ -13,6 +14,20 @@ function mapDoc(doc) {
     ShowCaseForm: data?.ShowCaseForm,
     serial: data?.serial,
     Subtype: data?.Subtype || "",
+  };
+}
+
+function mapRaw(data) {
+  return {
+    id: data?.id || "",
+    image: data?.Showcase_url || data?.image || "",
+    company: data?.Company || data?.company || "",
+    MainType: data?.MainType || "",
+    type: data?.SelectType || data?.type,
+    ShowCaseForm: data?.ShowCaseForm,
+    serial: data?.serial,
+    Subtype: data?.Subtype || "",
+    GraphicsLink: Array.isArray(data?.GraphicsLink) ? data.GraphicsLink : [],
   };
 }
 
@@ -64,6 +79,36 @@ export const TTrend_templateService = async (companyName) => {
   } catch {}
 
   try {
+    const [cdnGeneral, cdnMlm] = await Promise.all([
+      fetchTrendingGeneralCatalog(today),
+      requestedCompany
+        ? fetchMlmTypeCatalog(requestedCompany, "Today_Trending")
+        : Promise.resolve([]),
+    ]);
+    if (cdnGeneral !== null && (!requestedCompany || cdnMlm !== null)) {
+      const seen = new Set();
+      const templates = [...cdnGeneral, ...(cdnMlm || [])]
+        .map(mapRaw)
+        .filter((item) => {
+          if (!item.id || seen.has(item.id)) return false;
+          seen.add(item.id);
+          return true;
+        });
+      if (requestGeneration === _cacheGeneration) {
+        _cache = templates;
+        _cacheCompany = requestedCompany;
+        _cacheDate = today;
+        _cacheTs = now;
+        try {
+          sessionStorage.setItem(
+            `${SESSION_CACHE_PREFIX}${today}:${requestedCompany}`,
+            JSON.stringify({ ts: now, data: templates }),
+          );
+        } catch {}
+      }
+      return templates;
+    }
+
     const q1 = query(
       collection(db, COLLECTIONS.MLMTEMPLATE),
       where("MainType", "==", "General"),

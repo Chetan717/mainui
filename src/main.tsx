@@ -1,3 +1,4 @@
+import { migrateStoredProfileAssetsToR2 } from "./utils/profileR2Urls";
 import { StrictMode, useEffect } from "react";
 import { Toast, toast } from "@heroui/react";
 import { createRoot } from "react-dom/client";
@@ -105,6 +106,8 @@ function ModalKeyboardController() {
   useEffect(() => installModalKeyboardGuard(), []);
   return null;
 }
+
+migrateStoredProfileAssetsToR2();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -53,12 +53,21 @@ import {
 } from "firebase/firestore";
 import {
   deleteObject,
-  getDownloadURL,
   getStorage,
   ref as storageRef,
-  uploadBytes,
 } from "firebase/storage";
 import { convertToWebP } from "../../../lib/convertToWebP";
+import {
+  getFirebaseStorageObjectPath,
+  getProfileObjectPath,
+  isR2ProfileUrl,
+  normalizeMlmProfileAssetUrls,
+  normalizeProfileUrlArray,
+} from "../../../utils/profileR2Urls";
+import {
+  deleteR2ProfileAsset,
+  uploadProfileImageToR2,
+} from "../../../services/profileR2Storage";
 import MultiImagePicker from "./MultiImagePicker";
 import ImageUploadWithBgRemove from "./ImageUploadWithBgRemove";
 import ImageEditorCanvas from "./ImageEditorCanvas";
@@ -366,7 +375,9 @@ export default function SalesExecutiveForm() {
   const [promoter, setPromoter] = useState({});
   const [previewMiddleImage, setPreviewMiddleImage] = useState(() => {
     try {
-      const profile = JSON.parse(sessionStorage.getItem("mlmProfile") || "{}");
+      const profile = normalizeMlmProfileAssetUrls(
+        JSON.parse(sessionStorage.getItem("mlmProfile") || "{}"),
+      );
       return profile?.profileImageURLs?.[0] || null;
     } catch {
       return null;
@@ -563,7 +574,9 @@ export default function SalesExecutiveForm() {
 
     try {
       da = JSON.parse(localStorage.getItem("selType")) || {};
-      mlmProfile = JSON.parse(sessionStorage.getItem("mlmProfile"));
+      mlmProfile = normalizeMlmProfileAssetUrls(
+        JSON.parse(sessionStorage.getItem("mlmProfile")),
+      );
       saved = JSON.parse(localStorage.getItem("mlmform"));
     } catch {}
 
@@ -595,7 +608,7 @@ export default function SalesExecutiveForm() {
       setBonanzaDays(saved.bonanzaDays || "None");
 
       if (Array.isArray(saved.selectedLinks)) {
-        setSelectedLinks(saved.selectedLinks);
+        setSelectedLinks(normalizeProfileUrlArray(saved.selectedLinks));
       } else if (mlmProfile?.topuplineURLs?.length) {
         setSelectedLinks(mlmProfile.topuplineURLs);
       }
@@ -683,18 +696,18 @@ export default function SalesExecutiveForm() {
     if (!files?.length) return;
 
     try {
-      const profile = JSON.parse(sessionStorage.getItem("mlmProfile") || "{}");
+      const profile = normalizeMlmProfileAssetUrls(
+        JSON.parse(sessionStorage.getItem("mlmProfile") || "{}"),
+      );
       if (!profile?.id) throw new Error("MLM profile was not found");
 
       const uploadedURLs = await Promise.all(
         files.map(async (item, index) => {
           const webpBlob = await convertToWebP(item.file);
-          const fileRef = storageRef(
-            storage,
-            `mlmprofiles/${profile.id}/topup_form_${Date.now()}_${index}.webp`,
-          );
-          await uploadBytes(fileRef, webpBlob, { contentType: "image/webp", cacheControl: "public,max-age=31536000,immutable" });
-          return getDownloadURL(fileRef);
+          return uploadProfileImageToR2(webpBlob, {
+            scope: "topup",
+            fileName: `topup_form_${Date.now()}_${index}.webp`,
+          });
         }),
       );
 
@@ -740,31 +753,29 @@ export default function SalesExecutiveForm() {
     }
   };
 
-  const getStoragePathFromUrl = (url) => {
-    try {
-      const match = url?.match(/\/o\/([^?]+)/);
-      return match ? decodeURIComponent(match[1]) : null;
-    } catch {
-      return null;
-    }
-  };
-
   const removeTopupline = async (link) => {
-    const storagePath = getStoragePathFromUrl(link);
+    const storagePath = getProfileObjectPath(link);
 
     // Company-provided images are not owned by this profile and must never be
-    // deleted from Storage; removing those only clears the current selection.
+    // deleted; removing those only clears the current selection.
     if (!storagePath?.startsWith("mlmprofiles/")) {
       toggleLink(link);
       return;
     }
 
     try {
-      const profile = JSON.parse(sessionStorage.getItem("mlmProfile") || "{}");
+      const profile = normalizeMlmProfileAssetUrls(
+        JSON.parse(sessionStorage.getItem("mlmProfile") || "{}"),
+      );
       if (!profile?.id) throw new Error("MLM profile was not found");
 
       try {
-        await deleteObject(storageRef(storage, storagePath));
+        if (isR2ProfileUrl(link)) {
+          await deleteR2ProfileAsset(link);
+        } else {
+          const firebasePath = getFirebaseStorageObjectPath(link);
+          if (firebasePath) await deleteObject(storageRef(storage, firebasePath));
+        }
       } catch (storageError) {
         if (storageError?.code !== "storage/object-not-found") throw storageError;
       }
@@ -870,7 +881,9 @@ export default function SalesExecutiveForm() {
     setAchiever({});
     setPromoter({});
     setSelectedLinks(() => {
-      const mlmProfile = JSON.parse(sessionStorage.getItem("mlmProfile"));
+      const mlmProfile = normalizeMlmProfileAssetUrls(
+        JSON.parse(sessionStorage.getItem("mlmProfile")),
+      );
       return mlmProfile?.topuplineURLs || [];
     });
     setCustomFiles([]);

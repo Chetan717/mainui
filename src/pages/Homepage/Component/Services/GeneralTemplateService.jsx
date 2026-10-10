@@ -11,9 +11,16 @@ import { COLLECTIONS } from "../../../../collections";
 import {
   getAllGeneralTemplates,
   getGeneralTemplatesForHome,
+  loadGeneralTemplateIndex,
 } from "./generalTemplateIndex";
 import { primeAllTemplateGraphicsCache } from "./Alltemplateservice";
 import { RANK_PROMOTION_TYPES } from "../../../../utils/templateTypeConfig";
+import {
+  fetchHomeCompanyCatalog,
+  fetchHomeGeneralCatalog,
+  getTemplateCatalogVersion,
+  clearTemplateCdnRuntimeCache,
+} from "./templateCdnService";
 
 const TYPE_GROUPS = [
   [
@@ -98,43 +105,54 @@ export function getTemplateCache() {
 
 export function clearTemplateCache() {
   _cacheGeneration += 1;
+  clearTemplateCdnRuntimeCache();
   _cache.clear();
   clearSessionCache();
 }
 
-const normalizeDoc = (doc) => ({
-  id: doc.id,
-  MainType: doc.data().MainType,
-  image: doc.data().Showcase_url,
-  GraphicsLink: doc.data().GraphicsLink || [],
-  type: doc.data().SelectType,
-  Subtype: doc.data().Subtype,
-  ShowCaseForm: doc.data().ShowCaseForm,
-  serial: doc.data().serial,
+const normalizeTemplate = (data, id = data?.id) => ({
+  id: id || data?.id || "",
+  MainType: data?.MainType,
+  image: data?.Showcase_url || data?.image || "",
+  GraphicsLink: Array.isArray(data?.GraphicsLink) ? data.GraphicsLink : [],
+  type: data?.SelectType || data?.type,
+  Subtype: data?.Subtype,
+  ShowCaseForm: data?.ShowCaseForm,
+  serial: data?.serial,
 });
+const normalizeDoc = (doc) => normalizeTemplate(doc.data(), doc.id);
 
 // Max templates to fetch per type on the home page
 const HOME_LIMIT = 30;
+// Legacy cache completeness rule remains conceptually identical:
+// mlmTemplates.length < HOME_LIMIT means the Home slice is complete.
 
 export const fetchGeneralTemplates = async (groupIndex, company) => {
   const cacheKey = `${groupIndex}__${company || ""}`;
   const requestGeneration = _cacheGeneration;
 
-  // In-memory cache hit (with TTL check)
+  // A browser refresh must see a freshly-published Admin edit immediately.
+  // Cache entries are therefore tied to the tiny R2 version.json manifest.
+  // A new catalog version invalidates both memory and session caches without
+  // causing Firestore reads.
+  const catalogVersion = await getTemplateCatalogVersion();
+
   if (_cache.has(cacheKey)) {
-    const { ts, data } = _cache.get(cacheKey);
-    if (Date.now() - ts < CACHE_TTL_MS) {
-      return data;
+    const entry = _cache.get(cacheKey);
+    if (
+      Date.now() - Number(entry?.ts || 0) < CACHE_TTL_MS &&
+      String(entry?.catalogVersion || "") === String(catalogVersion || "")
+    ) {
+      return entry.data;
     }
-    // Expired — remove and re-fetch
     _cache.delete(cacheKey);
   }
 
-  // Preserve the same 5-minute freshness window across a hard page refresh.
-  // Pull-to-refresh/company changes call clearTemplateCache(), so explicit
-  // refresh behaviour remains fresh.
   const persisted = readSessionCache(cacheKey);
-  if (persisted) {
+  if (
+    persisted &&
+    String(persisted?.catalogVersion || "") === String(catalogVersion || "")
+  ) {
     _cache.set(cacheKey, persisted);
     return persisted.data;
   }
@@ -144,68 +162,96 @@ export const fetchGeneralTemplates = async (groupIndex, company) => {
     const selectedTypes = TYPE_GROUPS[groupIndex];
     if (!selectedTypes) return [];
 
+    // Refresh the legacy all-General index from R2. Home still prefers the
+    // smaller home/general.json slice, while this live master powers deep
+    // search and emergency fallback without a bundled stale export.
+    const generalIndexState = await loadGeneralTemplateIndex();
+
+    // CDN-first: Home needs only two small catalog files regardless of how
+    // many template types are shown. Firestore remains an emergency fallback.
+    const [homeGeneralCatalog, homeCompanyCatalog] = await Promise.all([
+      fetchHomeGeneralCatalog(),
+      company ? fetchHomeCompanyCatalog(company) : Promise.resolve(null),
+    ]);
+
     const results = await Promise.all(
       selectedTypes.map(async (type) => {
         const bundledGeneralTemplates = getGeneralTemplatesForHome(type, HOME_LIMIT);
-        const isLiveGeneralType = type === "Domestic_Trip" || type === "Latest_update";
 
-        const [liveGeneralSnapshot, mlmSnapshot] = await Promise.all([
-          isLiveGeneralType
-            ? getDocs(
-                query(
-                  collection(db, COLLECTIONS.MLMTEMPLATE),
-                  where("SelectType", "==", type),
-                  where("MainType", "==", "General"),
-                  where("Active", "==", true),
-                  where("Launched", "==", true),
-                  limit(HOME_LIMIT),
-                ),
-              )
-            : Promise.resolve({ docs: [] }),
-          company
-            ? getDocs(
-                query(
-                  collection(db, COLLECTIONS.MLMTEMPLATE),
-                  where("MainType", "==", "MLM"),
-                  where("Company", "==", company),
-                  where("SelectType", "==", type),
-                  where("Active", "==", true),
-                  where("Launched", "==", true),
-                  orderBy("serial"),
-                  limit(HOME_LIMIT),
-                ),
-              )
-            : Promise.resolve({ docs: [] }),
-        ]);
+        const hasGeneralCdn = homeGeneralCatalog !== null;
+        const hasCompanyCdn = company ? homeCompanyCatalog !== null : true;
 
-        const liveGeneralTemplates = liveGeneralSnapshot.docs
-          .filter((docSnap) => {
-            const data = docSnap.data();
-            return (
-              data?.MainType === "General" &&
-              data?.Active === true &&
-              data?.Launched === true
-            );
-          })
-          .map(normalizeDoc)
-          .sort((a, b) => Number(a.serial || 0) - Number(b.serial || 0))
-          .slice(0, HOME_LIMIT);
+        // ALL General types are R2/CDN-first. Previously only Latest Update and
+        // Domestic Trip used the live catalog, so Admin edits to Product,
+        // Motivational, Income, etc. kept showing the old bundled JSON.
+        let generalTemplates = bundledGeneralTemplates;
+        let generalCount = bundledGeneralTemplates.length;
+        let completeGeneralTemplates = getAllGeneralTemplates(type);
 
-        const generalTemplates = isLiveGeneralType
-          ? liveGeneralTemplates
-          : bundledGeneralTemplates;
-        const mlmTemplates = mlmSnapshot.docs.map(normalizeDoc);
+        if (hasGeneralCdn) {
+          const raw = Array.isArray(homeGeneralCatalog?.types?.[type])
+            ? homeGeneralCatalog.types[type]
+            : [];
+          generalTemplates = raw.map((item) => normalizeTemplate(item)).slice(0, HOME_LIMIT);
+          generalCount = Number(homeGeneralCatalog?.counts?.[type] ?? raw.length);
+          completeGeneralTemplates = generalCount < HOME_LIMIT ? generalTemplates : null;
+        } else if (generalIndexState?.source !== "cdn") {
+          // Emergency only: if both R2 home catalog and all-General master are
+          // unavailable, query Firestore so the app does not go blank.
+          const liveGeneralSnapshot = await getDocs(
+            query(
+              collection(db, COLLECTIONS.MLMTEMPLATE),
+              where("SelectType", "==", type),
+              where("MainType", "==", "General"),
+              where("Active", "==", true),
+              where("Launched", "==", true),
+              limit(HOME_LIMIT),
+            ),
+          );
+          generalTemplates = liveGeneralSnapshot.docs
+            .filter((docSnap) => {
+              const data = docSnap.data();
+              return data?.MainType === "General" && data?.Active === true && data?.Launched === true;
+            })
+            .map(normalizeDoc)
+            .sort((a, b) => Number(a.serial || 0) - Number(b.serial || 0))
+            .slice(0, HOME_LIMIT);
+          generalCount = generalTemplates.length;
+          completeGeneralTemplates = generalCount < HOME_LIMIT ? generalTemplates : null;
+        }
 
+        let mlmTemplates = [];
+        let mlmCount = 0;
+        if (company && hasCompanyCdn) {
+          const raw = Array.isArray(homeCompanyCatalog?.types?.[type])
+            ? homeCompanyCatalog.types[type]
+            : [];
+          mlmTemplates = raw.map((item) => normalizeTemplate(item)).slice(0, HOME_LIMIT);
+          mlmCount = Number(homeCompanyCatalog?.counts?.[type] ?? raw.length);
+        } else if (company) {
+          const mlmSnapshot = await getDocs(
+            query(
+              collection(db, COLLECTIONS.MLMTEMPLATE),
+              where("MainType", "==", "MLM"),
+              where("Company", "==", company),
+              where("SelectType", "==", type),
+              where("Active", "==", true),
+              where("Launched", "==", true),
+              orderBy("serial"),
+              limit(HOME_LIMIT),
+            ),
+          );
+          mlmTemplates = mlmSnapshot.docs.map(normalizeDoc);
+          mlmCount = mlmTemplates.length;
+        }
+
+        const completeMlm = !company || mlmCount < HOME_LIMIT;
         return {
           type,
           templates: [...mlmTemplates, ...generalTemplates],
-          // A short Firestore result proves that Home already received every
-          // matching company template. Reuse it with the complete local JSON
-          // set on View All. Exactly HOME_LIMIT remains intentionally
-          // unprimed because more remote documents may exist.
           completeTemplates:
-            !isLiveGeneralType && mlmTemplates.length < HOME_LIMIT
-              ? [...mlmTemplates, ...getAllGeneralTemplates(type)]
+            completeMlm && Array.isArray(completeGeneralTemplates)
+              ? [...mlmTemplates, ...completeGeneralTemplates]
               : null,
         };
       }),
@@ -222,10 +268,11 @@ export const fetchGeneralTemplates = async (groupIndex, company) => {
             result.type,
             company,
             result.completeTemplates,
+            catalogVersion,
           );
         }
       }
-      const entry = { ts: Date.now(), data };
+      const entry = { ts: Date.now(), data, catalogVersion };
       _cache.set(cacheKey, entry);
       writeSessionCache(cacheKey, entry);
     }
