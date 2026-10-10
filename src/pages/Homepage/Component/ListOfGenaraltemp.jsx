@@ -343,7 +343,7 @@ function AutoScrollCardLabel({ label }) {
 
 const GENERAL_SELECT_TYPES = new Set([
   // "Trending",
-  // "Today_Trending",
+  "Today_Trending",
   "Festival",
   "Latest_update",
   "Product",
